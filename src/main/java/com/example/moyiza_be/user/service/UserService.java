@@ -18,10 +18,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto) {
-        String password = requestDto.getPassword();
+        String password = passwordEncoder.encode(requestDto.getPassword());
 
         Optional<User> findUserByEmail = userRepository.findByEmail(requestDto.getEmail());
         if (findUserByEmail.isPresent()) {
