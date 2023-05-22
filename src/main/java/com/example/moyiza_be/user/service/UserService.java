@@ -1,8 +1,14 @@
 package com.example.moyiza_be.user.service;
 
+import com.example.moyiza_be.common.security.jwt.JwtTokenDto;
+import com.example.moyiza_be.common.security.jwt.JwtUtil;
+import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshToken;
+import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
+import com.example.moyiza_be.user.dto.LoginRequestDto;
 import com.example.moyiza_be.user.dto.SignupRequestDto;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +25,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto) {
@@ -38,4 +46,31 @@ public class UserService {
         return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
     }
 
+    //로그인
+    public ResponseEntity<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
+        String email = requestDto.getEmail();
+        String password = requestDto.getPassword();
+
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            throw new IllegalArgumentException("비밀번호가 틀립니다.");
+        }
+
+        JwtTokenDto tokenDto = jwtUtil.createAllToken(email);
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(user.getEmail());
+        if (refreshToken.isPresent()) {
+            refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
+        } else {
+            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmail());
+            refreshTokenRepository.save(newToken);
+        }
+        setHeader(response, tokenDto);
+        return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
+    }
+
+    private void setHeader(HttpServletResponse response, JwtTokenDto tokenDto) {
+        response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
+        response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+    }
 }
