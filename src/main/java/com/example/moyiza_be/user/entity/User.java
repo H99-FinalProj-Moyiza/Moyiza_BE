@@ -15,14 +15,21 @@ public class User extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
     private String nickname;
+    @Column(nullable = false)
     private Integer gender;  // 0 : 여성,  1 : 남성
+    @Column(nullable = false)
     private Calendar birth;
+    @Column(nullable = false)
     private String phone;
+    @Lob
     private String profileUrl;
 
     public User (String password, SignupRequestDto requestDto){
