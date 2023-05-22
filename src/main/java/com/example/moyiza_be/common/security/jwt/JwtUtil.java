@@ -28,9 +28,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    public static final String AUTHORIZATION_HEADER = "Authorization";
-    // 사용자 권한 값의 KEY
-    public static final String AUTHORIZATION_KEY = "auth";
     private static final String BEARER_PREFIX = "Bearer ";
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
@@ -67,12 +64,12 @@ public class JwtUtil {
 
     public String createToken(String email, String token) {
         Date date = new Date();
-        long tokenTypeTime = token.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
+        long time = token.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
 
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(email)
-                        .setExpiration(new Date(date.getTime() + tokenTypeTime))
+                        .setExpiration(new Date(date.getTime() + time))
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)
                         .compact();
@@ -115,17 +112,4 @@ public class JwtUtil {
         response.setHeader(ACCESS_TOKEN, accessToken);
     }
 
-    public long getExpirationTime(String token) {
-        // 토큰에서 만료 시간 정보를 추출
-        Claims claims = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody();
-
-        // 현재 시간과 만료 시간의 차이를 계산하여 반환
-        Date expirationDate = claims.getExpiration();
-        Date now = new Date();
-        long diff = (expirationDate.getTime() - now.getTime()) / 1000;
-        return diff;
-    }
 }

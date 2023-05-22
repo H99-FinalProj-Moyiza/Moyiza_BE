@@ -51,10 +51,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 jwtUtil.setHeaderAccessToken(response, newAccessToken);
                 setAuthentication(userEmail);
             } else if (refresh_token == null) {
-                jwtExceptionHandler(response, "AccessToken Expired.", HttpStatus.BAD_REQUEST.value());
+                jwtExceptionHandler(response, "AccessToken이 만료되었습니다.", HttpStatus.BAD_REQUEST.value());
                 return;
             } else {
-                jwtExceptionHandler(response, "RefreshToken Expired.", HttpStatus.BAD_REQUEST.value());
+                jwtExceptionHandler(response, "RefreshToken이 만료되었습니다. 다시 로그인 해주세요.", HttpStatus.BAD_REQUEST.value());
                 return;
             }
             // 다음 필터로 요청과 응답을 전달하여 필터 체인 계속 실행
@@ -72,12 +72,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     // JWT 예외 처리를 위한 응답 설정
-    public void jwtExceptionHandler(HttpServletResponse response, String msg, int statusCode) {
+    public void jwtExceptionHandler(HttpServletResponse response, String message, int statusCode) {
         response.setStatus(statusCode);
-        response.setContentType("application/json");
+        response.setContentType("application/json; charset=utf8"); //한국어 깨짐 문제 해결
         try {
             // 예외 정보를 JSON 형태로 변환하여 응답에 작성
-            String json = new ObjectMapper().writeValueAsString(new SecurityExceptionDto(statusCode, msg));
+            String json = new ObjectMapper().writeValueAsString(new SecurityExceptionDto(statusCode, message));
             response.getWriter().write(json);
         } catch (Exception e) {
             log.error(e.getMessage());
