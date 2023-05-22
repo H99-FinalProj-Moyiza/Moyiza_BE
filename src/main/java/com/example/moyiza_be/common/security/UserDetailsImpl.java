@@ -2,13 +2,16 @@ package com.example.moyiza_be.common.security;
 
 import com.example.moyiza_be.common.enums.UserRoleEnum;
 import com.example.moyiza_be.user.entity.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+@Component
 public class UserDetailsImpl implements UserDetails {
     private final User user;
 
