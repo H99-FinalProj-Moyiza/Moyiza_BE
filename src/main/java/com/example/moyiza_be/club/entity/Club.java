@@ -2,6 +2,7 @@ package com.example.moyiza_be.club.entity;
 
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderEnum;
+import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,6 +28,9 @@ public class Club {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CategoryEnum category;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TagEnum tag;
     @Column(nullable = false)
     private String content;
     @Column(nullable = false)
