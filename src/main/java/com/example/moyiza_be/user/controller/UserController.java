@@ -5,11 +5,9 @@ import com.example.moyiza_be.user.dto.SignupRequestDto;
 import com.example.moyiza_be.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,4 +32,8 @@ public class UserController {
     //회원정보 수정
 
     //Refresh 토큰으로 Access 토큰 재발급
+    @GetMapping("/reissue")
+    public ResponseEntity<?> reissueToken(){
+        return new ResponseEntity<>("AccessToken 재발행 성공", HttpStatus.OK);
+    }
 }

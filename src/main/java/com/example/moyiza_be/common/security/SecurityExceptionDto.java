@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 public class SecurityExceptionDto {
 
     private int statusCode;
-    private String msg;
+    private String message;
 
-    public SecurityExceptionDto(int statusCode, String msg) {
+    public SecurityExceptionDto(int statusCode, String message) {
         this.statusCode = statusCode;
-        this.msg = msg;
+        this.message = message;
     }
 }
