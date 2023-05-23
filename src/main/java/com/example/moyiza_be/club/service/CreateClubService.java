@@ -3,6 +3,7 @@ package com.example.moyiza_be.club.service;
 import com.example.moyiza_be.club.dto.ClubResponseDto;
 import com.example.moyiza_be.club.dto.ConfirmClubCreationDto;
 import com.example.moyiza_be.club.dto.CreateClubIdResponse;
+import com.example.moyiza_be.club.dto.ResumeCreationDto;
 import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.club.repository.CreateClubRepository;
 import com.example.moyiza_be.common.enums.CategoryEnum;
@@ -13,12 +14,14 @@ import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -26,18 +29,22 @@ public class CreateClubService {
     private final CreateClubRepository createClubRepository;
     private final ClubService clubService;
     public ResponseEntity<?> initCreateClubId(Long userId) {
+        System.out.println("exists = " + createClubRepository.existsByOwnerId(userId));
         if(createClubRepository.existsByOwnerId(userId)){
+            log.info("found existing club by user " + userId);
             return new ResponseEntity<>(new Message("이어서 작성하시겠습니까 ?"), HttpStatus.CONTINUE);
         }
         CreateClub createClub = new CreateClub();
         createClubRepository.saveAndFlush(createClub);
+        log.info("new club created : club ID " + createClub.getId());
         CreateClubIdResponse createClubIdResponse = new CreateClubIdResponse(createClub.getId());
         return new ResponseEntity<>(createClubIdResponse, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<CreateClubIdResponse> getPreviousCreateClub(Long userId, Long createclub_id) {
+    public ResponseEntity<ResumeCreationDto> getPreviousCreateClub(Long userId, Long createclub_id) {
         CreateClub createClub = loadCreateClubById(createclub_id);
-        return ResponseEntity.ok(new CreateClubIdResponse(createclub_id));
+        log.info("returning previous createclub : " + createclub_id);
+        return ResponseEntity.ok(new ResumeCreationDto(createClub));
     }
 
     public ResponseEntity<Message> setCategory(User user, Long createclub_id, CategoryEnum categoryEnum) {
