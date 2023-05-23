@@ -4,7 +4,7 @@ public enum GenderEnum {
     MALE("남성"),
     FEMALE("여성");
 
-    String genderEnum;
+    private final String genderEnum;
 
     GenderEnum(String genderEnum) {
         this.genderEnum = genderEnum;
