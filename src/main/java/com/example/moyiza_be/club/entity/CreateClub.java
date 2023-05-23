@@ -33,6 +33,9 @@ public class CreateClub {
 
     private Integer maxGroupSize;
 
+
+    public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
+
     public void setCategory(CategoryEnum category) {
         this.category = category;
     }
