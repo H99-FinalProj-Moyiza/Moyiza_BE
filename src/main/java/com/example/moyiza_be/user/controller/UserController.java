@@ -1,5 +1,6 @@
 package com.example.moyiza_be.user.controller;
 
+import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.user.dto.LoginRequestDto;
 import com.example.moyiza_be.user.dto.SignupRequestDto;
 import com.example.moyiza_be.user.service.UserService;
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,9 +28,11 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response){
         return userService.login(requestDto, response);
     }
-
     //로그아웃
-
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.logout(response, userDetails.getUser().getEmail());
+    }
     //회원정보 수정
 
     //Refresh 토큰으로 Access 토큰 재발급
