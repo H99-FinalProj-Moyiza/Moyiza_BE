@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -67,6 +68,13 @@ public class UserService {
         }
         setHeader(response, tokenDto);
         return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
+    }
+
+    //로그아웃
+    public ResponseEntity<?> logout(HttpServletResponse response, String email) {
+        refreshTokenRepository.deleteByEmail(email).orElseThrow(
+                ()-> new NoSuchElementException("로그인한 사용자가 아닙니다."));
+        return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
     }
 
     private void setHeader(HttpServletResponse response, JwtTokenDto tokenDto) {

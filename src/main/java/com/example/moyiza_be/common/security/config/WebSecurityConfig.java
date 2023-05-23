@@ -58,6 +58,12 @@ public class WebSecurityConfig {
                 .anyRequest().authenticated().and()
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
+        //로그아웃 기능
+//        http.logout()
+//                .deleteCookies(JwtUtil.ACCESS_TOKEN, JwtUtil.REFRESH_TOKEN)
+//                .logoutUrl("/user/logout")
+//                .logoutSuccessUrl("/");
+
         return http.build();
     }
 
@@ -69,7 +75,9 @@ public class WebSecurityConfig {
 
         config.addAllowedOrigin("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/");
 
-        config.addExposedHeader(JwtUtil.AUTHORIZATION_HEADER);
+        config.addExposedHeader(JwtUtil.ACCESS_TOKEN);
+
+        config.addExposedHeader(JwtUtil.REFRESH_TOKEN);
 
         config.addAllowedMethod("*");
 
