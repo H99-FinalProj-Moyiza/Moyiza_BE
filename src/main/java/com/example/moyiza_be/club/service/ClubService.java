@@ -1,5 +1,8 @@
 package com.example.moyiza_be.club.service;
 
+import com.example.moyiza_be.club.dto.ClubResponseDto;
+import com.example.moyiza_be.club.dto.ConfirmClubCreationDto;
+import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.club.dto.ClubMemberDto;
 import com.example.moyiza_be.club.dto.ClubResponseDto;
 import com.example.moyiza_be.club.entity.Club;
@@ -12,6 +15,7 @@ import com.example.moyiza_be.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -121,5 +125,14 @@ public class ClubService {
                 () -> new NullPointerException()
         );
         return club;
+    }
+
+    @Transactional
+    public ClubResponseDto createClub(ConfirmClubCreationDto creationRequest){
+
+
+
+        //생성해주신 후, ClubResponseDto 반환해주시면 됩니다
+        return null;
     }
 }
