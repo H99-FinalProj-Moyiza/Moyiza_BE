@@ -15,8 +15,9 @@ public class ConfirmClubCreationDto {
     private final String tagString;
     private final String title;
     private final String content;
+    private final Integer maxGroupSize;
     private final GenderPolicyEnum genderPolicy;
-    private final Calendar agePolicy;
+    private final Integer agePolicy;
 
     public ConfirmClubCreationDto(CreateClub createClub) {
         this.ownerId = createClub.getOwnerId();
@@ -24,6 +25,7 @@ public class ConfirmClubCreationDto {
         this.tagString = createClub.getTagString();
         this.title = createClub.getTitle();
         this.content = createClub.getContent();
+        this.maxGroupSize = createClub.getMaxGroupSize();
         this.genderPolicy = createClub.getGenderPolicy();
         this.agePolicy = createClub.getAgePolicy();
     }
