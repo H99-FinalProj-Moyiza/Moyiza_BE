@@ -2,15 +2,12 @@ package com.example.moyiza_be.club.entity;
 
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
-import com.example.moyiza_be.common.enums.TagEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Calendar;
 
 @Entity
 @Getter
@@ -32,7 +29,7 @@ public class CreateClub {
 
     private GenderPolicyEnum genderPolicy;
 
-    private Calendar agePolicy;
+    private Integer agePolicy;
 
     public void setCategory(CategoryEnum category) {
         this.category = category;
@@ -54,7 +51,7 @@ public class CreateClub {
         this.genderPolicy = genderPolicy;
     }
 
-    public void setAgePolicy(Calendar agePolicy) {
+    public void setAgePolicy(Integer agePolicy) {
         this.agePolicy = agePolicy;
     }
 
