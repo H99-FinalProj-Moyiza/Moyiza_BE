@@ -8,9 +8,11 @@ import com.example.moyiza_be.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,9 +37,12 @@ public class UserController {
         return userService.logout(response, userDetails.getUser().getEmail());
     }
     //회원정보 수정
-    @PutMapping("/profile")
-    public ResponseEntity<?> updateProfile(@RequestBody UpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return userService.updateProfile(requestDto, userDetails.getUser().getEmail());
+    @PutMapping(value = "/profile",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> updateProfile(@RequestPart("imageFile") MultipartFile image,
+                                           @RequestPart UpdateRequestDto requestDto,
+                                           @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.updateProfile(image, requestDto, userDetails.getUser().getEmail());
     }
 
     //Refresh 토큰으로 Access 토큰 재발급
