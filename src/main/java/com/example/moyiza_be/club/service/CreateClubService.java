@@ -3,7 +3,6 @@ package com.example.moyiza_be.club.service;
 import com.example.moyiza_be.club.dto.ClubResponseDto;
 import com.example.moyiza_be.club.dto.ConfirmClubCreationDto;
 import com.example.moyiza_be.club.dto.CreateClubIdResponse;
-import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.club.repository.CreateClubRepository;
 import com.example.moyiza_be.common.enums.CategoryEnum;
@@ -18,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -74,12 +72,19 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("성공"));
     }
 
-    public ResponseEntity<Message> setPolicy(
-            User user, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
+    public ResponseEntity<Message> setPolicy
+            ( User user, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum)
+    {
         CreateClub createclub = loadCreateClubById(createclub_id);
         createclub.setGenderPolicy(genderPolicyEnum);
         createclub.setAgePolicy(agePolicy);   // 모두 가능할시 null로 받아서 null로 세팅 가능한지 알아봐야함
 
+        return ResponseEntity.ok(new Message("성공"));
+    }
+
+    public ResponseEntity<Message> setMaxGroupSize(User user, Long createclub_id, Integer requestMaxSize) {
+        CreateClub createClub = loadCreateClubById(createclub_id);
+        createClub.setMaxGroupSize(requestMaxSize);
         return ResponseEntity.ok(new Message("성공"));
     }
 
@@ -88,7 +93,6 @@ public class CreateClubService {
         ConfirmClubCreationDto confirmClubCreationDto = new ConfirmClubCreationDto(createClub);
         ClubResponseDto newClub = clubService.createClub(confirmClubCreationDto);
         return ResponseEntity.ok(newClub);
-
     }
 
     ///////////////////////private methods///////////////////
