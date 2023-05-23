@@ -4,6 +4,7 @@ package com.example.moyiza_be.club.controller;
 import com.example.moyiza_be.club.dto.CreateClubIdResponse;
 import com.example.moyiza_be.club.dto.createclub.*;
 import com.example.moyiza_be.club.service.CreateClubService;
+import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.security.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.user.entity.User;
@@ -42,6 +43,7 @@ public class CreateClubController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CreateRequestTagDto requestTagDto
     ){
+
         User user = userDetails.getUser();
         return createClubService.setTag(user, requestTagDto.getTagEnumList());
     }
