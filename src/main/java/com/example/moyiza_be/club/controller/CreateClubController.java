@@ -11,6 +11,7 @@ import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -90,6 +91,16 @@ public class CreateClubController {
         return createClubService.setContent(
                 user, createclub_id, requestContentDto.getContent()
         );
+    }
+
+    @PutMapping("/club/create/{createclub_id}/maxgroupsize")
+    public ResponseEntity<Message> setMaxGroupSize(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long createclub_id,
+            @RequestBody CreateRequestMaxSizeDto requestMaxSize
+    ){
+        User user = userDetails.getUser();
+        return createClubService.setMaxGroupSize(user, createclub_id, requestMaxSize.getMaxGroupSize());
     }
 
     @PutMapping("/club/create/{createclub_id}/restriction")
