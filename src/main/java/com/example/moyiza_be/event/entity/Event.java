@@ -19,9 +19,13 @@ public class Event extends TimeStamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "userId")
-//    private User ownerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User ownerId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "clubId")
+    private User clubId;
 
     @Column(nullable = false)
     private String eventTitle;
@@ -48,7 +52,4 @@ public class Event extends TimeStamped {
 //        super(); 를 쓸 수 있지 않을까?
     }
 
-    public void deleteEvent() {
-        this.deleted = true;
-    }
 }

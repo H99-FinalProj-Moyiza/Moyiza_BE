@@ -24,7 +24,7 @@ public class EventService {
 
     // 이벤트 생성
     @Transactional
-    public EventCreateResponseDto createEvent (EventRequestDto eventRequestDto, User user) throws IOException {
+    public EventCreateResponseDto createEvent (EventRequestDto eventRequestDto, User user) {
         // 유저 확인
 //        User user = SecurityUtil.getCurrentUser();
 //        forLoggedUser(user);
@@ -44,9 +44,7 @@ public class EventService {
 
     // 이벤트 수정 : 보류긴 한데...
     @Transactional
-    public void updateEvent(long id, EventUpdateRequestDto requestDto) throws IOException {
-        // 유저 확인
-//        User user = SecurityUtil.getCurrentUser();
+    public void updateEvent(long id, EventUpdateRequestDto requestDto, User user) throws IOException {
         // 이벤트 가져오기
         Event event = eventRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("404 Not Found"));
         // 시간 처리 어떻게 해야 하는가?
@@ -89,13 +87,13 @@ public class EventService {
     // 이벤트 참석 취소
     // 이벤트 삭제
     @Transactional
-    public void deleteEvent(long id) {
-//        User user = SecurityUtil.getCurrentUser();
+    public void deleteEvent(long id, User user) {
+//        User user = SecurityUtil.getCurrentUser(); 이방식 말고 일단은 AuthPrincipal로 먼저
         Event event = eventRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("404 event Not found"));
 //        if (event.isDeleted()) {
 //            throw new IllegalArgumentException("404 not found");
 //        }
-        if (user.getId = event.getUser().getId()) {
+        if (user.getId().equals(event.getOwnerId())) {
             eventRepository.deleteById(id);
         } else {
             throw new IllegalArgumentException("401 Not Authorized");
