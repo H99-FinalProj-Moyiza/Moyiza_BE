@@ -31,6 +31,8 @@ public class CreateClub {
 
     private Integer agePolicy;
 
+    private Integer maxGroupSize;
+
     public void setCategory(CategoryEnum category) {
         this.category = category;
     }
@@ -53,6 +55,10 @@ public class CreateClub {
 
     public void setAgePolicy(Integer agePolicy) {
         this.agePolicy = agePolicy;
+    }
+
+    public void setMaxGroupSize(Integer maxGroupSize) {
+        this.maxGroupSize = maxGroupSize;
     }
 
 
