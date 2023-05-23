@@ -29,7 +29,6 @@ public class ClubResponseDto {
         this.content = club.getContent();
         this.allowBirthBefore = club.getAllowBirthBefore();
         this.allowGender = club.getAllowGender();
-        this.requireApproval = club.getRequireApproval();
         this.maxGroupSize = club.getMaxGroupSize();
     }
 }
