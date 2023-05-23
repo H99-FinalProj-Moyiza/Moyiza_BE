@@ -101,7 +101,7 @@ public class CreateClubController {
         return createClubService.setMaxGroupSize(user, createclub_id, requestMaxSize.getMaxGroupSize());
     }
 
-    @PutMapping("/{createclub_id}/restriction")
+    @PutMapping("/{createclub_id}/policy")
     public ResponseEntity<Message> setPolicy(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CreateRequestPolicyDto requestPolicy,
@@ -118,7 +118,7 @@ public class CreateClubController {
             @PathVariable Long createclub_id
     ){
         User user = userDetails.getUser();
-        return createClubService.confirmCreation(userDetails, createclub_id);
+        return createClubService.confirmCreation(user, createclub_id);
     }
 
 
