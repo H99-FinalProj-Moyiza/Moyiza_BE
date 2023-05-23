@@ -55,6 +55,8 @@ public class WebSecurityConfig {
                 .httpBasic().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests().requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                .requestMatchers(HttpMethod.GET, "/club/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
                 .anyRequest().authenticated().and()
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
