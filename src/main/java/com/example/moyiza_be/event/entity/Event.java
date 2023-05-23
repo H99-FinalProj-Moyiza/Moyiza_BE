@@ -43,6 +43,9 @@ public class Event extends TimeStamped {
     private int eventGroupsize;
 
     @Column
+    private boolean deleted;
+
+    @Column
     private int attendantsNum;
     public void addAttend(){
         attendantsNum++;

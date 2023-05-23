@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Slf4j
 @Service
@@ -96,7 +97,7 @@ public class EventService {
 //        if (event.isDeleted()) { // 삭제를 T?F로 처리하면 좋을것 같은데...?
 //            throw new IllegalArgumentException("404 not found");
 //        }
-        if (user.getId().equals(event.getOwnerId())) {
+        if (user.getId().equals(event.getOwnerId().getId())) {
             eventRepository.deleteById(eventId);
         } else {
             throw new IllegalArgumentException("401 Not Authorized");
@@ -115,8 +116,8 @@ public class EventService {
         if(event.getOwnerId().equals(user)){
             throw new IllegalArgumentException("방장은 취소가 불가능해요 ㅠ.ㅠ");
         }
-        // 참석자테이블에 존재하는가
-        EventAttendant attendant = attendantRepository.findByEventAndUser(event, user).orElseGet(attendant);
+        // 참석자테이블에 존재하는가??
+        EventAttendant attendant = (EventAttendant) attendantRepository.findByEventAndUser(event, user).orElseGet(()->new EventAttendant(event, user));
 
         if (attendant == null) {
             // 최대정원 도달시 참석불가
