@@ -67,7 +67,7 @@ public class ClubService {
 
     //클럽 상세 조회
     public ResponseEntity<ClubResponseDto> getClub(Long clubId) {
-        checkNullClub(clubId);
+        Club club = checkNullClub(clubId);
         ClubResponseDto responseDto = new ClubResponseDto(club);
         return ResponseEntity.ok(responseDto);
     }
@@ -116,11 +116,10 @@ public class ClubService {
         }
     }
 
-    private void checkNullClub(Long clubId) {
+    private Club checkNullClub(Long clubId) {
         Club club = clubRepository.findById(clubId).orElseThrow(
                 () -> new NullPointerException()
         );
+        return club;
     }
-
-
 }

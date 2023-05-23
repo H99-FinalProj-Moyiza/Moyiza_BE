@@ -39,7 +39,5 @@ public class Club {
     @Enumerated(EnumType.STRING)
     private GenderEnum allowGender;
     @Column(nullable = false)
-    private Boolean requireApproval;
-    @Column(nullable = false)
     private Integer maxGroupSize;
 }
