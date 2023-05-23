@@ -42,8 +42,18 @@ public class Event extends TimeStamped {
     @Column
     private int eventGroupsize;
 
+    @Column
+    private int attendantsNum;
+    public void addAttend(){
+        attendantsNum++;
+    }
+
+    public void cancelAttend(){
+        attendantsNum--;
+    }
 
     public Event(EventRequestDto eventRequestDto, User user) {
+        this.ownerId = user;
         this.eventTitle = eventRequestDto.getEventTitle();
         this.eventContent = eventRequestDto.getEventContent();
         this.eventLocation = eventRequestDto.getLocation();

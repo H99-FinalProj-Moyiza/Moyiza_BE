@@ -32,25 +32,30 @@ public class EventController {
     // ReadOne
     @GetMapping("/{club_id}/event/{event_id}")
     public DataResponseDto<Optional<Event>> getEvent(@PathVariable long club_id, @PathVariable long event_id) {
-        return DataResponseDto.of(eventService.getEvent(event_id));
+        return DataResponseDto.of(eventService.getEvent(club_id,event_id));
     }
 
     // Update : 보류
 //    @PutMapping("/{club_id}/event/{event_id}")
 //    public String putEvent() {
-//
 //    }
+
     // Delete
     @DeleteMapping("/{club_id}/event/{event_id}")
     public String deleteEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        eventService.deleteEvent(event_id, userDetails.getUser());
+        eventService.deleteEvent(club_id,event_id, userDetails.getUser());
         return "삭제되었습니다.";
     }
+
     // Attend
 //    @PostMapping("/{club_id}/event/join/{event_id}")
-//    public String attendEvent() {
+//    public String attendEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 //
 //    }
-    // Cancel Attend
 
+    // Cancel Attend
+//    @DeleteMapping("/{club_id}/event/join/{event_id}")
+//    public String attendEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+//
+//    }
 }
