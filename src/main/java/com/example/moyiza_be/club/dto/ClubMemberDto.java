@@ -1,7 +1,6 @@
 package com.example.moyiza_be.club.dto;
-import com.example.moyiza_be.user.repository.UserRepository;
+
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Getter
 public class ClubMemberDto {

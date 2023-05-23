@@ -1,10 +1,8 @@
 package com.example.moyiza_be.club.service;
 
-import com.example.moyiza_be.club.dto.ClubResponseDto;
-import com.example.moyiza_be.club.dto.ConfirmClubCreationDto;
-import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.club.dto.ClubMemberDto;
 import com.example.moyiza_be.club.dto.ClubResponseDto;
+import com.example.moyiza_be.club.dto.ConfirmClubCreationDto;
 import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.entity.ClubJoinEntry;
 import com.example.moyiza_be.club.repository.ClubJoinEntryRepository;
@@ -23,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ClubService {
 
     private final ClubRepository clubRepository;
@@ -92,6 +91,7 @@ public class ClubService {
         return ResponseEntity.ok(memberDtoList);
     }
 
+    //클럽 탈퇴
     public ResponseEntity<Message> goodbyeClub(Long clubId, User user) {
         checkNullClub(clubId);
 
@@ -106,6 +106,7 @@ public class ClubService {
         }
     }
 
+    //클럽 강퇴
     public ResponseEntity<Message> banclub(Long clubId, User user) {
         checkNullClub(clubId);
 
@@ -120,19 +121,21 @@ public class ClubService {
         }
     }
 
+    //클럽 생성
+    public ClubResponseDto createClub(ConfirmClubCreationDto creationRequest){
+        Club club = new Club(creationRequest);
+        clubRepository.save(club);
+        ClubResponseDto responseDto = new ClubResponseDto(club);
+        return responseDto;
+    }
+
+    /////////////////////private method/////////////////////
+
+    //클럽id Null 체크
     private Club checkNullClub(Long clubId) {
         Club club = clubRepository.findById(clubId).orElseThrow(
                 () -> new NullPointerException()
         );
         return club;
-    }
-
-    @Transactional
-    public ClubResponseDto createClub(ConfirmClubCreationDto creationRequest){
-
-
-
-        //생성해주신 후, ClubResponseDto 반환해주시면 됩니다
-        return null;
     }
 }
