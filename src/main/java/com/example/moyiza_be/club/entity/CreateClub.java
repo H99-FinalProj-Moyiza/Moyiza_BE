@@ -16,3 +16,4 @@ public class CreateClub {
     private Long id;
 
 }
+
