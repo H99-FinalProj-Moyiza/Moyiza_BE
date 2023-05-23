@@ -29,12 +29,12 @@ public class CreateClubService {
     private final CreateClubRepository createClubRepository;
     private final ClubService clubService;
     public ResponseEntity<?> initCreateClubId(Long userId) {
-        System.out.println("exists = " + createClubRepository.existsByOwnerId(userId));
         if(createClubRepository.existsByOwnerId(userId)){
             log.info("found existing club by user " + userId);
-            return new ResponseEntity<>(new Message("이어서 작성하시겠습니까 ?"), HttpStatus.CONTINUE);
+            return new ResponseEntity<>(new Message("이어서 작성하시겠습니까 ?"), HttpStatus.FOUND);
         }
         CreateClub createClub = new CreateClub();
+        createClub.setOwnerId(userId);
         createClubRepository.saveAndFlush(createClub);
         log.info("new club created : club ID " + createClub.getId());
         CreateClubIdResponse createClubIdResponse = new CreateClubIdResponse(createClub.getId());
