@@ -31,4 +31,5 @@ public class ClubResponseDto {
         this.genderPolicy = club.getGenderPolicy();
         this.maxGroupSize = club.getMaxGroupSize();
     }
+
 }
