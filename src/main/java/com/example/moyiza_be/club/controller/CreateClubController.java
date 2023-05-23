@@ -22,9 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class CreateClubController {
     private final CreateClubService createClubService;
 
-
-
-    @PostMapping("/club/create")
+    @PostMapping
     public ResponseEntity<?> initCreateClubId(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
@@ -34,8 +32,8 @@ public class CreateClubController {
     }
 
 
-    @GetMapping("/club/create/{createclub_id}")
-    public ResponseEntity<CreateClubIdResponse> getPreviousCreateClub(
+    @GetMapping("/{createclub_id}")
+    public ResponseEntity<ResumeCreationDto> getPreviousCreateClub(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long createclub_id
     ){
@@ -44,7 +42,7 @@ public class CreateClubController {
         return createClubService.getPreviousCreateClub(user.getId(), createclub_id);
     }
 
-    @PutMapping("/club/create/{createclub_id}/category")
+    @PutMapping("/{createclub_id}/category")
     public ResponseEntity<Message> setCategory(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CreateRequestCategoryDto requestCategoryDto,
@@ -56,7 +54,7 @@ public class CreateClubController {
         );
     }
 
-    @PutMapping("/club/create/{createclub_id}/tag")
+    @PutMapping("/{createclub_id}/tag")
     public ResponseEntity<Message> setTag(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CreateRequestTagDto requestTagDto,
@@ -69,7 +67,7 @@ public class CreateClubController {
         );
     }
     
-    @PutMapping("/club/create/{createclub_id}/title")
+    @PutMapping("/{createclub_id}/title")
     public ResponseEntity<Message> setTitle(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CreateRequestTitleDto requestTitleDto,
@@ -81,7 +79,7 @@ public class CreateClubController {
         );
     }
 
-    @PutMapping("/club/create/{createclub_id}/content")
+    @PutMapping("/{createclub_id}/content")
     public ResponseEntity<Message> setContent(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CreateRequestContentDto requestContentDto,
@@ -93,7 +91,7 @@ public class CreateClubController {
         );
     }
 
-    @PutMapping("/club/create/{createclub_id}/maxgroupsize")
+    @PutMapping("/{createclub_id}/maxgroupsize")
     public ResponseEntity<Message> setMaxGroupSize(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long createclub_id,
@@ -103,7 +101,7 @@ public class CreateClubController {
         return createClubService.setMaxGroupSize(user, createclub_id, requestMaxSize.getMaxGroupSize());
     }
 
-    @PutMapping("/club/create/{createclub_id}/restriction")
+    @PutMapping("/{createclub_id}/restriction")
     public ResponseEntity<Message> setPolicy(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody CreateRequestPolicyDto requestPolicy,
@@ -114,7 +112,7 @@ public class CreateClubController {
                 user, createclub_id, requestPolicy.getAgePolicy(),requestPolicy.getGenderPolicy());
     }
 
-    @PostMapping("/club/create/{createclub_id}/confirm")
+    @PostMapping("/{createclub_id}/confirm")
     public ResponseEntity<ClubResponseDto> confirmCreation(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long createclub_id
