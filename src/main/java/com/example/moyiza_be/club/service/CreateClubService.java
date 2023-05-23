@@ -75,7 +75,7 @@ public class CreateClubService {
     }
 
     public ResponseEntity<Message> setPolicy(
-            User user, Long createclub_id, Calendar agePolicy, GenderPolicyEnum genderPolicyEnum) {
+            User user, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
         CreateClub createclub = loadCreateClubById(createclub_id);
         createclub.setGenderPolicy(genderPolicyEnum);
         createclub.setAgePolicy(agePolicy);   // 모두 가능할시 null로 받아서 null로 세팅 가능한지 알아봐야함
