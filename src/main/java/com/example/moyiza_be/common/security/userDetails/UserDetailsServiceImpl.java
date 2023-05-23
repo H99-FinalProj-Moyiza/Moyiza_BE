@@ -1,13 +1,14 @@
-package com.example.moyiza_be.common.security;
+package com.example.moyiza_be.common.security.userDetails;
+
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-@Component
+@Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
     @Override
@@ -19,4 +20,3 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserDetailsImpl(user);
     }
 }
-
