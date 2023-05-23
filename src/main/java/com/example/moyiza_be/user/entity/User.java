@@ -2,6 +2,7 @@ package com.example.moyiza_be.user.entity;
 
 import com.example.moyiza_be.common.utils.TimeStamped;
 import com.example.moyiza_be.user.dto.SignupRequestDto;
+import com.example.moyiza_be.user.dto.UpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,5 +42,10 @@ public class User extends TimeStamped {
         this.birth = requestDto.getBirth();
         this.phone = requestDto.getPhone();
         this.profileUrl = requestDto.getProfileUrl();
+    }
+
+    public void updateProfile(UpdateRequestDto requestDto){
+        this.nickname = requestDto.getNickname();
+        this.password = requestDto.getPassword();
     }
 }

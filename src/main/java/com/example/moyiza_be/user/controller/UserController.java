@@ -3,6 +3,7 @@ package com.example.moyiza_be.user.controller;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.user.dto.LoginRequestDto;
 import com.example.moyiza_be.user.dto.SignupRequestDto;
+import com.example.moyiza_be.user.dto.UpdateRequestDto;
 import com.example.moyiza_be.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,10 @@ public class UserController {
         return userService.logout(response, userDetails.getUser().getEmail());
     }
     //회원정보 수정
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody UpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.updateProfile(requestDto, userDetails.getUser().getEmail());
+    }
 
     //Refresh 토큰으로 Access 토큰 재발급
     @GetMapping("/reissue")

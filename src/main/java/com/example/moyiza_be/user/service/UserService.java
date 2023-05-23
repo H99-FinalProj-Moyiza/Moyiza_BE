@@ -6,6 +6,7 @@ import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshToken;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
 import com.example.moyiza_be.user.dto.LoginRequestDto;
 import com.example.moyiza_be.user.dto.SignupRequestDto;
+import com.example.moyiza_be.user.dto.UpdateRequestDto;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -75,6 +76,18 @@ public class UserService {
         refreshTokenRepository.deleteByEmail(email).orElseThrow(
                 ()-> new NoSuchElementException("로그인한 사용자가 아닙니다."));
         return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
+    }
+
+    //회원정보 수정
+    public ResponseEntity<?> updateProfile(UpdateRequestDto requestDto, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(()->
+                new NoSuchElementException("사용자가 존재하지 않습니다."));
+        Optional<User> findNicknameByEmail = userRepository.findByNickname(requestDto.getNickname());
+        if (findNicknameByEmail.isPresent()) {
+            throw new IllegalArgumentException("중복된 닉네임 사용");
+        }
+        user.updateProfile(requestDto);
+        return new ResponseEntity<>("회원정보 수정 완료", HttpStatus.OK);
     }
 
     private void setHeader(HttpServletResponse response, JwtTokenDto tokenDto) {
