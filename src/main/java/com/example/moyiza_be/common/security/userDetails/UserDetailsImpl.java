@@ -1,4 +1,4 @@
-package com.example.moyiza_be.common.security;
+package com.example.moyiza_be.common.security.userDetails;
 
 import com.example.moyiza_be.common.enums.UserRoleEnum;
 import com.example.moyiza_be.user.entity.User;
@@ -11,13 +11,10 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Component
 public class UserDetailsImpl implements UserDetails {
     private final User user;
 
-    public UserDetailsImpl(User user) {
-        this.user = user;
-    }
+    public UserDetailsImpl(User user) { this.user = user; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
