@@ -3,7 +3,7 @@ package com.example.moyiza_be.club.controller;
 import com.example.moyiza_be.club.dto.ClubMemberDto;
 import com.example.moyiza_be.club.dto.ClubResponseDto;
 import com.example.moyiza_be.club.service.ClubService;
-import com.example.moyiza_be.common.security.UserDetailsImpl;
+import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
