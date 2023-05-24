@@ -34,7 +34,7 @@ public class User extends TimeStamped {
     @Lob
     private String profileImage;
 
-    public User (String password, SignupRequestDto requestDto){
+    public User (String password, SignupRequestDto requestDto, String storedFileUrl){
         this.email = requestDto.getEmail();
         this.password = password;
         this.name = requestDto.getName();
@@ -42,7 +42,7 @@ public class User extends TimeStamped {
         this.gender = requestDto.getGender();
         this.birth = requestDto.getBirth();
         this.phone = requestDto.getPhone();
-        this.profileImage = requestDto.getProfileImage();
+        this.profileImage = storedFileUrl;
     }
 
     public void updateProfile(UpdateRequestDto requestDto){
