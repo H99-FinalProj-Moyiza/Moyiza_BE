@@ -44,6 +44,14 @@ jobs:
       - name: Copy Jar
         run: cp ./build/libs/*.jar ./deploy
 
+      # appspec.yml 파일 복사
+      - name: Copy appspec.yml
+        run: cp appspec.yml ./deploy
+
+      # script files 복사
+      - name: Copy script
+        run: cp ./scripts/*.sh ./deploy
+
       # 빌드한 프로젝트를 zip파일로 압축
       - name: Make zip file
         run: zip -r ./$GITHUB_SHA.zip ./deploy
@@ -62,6 +70,10 @@ jobs:
 
       # S3에 업로드한 파일을 CodeDeploy에 배포 요청
       - name: Code Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
         run: aws deploy create-deployment --application-name ${{ secrets.CODE_DEPLOY_APP_NAME }}
           --deployment-config-name CodeDeployDefault.OneAtATime
           --deployment-group-name ${{ secrets.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }}
