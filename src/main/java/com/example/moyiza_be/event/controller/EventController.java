@@ -8,6 +8,7 @@ import com.example.moyiza_be.event.dto.ResponseDto;
 import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.event.service.EventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class EventController {
     // ReadOne
     @GetMapping("/{club_id}/event/{event_id}")
     public DataResponseDto<Optional<Event>> getEvent(@PathVariable long club_id, @PathVariable long event_id) {
-        return DataResponseDto.of(eventService.getEvent(club_id,event_id));
+        return DataResponseDto.of(eventService.getEvent(club_id,event_id), "조회 성공");
     }
 
     // Update : 보류
