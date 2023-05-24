@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 public class ResumeCreationDto {
-    private final CreateClubResponse createClubResponse;
+    private final ClubResponseDto createClub;
 
     private final EnumOptionsDto optionList= new EnumOptionsDto();
 
     public ResumeCreationDto(CreateClub createClub) {
-        this.createClubResponse = new CreateClubResponse(createClub);
+        this.createClub = new ClubResponseDto(createClub);
     }
 
 }
