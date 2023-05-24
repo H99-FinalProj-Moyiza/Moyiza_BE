@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ develop ]
 
-#AWS리전, 버킷 이름, CodeDeploy App Name, CodeDeploy 배포 그룹 이름
+#버킷 이름, CodeDeploy App Name, CodeDeploy 배포 그룹 이름
 env:
   S3_BUCKET_NAME: hohomi
   CODE_DEPLOY_APPLICATION_NAME: hohomi
