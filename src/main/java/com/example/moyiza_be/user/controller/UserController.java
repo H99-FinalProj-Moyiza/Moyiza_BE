@@ -20,9 +20,11 @@ public class UserController {
     private final UserService userService;
 
     //회원가입
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupRequestDto requestDto){
-        return userService.signup(requestDto);
+    @PostMapping(value = "/signup",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> signup(@RequestPart SignupRequestDto requestDto,
+                                    @RequestPart("imageFile") MultipartFile image){
+        return userService.signup(requestDto, image);
     }
     //로그인
     @PostMapping("/login")

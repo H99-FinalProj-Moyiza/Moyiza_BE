@@ -35,11 +35,15 @@ public class UserService {
     private final AwsS3Uploader awsS3Uploader;
 
     //회원가입
-    public ResponseEntity<?> signup(SignupRequestDto requestDto) {
+    public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
+        String storedFileUrl = "";
         checkDuplicatedEmail(requestDto.getEmail());
         checkDuplicatedNick(requestDto.getNickname());
-        User user = new User(password, requestDto);
+        if(!imageFile.isEmpty()){
+            storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
+        }
+        User user = new User(password, requestDto, storedFileUrl);
         userRepository.save(user);
         return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
     }
@@ -76,11 +80,11 @@ public class UserService {
 
         User user = findUser(email);
         checkDuplicatedNick(requestDto.getNickname());
-       if(!imageFile.isEmpty()){
-           awsS3Uploader.delete(user.getProfileImage());
-           String storedFileName  = awsS3Uploader.uploadFile(imageFile);
-           user.updateProfileImage(storedFileName);
-       }
+        if(!imageFile.isEmpty()){
+            awsS3Uploader.delete(user.getProfileImage());
+            String storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
+            user.updateProfileImage(storedFileUrl);
+        }
         user.updateProfile(requestDto);
         return new ResponseEntity<>("회원정보 수정 완료", HttpStatus.OK);
     }
