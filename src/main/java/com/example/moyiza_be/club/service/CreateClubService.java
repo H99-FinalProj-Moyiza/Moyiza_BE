@@ -106,6 +106,7 @@ public class CreateClubService {
         CreateClub createClub = loadCreateClubById(createclub_id);
         List<String> imageUrlList;
         if(imageFileList == null){
+            log.info("no input image : setting default image...");
             imageUrlList = List.of(DEFAULT_IMAGE_URL);
         }
         else{
@@ -115,7 +116,7 @@ public class CreateClubService {
         List<ClubImageUrl> imageEntityList = imageUrlList.stream().map(i -> new ClubImageUrl(createclub_id, i)).toList();
         clubImageUrlRepository.saveAll(imageEntityList);
 
-        return ResponseEntity.ok(new Message("이미지 업로드 테스트 성공 !"));
+        return ResponseEntity.ok(new Message("이미지 업로드 완료 !"));
     }
 
     public ResponseEntity<ClubResponseDto> confirmCreation(User User, Long createclub_id) {
