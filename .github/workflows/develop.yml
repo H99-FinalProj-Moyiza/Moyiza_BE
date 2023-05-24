@@ -82,5 +82,5 @@ jobs:
         run: aws deploy create-deployment --application-name $CODE_DEPLOY_APPLICATION_NAME
           --deployment-config-name CodeDeployDefault.AllAtOnce --file-exists-behavior OVERWRITE
           --deployment-group-name $CODE_DEPLOY_DEPLOYMENT_GROUP_NAME
-          --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
+          --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=deploy/$GITHUB_SHA.zip
           --region ${{ secrets.AWS_REGION }}
