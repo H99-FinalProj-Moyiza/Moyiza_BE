@@ -5,9 +5,7 @@ import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshToken;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
-import com.example.moyiza_be.user.dto.LoginRequestDto;
-import com.example.moyiza_be.user.dto.SignupRequestDto;
-import com.example.moyiza_be.user.dto.UpdateRequestDto;
+import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -36,16 +36,8 @@ public class UserService {
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto) {
         String password = passwordEncoder.encode(requestDto.getPassword());
-
-        Optional<User> findUserByEmail = userRepository.findByEmail(requestDto.getEmail());
-        if (findUserByEmail.isPresent()) {
-            throw new IllegalArgumentException("회원가입 중복된 이메일 사용");
-        }
-
-        Optional<User> findNicknameByEmail = userRepository.findByNickname(requestDto.getNickname());
-        if (findNicknameByEmail.isPresent()) {
-            throw new IllegalArgumentException("회원가입 중복된 닉네임 사용");
-        }
+        checkDuplicatedEmail(requestDto.getEmail());
+        checkDuplicatedNick(requestDto.getNickname());
         User user = new User(password, requestDto);
         userRepository.save(user);
         return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
@@ -55,13 +47,10 @@ public class UserService {
     public ResponseEntity<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();
-
-        User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new IllegalArgumentException("아이디가 존재하지 않습니다."));
+        User user = findUser(email);
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 틀립니다.");
         }
-
         JwtTokenDto tokenDto = jwtUtil.createAllToken(email);
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(user.getEmail());
         if (refreshToken.isPresent()) {
@@ -83,21 +72,49 @@ public class UserService {
 
     //회원정보 수정
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
-        User foundUser = userRepository.findByEmail(email).orElseThrow(()->
-                new NoSuchElementException("사용자가 존재하지 않습니다."));
-        Optional<User> findNicknameByEmail = userRepository.findByNickname(requestDto.getNickname());
-        if (findNicknameByEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 닉네임 사용");
-        }
+        User user = findUser(email);
+        checkDuplicatedNick(requestDto.getNickname());
         if(!imageFile.isEmpty()){
-            awsS3Uploader.delete(foundUser.getProfileImage());
+            awsS3Uploader.delete(user.getProfileImage());
             String storedFileName  = awsS3Uploader.uploadFile(imageFile);
-            foundUser.updateProfileImage(storedFileName);
+            user.updateProfileImage(storedFileName);
         }
-        foundUser.updateProfile(requestDto);
+        user.updateProfile(requestDto);
         return new ResponseEntity<>("회원정보 수정 완료", HttpStatus.OK);
     }
 
+    //이메일 중복 확인
+    public ResponseEntity<?> isDuplicatedEmail(CheckEmailRequestDto requestDto) {
+        checkDuplicatedEmail(requestDto.getEmail());
+        Map<String, Boolean> result = new HashMap<>();
+        result.put("isDuplicatedEmail", false);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    //닉네임 중복 확인
+    public ResponseEntity<?> isDuplicatedNick(CheckNickRequestDto requestDto) {
+        checkDuplicatedNick(requestDto.getNickname());
+        Map<String, Boolean> result = new HashMap<>();
+        result.put("isDuplicatedNick", false);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    public User findUser(String email){
+        return userRepository.findByEmail(email).orElseThrow(()->
+                new NoSuchElementException("사용자가 존재하지 않습니다."));
+    }
+    public void checkDuplicatedEmail(String email){
+        Optional<User> findUserByEmail = userRepository.findByEmail(email);
+        if (findUserByEmail.isPresent()) {
+            throw new IllegalArgumentException("중복된 이메일 사용");
+        }
+    }
+    public void checkDuplicatedNick(String nickname){
+        Optional<User> findUserByNickname = userRepository.findByNickname(nickname);
+        if (findUserByNickname.isPresent()) {
+            throw new IllegalArgumentException("중복된 닉네임 사용");
+        }
+    }
     private void setHeader(HttpServletResponse response, JwtTokenDto tokenDto) {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
