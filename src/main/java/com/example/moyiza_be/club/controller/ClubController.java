@@ -1,4 +1,4 @@
-package com.example.moyiza_be.club.controller;
+package com.example.demo.src.main.java.com.example.moyiza_be.club.controller;
 
 import com.example.moyiza_be.club.dto.ClubMemberDto;
 import com.example.moyiza_be.club.dto.ClubResponseDto;
