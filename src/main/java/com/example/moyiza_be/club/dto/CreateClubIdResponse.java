@@ -1,5 +1,6 @@
 package com.example.moyiza_be.club.dto;
 
+import com.example.moyiza_be.club.dto.EnumOptionsDto;
 import lombok.Getter;
 
 @Getter

@@ -10,7 +10,9 @@ import java.util.List;
 
 @Getter
 public class EnumOptionsDto {
-    private final List<String> categoryList = Arrays.stream(CategoryEnum.values()).map(CategoryEnum::toString).toList();
-    private final List<String> tagList = Arrays.stream(TagEnum.values()).map(TagEnum::toString).toList();
-    private final List<String> genderPolicyList = Arrays.stream(GenderPolicyEnum.values()).map(GenderPolicyEnum::toString).toList();
+  
+    private final List<String> categoryList = Arrays.stream(CategoryEnum.values()).map(CategoryEnum::getCategory).toList();
+    //    private final List<String> tagList = Arrays.stream(TagEnum.values()).map(TagEnum::getTag).toList();
+    private final List<String> genderPolicyList = Arrays.stream(GenderPolicyEnum.values()).map(GenderPolicyEnum::getGenderPolicy).toList();
+
 }
