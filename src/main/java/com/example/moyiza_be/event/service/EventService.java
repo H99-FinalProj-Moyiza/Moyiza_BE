@@ -79,7 +79,6 @@ public class EventService {
     // 이벤트 조회
     @Transactional
     public Optional<Event> getEvent(long clubId, long eventId) {
-//        User user = Security.getCurrentUser();
         Optional<Event> eventDetailResponseDto = eventRepository.findById(eventId);
         // 있는 모임인가?
         if (eventDetailResponseDto.isEmpty()) throw new IllegalArgumentException("400 Bad Request");
@@ -110,7 +109,7 @@ public class EventService {
 
     // 이벤트 참석 / 취소
     @Transactional
-    public EventAttendantResponseDto addAttendant(long eventId, User user) {
+    public EventAttendantResponseDto addAttendant(long club_id, long eventId, User user) {
         if (user == null) throw new IllegalArgumentException("401 UnAuthorized");
 
         Event event = (Event) eventRepository.findByIdAndDeletedIsFalse(eventId).orElseThrow(

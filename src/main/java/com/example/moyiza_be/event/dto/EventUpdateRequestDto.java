@@ -11,7 +11,7 @@ public class EventUpdateRequestDto {
 
     private final String eventTitle;
     private final String eventContent;
-    private final LocalDateTime eventStartTime;
+    private final Calendar eventStartTime;
     private final String eventLocation;
     private final int eventGroupsize;
 //    private String image;
