@@ -2,18 +2,14 @@ package com.example.moyiza_be.club.controller;
 
 
 import com.example.moyiza_be.club.dto.ClubResponseDto;
-import com.example.moyiza_be.club.dto.CreateClubIdResponse;
 import com.example.moyiza_be.club.dto.ResumeCreationDto;
 import com.example.moyiza_be.club.dto.createclub.*;
-import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.club.service.CreateClubService;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.user.entity.User;
 import jakarta.annotation.Nullable;
-import jakarta.servlet.annotation.MultipartConfig;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
