@@ -14,5 +14,5 @@ public class SignupRequestDto {
     private int gender;
     private Calendar birth;
     private String phone;
-    private String profileUrl;
+    private String profileImage;
 }
