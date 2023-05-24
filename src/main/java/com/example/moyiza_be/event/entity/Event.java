@@ -18,6 +18,7 @@ import java.util.Calendar;
 public class Event extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "event_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,7 +39,7 @@ public class Event extends TimeStamped {
     private String eventLocation;
 
     @Column
-    private LocalDateTime eventStartTime;
+    private Calendar eventStartTime;
 
     @Column
     private int eventGroupSize;

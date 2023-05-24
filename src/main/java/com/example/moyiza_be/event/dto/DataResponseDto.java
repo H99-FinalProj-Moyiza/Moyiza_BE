@@ -27,9 +27,9 @@ public class DataResponseDto<T> extends ResponseDto {
         this.data = data;
     }
 
-    public static <T> DataResponseDto<T> of(T data) {
-        return new DataResponseDto<>(data);
-    }
+//    public static <T> DataResponseDto<T> of(T data) {
+//        return new DataResponseDto<>(data);
+//    }
 
     public static <T> DataResponseDto<T> of(T data, String message) {
         return new DataResponseDto<>(data, message);

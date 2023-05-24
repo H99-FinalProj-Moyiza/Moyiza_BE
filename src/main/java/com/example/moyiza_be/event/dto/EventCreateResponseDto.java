@@ -12,7 +12,7 @@ public class EventCreateResponseDto {
     private final String eventContent;
     private final String eventLocation;
 //    private Tag tag;
-    private final LocalDateTime eventStartTime;
+    private final Calendar eventStartTime;
     private final int eventGroupSize;
 
     // for image
