@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 @RestController
@@ -122,6 +121,7 @@ public class CreateClubController {
         User user = userDetails.getUser();
         return createClubService.setImageList( user, createclub_id, image );
     }
+
 
     @PostMapping("/{createclub_id}/confirm")
     public ResponseEntity<ClubResponseDto> confirmCreation(

@@ -1,6 +1,7 @@
 package com.example.moyiza_be.club.service;
 
 import com.example.moyiza_be.club.dto.*;
+
 import com.example.moyiza_be.club.entity.ClubImageUrl;
 import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
@@ -9,6 +10,7 @@ import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
+import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.user.entity.User;
 import jakarta.transaction.Transactional;
@@ -17,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -28,6 +31,7 @@ import java.util.List;
 public class CreateClubService {
     private final CreateClubRepository createClubRepository;
     private final ClubService clubService;
+
     private final AwsS3Uploader imageUploader;
     private final ClubImageUrlRepository clubImageUrlRepository;
 
@@ -58,6 +62,7 @@ public class CreateClubService {
         CreateClub createClub = loadCreateClubById(createclub_id);
         createClub.setCategory(categoryEnum);
         return ResponseEntity.ok(new MessageWithTagOptionsDto("성공", categoryEnum));
+
     }
 
     public ResponseEntity<Message> setTag(User user, Long createclub_id, List<TagEnum> tagEnumList) {
@@ -102,6 +107,7 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("성공"));
     }
 
+
     public ResponseEntity<Message> setImageList(User user, Long createclub_id, List<MultipartFile> imageFileList) {
         CreateClub createClub = loadCreateClubById(createclub_id);
         List<String> imageUrlList;
@@ -118,7 +124,6 @@ public class CreateClubService {
 
         return ResponseEntity.ok(new Message("이미지 업로드 완료 !"));
     }
-
     public ResponseEntity<ClubResponseDto> confirmCreation(User User, Long createclub_id) {
         CreateClub createClub = loadCreateClubById(createclub_id);
         ConfirmClubCreationDto confirmClubCreationDto = new ConfirmClubCreationDto(createClub);

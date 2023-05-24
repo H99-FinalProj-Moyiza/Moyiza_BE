@@ -1,9 +1,7 @@
 package com.example.moyiza_be.user.controller;
 
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
-import com.example.moyiza_be.user.dto.LoginRequestDto;
-import com.example.moyiza_be.user.dto.SignupRequestDto;
-import com.example.moyiza_be.user.dto.UpdateRequestDto;
+import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +20,11 @@ public class UserController {
     private final UserService userService;
 
     //회원가입
-    @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupRequestDto requestDto){
-        return userService.signup(requestDto);
+    @PostMapping(value = "/signup",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> signup(@RequestPart SignupRequestDto requestDto,
+                                    @RequestPart("imageFile") MultipartFile image){
+        return userService.signup(requestDto, image);
     }
     //로그인
     @PostMapping("/login")
@@ -49,5 +49,17 @@ public class UserController {
     @GetMapping("/reissue")
     public ResponseEntity<?> reissueToken(){
         return new ResponseEntity<>("AccessToken 재발행 성공", HttpStatus.OK);
+    }
+
+    //이메일 중복 확인
+    @PostMapping("/check/email")
+    public ResponseEntity<?> isDuplicatedEmail(@RequestBody CheckEmailRequestDto requestDto){
+        return userService.isDuplicatedEmail(requestDto);
+    }
+
+    //닉네임 중복 확인
+    @PostMapping("/check/nickname")
+    public ResponseEntity<?> isDuplicatedNick(@RequestBody CheckNickRequestDto requestDto){
+        return userService.isDuplicatedNick(requestDto);
     }
 }

@@ -46,5 +46,6 @@ public class Club {
         this.genderPolicy = creationRequest.getGenderPolicy();
         this.maxGroupSize = creationRequest.getMaxGroupSize();
         this.thumbnailUrl = creationRequest.getThumbnailUrl();
+
     }
 }

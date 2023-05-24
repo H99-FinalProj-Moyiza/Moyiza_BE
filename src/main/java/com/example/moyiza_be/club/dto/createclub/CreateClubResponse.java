@@ -1,5 +1,7 @@
 package com.example.moyiza_be.club.dto.createclub;
 
+
+import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class CreateClubResponse {
+
     private Long createclub_id;
     private Long ownerId;
     private String clubTitle;
@@ -18,6 +21,7 @@ public class CreateClubResponse {
     private Integer agePolicy;
     private GenderPolicyEnum genderPolicy;
     private Integer maxGroupSize;
+
     private String thumbnailUrl;
     //사진 구현
     public CreateClubResponse(CreateClub createClub) {
@@ -26,10 +30,12 @@ public class CreateClubResponse {
         this.clubTitle = createClub.getTitle();
         this.clubCategory = createClub.getCategory();
         this.clubTag = createClub.getTagString();
+
         this.content = createClub.getContent();
         this.agePolicy = createClub.getAgePolicy();
         this.genderPolicy = createClub.getGenderPolicy();
         this.maxGroupSize = createClub.getMaxGroupSize();
         this.thumbnailUrl = createClub.getThumbnailUrl();
+
     }
 }
