@@ -1,9 +1,6 @@
 package com.example.moyiza_be.club.service;
 
-import com.example.moyiza_be.club.dto.ClubResponseDto;
-import com.example.moyiza_be.club.dto.ConfirmClubCreationDto;
-import com.example.moyiza_be.club.dto.CreateClubIdResponse;
-import com.example.moyiza_be.club.dto.ResumeCreationDto;
+import com.example.moyiza_be.club.dto.*;
 import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.club.repository.CreateClubRepository;
 import com.example.moyiza_be.common.enums.CategoryEnum;
@@ -29,9 +26,10 @@ public class CreateClubService {
     private final CreateClubRepository createClubRepository;
     private final ClubService clubService;
     public ResponseEntity<?> initCreateClubId(Long userId) {
-        if(createClubRepository.existsByOwnerId(userId)){
+        CreateClub previousCreate = createClubRepository.findByOwnerId(userId);
+        if(previousCreate != null){
             log.info("found existing club by user " + userId);
-            return new ResponseEntity<>(new Message("이어서 작성하시겠습니까 ?"), HttpStatus.FOUND);
+            return new ResponseEntity<>(new ResumeIdResponse(previousCreate.getId()), HttpStatus.ACCEPTED);
         }
         CreateClub createClub = new CreateClub();
         createClub.setOwnerId(userId);
@@ -95,7 +93,7 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("성공"));
     }
 
-    public ResponseEntity<ClubResponseDto> confirmCreation(UserDetailsImpl userDetails, Long createclub_id) {
+    public ResponseEntity<ClubResponseDto> confirmCreation(User User, Long createclub_id) {
         CreateClub createClub = loadCreateClubById(createclub_id);
         ConfirmClubCreationDto confirmClubCreationDto = new ConfirmClubCreationDto(createClub);
         ClubResponseDto newClub = clubService.createClub(confirmClubCreationDto);

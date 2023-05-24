@@ -4,6 +4,7 @@ import com.example.moyiza_be.common.security.jwt.JwtTokenDto;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshToken;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
+import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.user.dto.LoginRequestDto;
 import com.example.moyiza_be.user.dto.SignupRequestDto;
 import com.example.moyiza_be.user.dto.UpdateRequestDto;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -29,6 +31,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AwsS3Uploader awsS3Uploader;
 
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto) {
@@ -79,14 +82,19 @@ public class UserService {
     }
 
     //회원정보 수정
-    public ResponseEntity<?> updateProfile(UpdateRequestDto requestDto, String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(()->
+    public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
+        User foundUser = userRepository.findByEmail(email).orElseThrow(()->
                 new NoSuchElementException("사용자가 존재하지 않습니다."));
         Optional<User> findNicknameByEmail = userRepository.findByNickname(requestDto.getNickname());
         if (findNicknameByEmail.isPresent()) {
             throw new IllegalArgumentException("중복된 닉네임 사용");
         }
-        user.updateProfile(requestDto);
+        if(!imageFile.isEmpty()){
+            awsS3Uploader.delete(foundUser.getProfileImage());
+            String storedFileName  = awsS3Uploader.uploadFile(imageFile);
+            foundUser.updateProfileImage(storedFileName);
+        }
+        foundUser.updateProfile(requestDto);
         return new ResponseEntity<>("회원정보 수정 완료", HttpStatus.OK);
     }
 
