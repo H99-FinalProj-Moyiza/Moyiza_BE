@@ -9,4 +9,8 @@ class ClubControllerTest {
     @Test
     void joinClub() {
     }
+
+    @Test
+    void getClubList() {
+    }
 }
