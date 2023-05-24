@@ -124,12 +124,11 @@ public class ClubService {
     //클럽 생성
     public ClubResponseDto createClub(ConfirmClubCreationDto creationRequest){
         Club club = new Club(creationRequest);
-        clubRepository.save(club);
-        ClubResponseDto responseDto = new ClubResponseDto(club);
-        return responseDto;
+        clubRepository.saveAndFlush(club);
+        return new ClubResponseDto(club);
     }
 
-    /////////////////////private method///////////////////////
+    ///////////////////////private method///////////////////////
 
     //클럽id Null 체크
     private Club checkNullClub(Long clubId) {
