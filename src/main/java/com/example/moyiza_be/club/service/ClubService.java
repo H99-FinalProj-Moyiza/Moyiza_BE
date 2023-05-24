@@ -128,7 +128,7 @@ public class ClubService {
         return new ClubResponseDto(club);
     }
 
-    /////////////////////private method///////////////////////
+    ///////////////////////private method///////////////////////
 
     //클럽id Null 체크
     private Club checkNullClub(Long clubId) {
