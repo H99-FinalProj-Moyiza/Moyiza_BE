@@ -49,14 +49,14 @@ public class WebSecurityConfig {
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
         http.cors().and()
-                .csrf().disable()
-                .httpBasic().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeHttpRequests().requestMatchers(PERMIT_URL_ARRAY).permitAll()
-                .requestMatchers(HttpMethod.GET, "/club/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
-                .anyRequest().authenticated().and()
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                        .csrf().disable()
+                        .httpBasic().disable()
+                        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                        .authorizeHttpRequests().requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/club/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
+                        .anyRequest().authenticated().and()
+                        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         //로그아웃 기능
 //        http.logout()

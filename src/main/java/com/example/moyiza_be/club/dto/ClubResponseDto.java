@@ -23,11 +23,11 @@ public class ClubResponseDto {
         this.createclub_id = club.getId();
         this.ownerId = club.getOwnerId();
         this.clubTitle = club.getTitle();
-        this.clubCategory = club.getCategory().toString();
+        this.clubCategory = club.getCategory().getCategory();
         this.clubTag = club.getTagString();
         this.clubContent = club.getContent();
         this.agePolicy = club.getAgePolicy();
-        this.genderPolicy = club.getGenderPolicy().toString();
+        this.genderPolicy = club.getGenderPolicy().getGenderPolicy();
         this.maxGroupSize = club.getMaxGroupSize();
         this.thumbnailUrl = club.getThumbnailUrl();
     }
@@ -36,11 +36,11 @@ public class ClubResponseDto {
         this.createclub_id = createClub.getId();
         this.ownerId = createClub.getOwnerId();
         this.clubTitle = createClub.getTitle();
-        this.clubCategory = (createClub.getCategory() != null) ? createClub.getCategory().toString() : null;
+        this.clubCategory = (createClub.getCategory() != null) ? createClub.getCategory().getCategory() : null;
         this.clubTag = createClub.getTagString();
         this.clubContent = createClub.getContent();
         this.agePolicy = createClub.getAgePolicy();
-        this.genderPolicy = (createClub.getGenderPolicy() != null) ? createClub.getGenderPolicy().toString() : null;
+        this.genderPolicy = (createClub.getGenderPolicy() != null) ? createClub.getGenderPolicy().getGenderPolicy() : null;
         this.maxGroupSize = createClub.getMaxGroupSize();
         this.thumbnailUrl = createClub.getThumbnailUrl();
     }
