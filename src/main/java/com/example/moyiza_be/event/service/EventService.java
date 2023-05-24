@@ -45,6 +45,7 @@ public class EventService {
         // 글 작성자 팔로워에게 알리는 코드 위치 (alarmService)
 
         return new EventCreateResponseDto(event);
+//        return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
     }
 
     // 이벤트 수정 : 보류긴 한데...
