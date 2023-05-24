@@ -1,6 +1,7 @@
 package com.example.moyiza_be.user.entity;
 
 import com.example.moyiza_be.common.utils.TimeStamped;
+
 import com.example.moyiza_be.user.dto.SignupRequestDto;
 import com.example.moyiza_be.user.dto.UpdateRequestDto;
 import jakarta.persistence.*;

@@ -4,6 +4,7 @@ import com.example.moyiza_be.common.security.jwt.JwtTokenDto;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshToken;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
+
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.entity.User;
@@ -76,6 +77,7 @@ public class UserService {
 
     //회원정보 수정
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
+
         User user = findUser(email);
         checkDuplicatedNick(requestDto.getNickname());
         if(!imageFile.isEmpty()){
