@@ -33,6 +33,8 @@ public class Club {
     private GenderPolicyEnum genderPolicy;
     @Column(nullable = false)
     private Integer maxGroupSize;
+    @Column(nullable = false)
+    private String thumbnailUrl;
 
     public Club(ConfirmClubCreationDto creationRequest) {
         this.ownerId = creationRequest.getOwnerId();
@@ -43,5 +45,6 @@ public class Club {
         this.agePolicy = creationRequest.getAgePolicy();
         this.genderPolicy = creationRequest.getGenderPolicy();
         this.maxGroupSize = creationRequest.getMaxGroupSize();
+        this.thumbnailUrl = creationRequest.getThumbnailUrl();
     }
 }

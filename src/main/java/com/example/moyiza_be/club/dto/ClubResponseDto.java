@@ -24,6 +24,7 @@ public class ClubResponseDto {
     private Integer agePolicy;
     private String genderPolicy;
     private Integer maxGroupSize;
+    private String thumbnailUrl;
 
     public ClubResponseDto(Club club) {
         this.createclub_id = club.getId();
@@ -35,6 +36,7 @@ public class ClubResponseDto {
         this.agePolicy = club.getAgePolicy();
         this.genderPolicy = club.getGenderPolicy().toString();
         this.maxGroupSize = club.getMaxGroupSize();
+        this.thumbnailUrl = club.getThumbnailUrl();
     }
 
     public ClubResponseDto(CreateClub createClub) {
@@ -47,6 +49,7 @@ public class ClubResponseDto {
         this.agePolicy = createClub.getAgePolicy();
         this.genderPolicy = (createClub.getGenderPolicy() != null) ? createClub.getGenderPolicy().toString() : null;
         this.maxGroupSize = createClub.getMaxGroupSize();
+        this.thumbnailUrl = createClub.getThumbnailUrl();
     }
 
 }

@@ -15,6 +15,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 @RequiredArgsConstructor
 @Service
@@ -39,6 +41,25 @@ public class AwsS3Uploader {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
         }
         return amazonS3.getUrl(bucket, fileName).toString();
+    }
+
+    public List<String> uploadMultipleImg(List<MultipartFile> fileList){
+        List<String> imgUrlList = new ArrayList<>();
+        for(MultipartFile multipartFile : fileList){
+            String fileName = UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
+            ObjectMetadata objMeta = new ObjectMetadata();
+            objMeta.setContentType(multipartFile.getContentType());
+            objMeta.setContentLength(multipartFile.getSize());
+
+            try(InputStream inputStream = multipartFile.getInputStream()){
+                amazonS3.putObject(bucket, fileName, multipartFile.getInputStream(), objMeta);
+                imgUrlList.add(String.valueOf(amazonS3.getUrl(bucket, fileName)));
+            } catch (IOException e){
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+            }
+        }
+        log.info("uploaded " + imgUrlList.size() + "files to aws");
+        return imgUrlList;
     }
 
     public String upload(File uploadFile, String dirName) {

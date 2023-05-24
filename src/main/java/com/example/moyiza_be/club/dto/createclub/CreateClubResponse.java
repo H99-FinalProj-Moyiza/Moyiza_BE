@@ -21,6 +21,7 @@ public class CreateClubResponse {
     private Integer agePolicy;
     private GenderPolicyEnum genderPolicy;
     private Integer maxGroupSize;
+    private String thumbnailUrl;
     //사진 구현
     public CreateClubResponse(CreateClub createClub) {
         this.createclub_id = createClub.getId();
@@ -32,5 +33,6 @@ public class CreateClubResponse {
         this.agePolicy = createClub.getAgePolicy();
         this.genderPolicy = createClub.getGenderPolicy();
         this.maxGroupSize = createClub.getMaxGroupSize();
+        this.thumbnailUrl = createClub.getThumbnailUrl();
     }
 }

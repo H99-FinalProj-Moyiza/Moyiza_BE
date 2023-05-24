@@ -4,7 +4,9 @@ import com.example.moyiza_be.club.dto.ClubMemberDto;
 import com.example.moyiza_be.club.dto.ClubResponseDto;
 import com.example.moyiza_be.club.dto.ConfirmClubCreationDto;
 import com.example.moyiza_be.club.entity.Club;
+import com.example.moyiza_be.club.entity.ClubImageUrl;
 import com.example.moyiza_be.club.entity.ClubJoinEntry;
+import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
 import com.example.moyiza_be.club.repository.ClubJoinEntryRepository;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.utils.Message;
@@ -27,6 +29,7 @@ public class ClubService {
     private final ClubRepository clubRepository;
     private final ClubJoinEntryRepository clubJoinEntryRepository;
     private final UserRepository userRepository;
+    private final ClubImageUrlRepository clubImageUrlRepository;
 
     //클럽 가입
     public ResponseEntity<Message> joinClub(Long clubId, User user) {
@@ -125,6 +128,8 @@ public class ClubService {
     public ClubResponseDto createClub(ConfirmClubCreationDto creationRequest){
         Club club = new Club(creationRequest);
         clubRepository.saveAndFlush(club);
+        clubImageUrlRepository.findAllByClubId(creationRequest.getCreateClubId())
+                .forEach(i->i.setClubId(club.getId()));
         return new ClubResponseDto(club);
     }
 
