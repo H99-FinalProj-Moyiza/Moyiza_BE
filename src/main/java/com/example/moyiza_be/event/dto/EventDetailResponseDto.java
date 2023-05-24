@@ -13,7 +13,7 @@ public class EventDetailResponseDto {
     private String eventLocation;
 //    private Tag tag;
     private Calendar eventStartTime;
-    private int eventGroupsize;
+    private int eventGroupSize;
 //    private String image;
 
 

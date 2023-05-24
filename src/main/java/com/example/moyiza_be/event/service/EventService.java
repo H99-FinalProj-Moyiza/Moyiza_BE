@@ -85,7 +85,7 @@ public class EventService {
     }
 
     // 전체 이벤트 조회 : 보류긴 한데
-    public List<Event> getEventList(long clubId) {
+    public List<Event> getEventList(long clubId) { //ResponseEntity GenericType ListEntity
         List<Event> eventList = eventRepository.findAllByClubId(clubId);
         return eventList;
     }
@@ -122,7 +122,7 @@ public class EventService {
 
         if (attendant == null) {
             // 최대정원 도달시 참석불가
-            if (event.getEventGroupsize() <= event.getAttendantsNum()) {
+            if (event.getEventGroupSize() <= event.getAttendantsNum()) {
                 throw new IllegalArgumentException("Fully Occupied");
             }
             // 참석하지 않은 유저인 경우 참석으로 하고 참석자수++

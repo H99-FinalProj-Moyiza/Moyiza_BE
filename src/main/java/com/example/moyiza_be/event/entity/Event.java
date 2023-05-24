@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 
 @Entity
@@ -37,10 +38,10 @@ public class Event extends TimeStamped {
     private String eventLocation;
 
     @Column
-    private Calendar startTime;
+    private LocalDateTime eventStartTime;
 
     @Column
-    private int eventGroupsize;
+    private int eventGroupSize;
 
     @Column
     private boolean deleted;
@@ -59,9 +60,9 @@ public class Event extends TimeStamped {
         this.ownerId = user;
         this.eventTitle = eventRequestDto.getEventTitle();
         this.eventContent = eventRequestDto.getEventContent();
-        this.eventLocation = eventRequestDto.getLocation();
-        this.eventGroupsize = eventRequestDto.getEventGroupsize();
-        this.startTime = eventRequestDto.getStartTime();
+        this.eventLocation = eventRequestDto.getEventLocation();
+        this.eventGroupSize = eventRequestDto.getEventGroupSize();
+        this.eventStartTime = eventRequestDto.getEventStartTime();
 //        super(); 를 쓸 수 있지 않을까?
     }
 
