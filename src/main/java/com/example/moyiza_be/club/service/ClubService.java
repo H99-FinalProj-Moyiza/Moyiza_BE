@@ -31,6 +31,7 @@ public class ClubService {
     private final UserRepository userRepository;
     private final ClubImageUrlRepository clubImageUrlRepository;
 
+
     //클럽 가입
     public ResponseEntity<Message> joinClub(Long clubId, User user) {
         ClubJoinEntry joinEntry = new ClubJoinEntry(user.getId(), clubId);

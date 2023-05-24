@@ -2,11 +2,13 @@ package com.example.moyiza_be.common.security.config;
 
 import com.example.moyiza_be.common.security.jwt.JwtAuthFilter;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -41,6 +43,7 @@ public class WebSecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         // resources 접근 허용 설정
         return (web) -> web.ignoring()
+
 //                .requestMatchers(PathRequest.toH2Console())
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
@@ -57,6 +60,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
                         .anyRequest().authenticated().and()
                         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         //로그아웃 기능
 //        http.logout()

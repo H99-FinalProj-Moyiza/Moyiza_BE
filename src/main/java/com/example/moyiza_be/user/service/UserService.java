@@ -95,6 +95,7 @@ public class UserService {
             foundUser.updateProfileImage(storedFileName);
         }
         foundUser.updateProfile(requestDto);
+
         return new ResponseEntity<>("회원정보 수정 완료", HttpStatus.OK);
     }
 

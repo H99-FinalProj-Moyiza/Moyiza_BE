@@ -5,6 +5,8 @@ import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import lombok.Getter;
 
+import java.util.Calendar;
+
 
 @Getter
 public class ConfirmClubCreationDto {
@@ -17,6 +19,7 @@ public class ConfirmClubCreationDto {
     private final Integer maxGroupSize;
     private final GenderPolicyEnum genderPolicy;
     private final Integer agePolicy;
+
     private final Long createClubId;
     private final String thumbnailUrl;
 

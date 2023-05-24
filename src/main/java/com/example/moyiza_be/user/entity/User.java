@@ -43,6 +43,7 @@ public class User extends TimeStamped {
         this.birth = requestDto.getBirth();
         this.phone = requestDto.getPhone();
         this.profileImage = requestDto.getProfileUrl();
+        this.profileUrl = requestDto.getProfileUrl();
     }
 
     public void updateProfile(UpdateRequestDto requestDto){

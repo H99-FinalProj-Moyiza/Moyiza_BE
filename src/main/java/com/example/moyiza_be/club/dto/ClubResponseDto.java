@@ -43,6 +43,7 @@ public class ClubResponseDto {
         this.genderPolicy = (createClub.getGenderPolicy() != null) ? createClub.getGenderPolicy().getGenderPolicy() : null;
         this.maxGroupSize = createClub.getMaxGroupSize();
         this.thumbnailUrl = createClub.getThumbnailUrl();
+
     }
 
 }
