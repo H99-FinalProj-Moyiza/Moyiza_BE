@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.util.Calendar;
 
+
 @Getter
 public class ConfirmClubCreationDto {
 
@@ -19,6 +20,9 @@ public class ConfirmClubCreationDto {
     private final GenderPolicyEnum genderPolicy;
     private final Integer agePolicy;
 
+    private final Long createClubId;
+    private final String thumbnailUrl;
+
     public ConfirmClubCreationDto(CreateClub createClub) {
         this.ownerId = createClub.getOwnerId();
         this.category = createClub.getCategory();
@@ -28,5 +32,7 @@ public class ConfirmClubCreationDto {
         this.maxGroupSize = createClub.getMaxGroupSize();
         this.genderPolicy = createClub.getGenderPolicy();
         this.agePolicy = createClub.getAgePolicy();
+        this.createClubId = createClub.getId();
+        this.thumbnailUrl = createClub.getThumbnailUrl();
     }
 }

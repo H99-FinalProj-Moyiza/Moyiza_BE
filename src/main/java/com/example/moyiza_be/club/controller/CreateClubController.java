@@ -10,11 +10,15 @@ import com.example.moyiza_be.club.service.CreateClubService;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.user.entity.User;
+import jakarta.annotation.Nullable;
+import jakarta.servlet.annotation.MultipartConfig;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -66,7 +70,7 @@ public class CreateClubController {
                 user, createclub_id, requestTagDto.getTagEnumList()
         );
     }
-    
+
     @PutMapping("/{createclub_id}/title")
     public ResponseEntity<Message> setTitle(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -111,6 +115,17 @@ public class CreateClubController {
         return createClubService.setPolicy(
                 user, createclub_id, requestPolicy.getAgePolicy(),requestPolicy.getGenderPolicy());
     }
+
+    @PutMapping("/{createclub_id}/images")
+    public ResponseEntity<Message> setImageList(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestPart @Nullable List<MultipartFile> image,
+            @PathVariable Long createclub_id
+    ){
+        User user = userDetails.getUser();
+        return createClubService.setImageList( user, createclub_id, image );
+    }
+
 
     @PostMapping("/{createclub_id}/confirm")
     public ResponseEntity<ClubResponseDto> confirmCreation(

@@ -30,8 +30,9 @@ public class User extends TimeStamped {
     private Calendar birth;
     @Column(nullable = false)
     private String phone;
+    @Column(name = "image_url")
     @Lob
-    private String profileUrl;
+    private String profileImage;
 
     public User (String password, SignupRequestDto requestDto){
         this.email = requestDto.getEmail();
@@ -41,11 +42,16 @@ public class User extends TimeStamped {
         this.gender = requestDto.getGender();
         this.birth = requestDto.getBirth();
         this.phone = requestDto.getPhone();
+        this.profileImage = requestDto.getProfileUrl();
         this.profileUrl = requestDto.getProfileUrl();
     }
 
     public void updateProfile(UpdateRequestDto requestDto){
         this.nickname = requestDto.getNickname();
         this.password = requestDto.getPassword();
+    }
+
+    public void updateProfileImage(String storedFileName) {
+        this.profileImage = storedFileName;
     }
 }
