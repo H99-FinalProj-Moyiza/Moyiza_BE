@@ -8,6 +8,7 @@ import com.example.moyiza_be.event.dto.ResponseDto;
 import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.event.service.EventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class EventController {
 
     // create
     @PostMapping("/{club_id}/event")
-    public EventCreateResponseDto createEvent(@RequestBody EventRequestDto eventRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+    public ResponseEntity<?> createEvent(@RequestBody EventRequestDto eventRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return eventService.createEvent(eventRequestDto, userDetails.getUser());
     }
 
@@ -42,9 +43,8 @@ public class EventController {
 
     // Delete
     @DeleteMapping("/{club_id}/event/{event_id}")
-    public String deleteEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        eventService.deleteEvent(club_id,event_id, userDetails.getUser());
-        return "삭제되었습니다.";
+    public ResponseEntity<?> deleteEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return eventService.deleteEvent(club_id,event_id, userDetails.getUser());
     }
 
     // Attend
