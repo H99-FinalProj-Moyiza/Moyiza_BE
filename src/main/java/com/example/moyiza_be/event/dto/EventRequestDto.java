@@ -1,8 +1,6 @@
 package com.example.moyiza_be.event.dto;
 
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 import java.util.Calendar;
 
 @Getter

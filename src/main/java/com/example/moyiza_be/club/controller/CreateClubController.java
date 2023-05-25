@@ -50,7 +50,7 @@ public class CreateClubController {
     ){
         User user = userDetails.getUser();
         return createClubService.setCategory(
-                user, createclub_id, requestCategoryDto.getCategoryEnum()
+                user.getId(), createclub_id, requestCategoryDto.getCategoryEnum()
         );
     }
 
@@ -63,7 +63,7 @@ public class CreateClubController {
 
         User user = userDetails.getUser();
         return createClubService.setTag(
-                user, createclub_id, requestTagDto.getTagEnumList()
+                user.getId(), createclub_id, requestTagDto.getTagEnumList()
         );
     }
 
@@ -75,7 +75,7 @@ public class CreateClubController {
     ){
         User user = userDetails.getUser();
         return createClubService.setTitle(
-                user, createclub_id, requestTitleDto.getTitle()
+                user.getId(), createclub_id, requestTitleDto.getTitle()
         );
     }
 
@@ -87,7 +87,7 @@ public class CreateClubController {
     ){
         User user = userDetails.getUser();
         return createClubService.setContent(
-                user, createclub_id, requestContentDto.getContent()
+                user.getId(), createclub_id, requestContentDto.getContent()
         );
     }
 
@@ -98,7 +98,7 @@ public class CreateClubController {
             @RequestBody CreateRequestMaxSizeDto requestMaxSize
     ){
         User user = userDetails.getUser();
-        return createClubService.setMaxGroupSize(user, createclub_id, requestMaxSize.getMaxGroupSize());
+        return createClubService.setMaxGroupSize(user.getId(), createclub_id, requestMaxSize.getMaxGroupSize());
     }
 
     @PutMapping("/{createclub_id}/policy")
@@ -109,7 +109,7 @@ public class CreateClubController {
     ){
         User user = userDetails.getUser();
         return createClubService.setPolicy(
-                user, createclub_id, requestPolicy.getAgePolicy(),requestPolicy.getGenderPolicy());
+                user.getId(), createclub_id, requestPolicy.getAgePolicy(),requestPolicy.getGenderPolicy());
     }
 
     @PutMapping("/{createclub_id}/images")
@@ -119,7 +119,7 @@ public class CreateClubController {
             @PathVariable Long createclub_id
     ){
         User user = userDetails.getUser();
-        return createClubService.setImageList( user, createclub_id, image );
+        return createClubService.setImageList( user.getId(), createclub_id, image );
     }
 
 
@@ -129,7 +129,7 @@ public class CreateClubController {
             @PathVariable Long createclub_id
     ){
         User user = userDetails.getUser();
-        return createClubService.confirmCreation(user, createclub_id);
+        return createClubService.confirmCreation(user.getId(), createclub_id);
     }
 
 
