@@ -36,12 +36,9 @@ public class EventService {
     @Transactional
     public ResponseEntity<?> createEvent (EventRequestDto eventRequestDto, User user, long clubId) {
         // 클럽이 유효한가
-        Optional<Club> club = clubRepository.findById(clubId);
-        if (club.isEmpty()) {
-            throw new IllegalArgumentException("404 Not Found");
-        }
+        Club club = clubRepository.findById(clubId).orElseThrow(()-> new IllegalArgumentException("401 UnAuthorized"));
         // 작성자가 소유자인가
-        if (user.getId()!=clubId) {
+        if (!user.getId().equals(club.getOwnerId())) {
             throw new IllegalArgumentException("401 UnAuthorized");
         }
         // 생성 + 삭제상태 : false + 참석자수 : 1(방장)
