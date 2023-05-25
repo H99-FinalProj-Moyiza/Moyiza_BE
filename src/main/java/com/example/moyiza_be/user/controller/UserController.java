@@ -20,12 +20,23 @@ public class UserController {
     private final UserService userService;
 
     //회원가입
-    @PostMapping(value = "/signup",
+    @RequestMapping (value = "/signup", method = RequestMethod.POST,
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> signup(@RequestPart SignupRequestDto requestDto,
-                                    @RequestPart("imageFile") MultipartFile image){
+    public ResponseEntity<?> signup(@RequestPart(value = "data") SignupRequestDto requestDto,
+                                    @RequestPart(value = "imageFile") MultipartFile image){
         return userService.signup(requestDto, image);
     }
+
+    //회원가입 테스트
+    @PostMapping("/test/upload")
+    public ResponseEntity<?> uploadTest(@RequestPart(value = "imageFile") MultipartFile image){
+        return userService.uploadTest(image);
+    }
+    @PostMapping("/test/signup")
+    public ResponseEntity<?> signupTest(@RequestBody TestSignupRequestDto testRequestDto){
+        return userService.signupTest(testRequestDto);
+    }
+
     //로그인
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response){
