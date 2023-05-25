@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface CreateClubRepository extends JpaRepository<CreateClub, Long> {
-    Optional<CreateClub> findByOwnerId(Long ownerId);
+    Optional<CreateClub> findByOwnerIdAndFlagConfirmedIsFalse(Long ownerId);
 }

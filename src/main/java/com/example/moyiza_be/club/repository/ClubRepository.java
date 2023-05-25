@@ -11,4 +11,6 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     List<Club> findByCategory(String category);
 
     List<Club> findByTitleContaining(String q);
+
+    Integer countByOwnerIdAndIsDeletedFalse(Long userId);
 }
