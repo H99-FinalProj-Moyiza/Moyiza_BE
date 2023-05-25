@@ -29,4 +29,4 @@ echo "> $JAR_NAME 에 실행권한 추가"
 echo "> $JAR_NAME 실행"
 
 #nohup java -jar $JAR_NAME &
-java -jar $JAR_NAME
+java -jar -Djasypt.password=$JASYPT_PASSWORD $JAR_NAME
