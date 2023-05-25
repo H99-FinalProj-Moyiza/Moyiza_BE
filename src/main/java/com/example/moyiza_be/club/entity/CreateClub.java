@@ -33,6 +33,8 @@ public class CreateClub {
 
     private Integer maxGroupSize;
 
+    private String thumbnailUrl;
+
 
     public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
 
@@ -62,6 +64,10 @@ public class CreateClub {
 
     public void setMaxGroupSize(Integer maxGroupSize) {
         this.maxGroupSize = maxGroupSize;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 
 
