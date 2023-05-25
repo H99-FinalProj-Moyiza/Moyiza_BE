@@ -34,6 +34,8 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AwsS3Uploader awsS3Uploader;
 
+    public static final String basicProfileUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/87f7fcdb-254b-474a-9bf0-86cf3e89adcc_basicProfile.jpg";
+
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
@@ -124,5 +126,23 @@ public class UserService {
     private void setHeader(HttpServletResponse response, JwtTokenDto tokenDto) {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+    }
+
+    public ResponseEntity<?> uploadTest(MultipartFile image) {
+        if(image.isEmpty()){
+            return new ResponseEntity<>(basicProfileUrl, HttpStatus.OK);
+        }
+        String storedFileUrl  = awsS3Uploader.uploadFile(image);
+        return new ResponseEntity<>(storedFileUrl, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> signupTest(TestSignupRequestDto testRequestDto) {
+        String password = passwordEncoder.encode(testRequestDto.getPassword());
+        String storedFileUrl = "";
+        checkDuplicatedEmail(testRequestDto.getEmail());
+        checkDuplicatedNick(testRequestDto.getNickname());
+        User user = new User(password, testRequestDto);
+        userRepository.save(user);
+        return new ResponseEntity<>("🎊테스트 성공!!🎊 고생하셨어요ㅠㅠ", HttpStatus.OK);
     }
 }
