@@ -1,5 +1,6 @@
 package com.example.moyiza_be.event.controller;
 
+import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.event.dto.DataResponseDto;
 import com.example.moyiza_be.event.dto.EventCreateResponseDto;
@@ -24,8 +25,8 @@ public class EventController {
 
     // create
     @PostMapping("/{club_id}/event")
-    public ResponseEntity<?> createEvent(@RequestBody EventRequestDto eventRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        return eventService.createEvent(eventRequestDto, userDetails.getUser());
+    public ResponseEntity<?> createEvent(@PathVariable long club_id, @RequestBody EventRequestDto eventRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        return eventService.createEvent(eventRequestDto, userDetails.getUser(), club_id);
     }
 
     // ReadAll
