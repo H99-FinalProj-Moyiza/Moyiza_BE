@@ -143,4 +143,8 @@ public class ClubService {
         );
         return club;
     }
+
+    public Integer userOwnedClubCount(Long userId) {
+        return clubRepository.countByOwnerIdAndIsDeletedFalse(userId);
+    }
 }
