@@ -5,6 +5,7 @@ import com.example.moyiza_be.club.dto.*;
 import com.example.moyiza_be.club.entity.ClubImageUrl;
 import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
+import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.club.repository.CreateClubRepository;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
@@ -39,10 +40,13 @@ public class CreateClubService {
 
 
     public ResponseEntity<?> initCreateClubId(Long userId) {
-        CreateClub previousCreate = createClubRepository.findByOwnerId(userId).orElse(null);
+        CreateClub previousCreate = createClubRepository.findByOwnerIdAndFlagConfirmedIsFalse(userId).orElse(null);
         if(previousCreate != null){
             log.info("found existing club by user " + userId);
             return new ResponseEntity<>(new ResumeIdResponse(previousCreate.getId()), HttpStatus.ACCEPTED);
+        }
+        if(clubService.userOwnedClubCount(userId) >= 3){
+            log.info("createClub denied by user " + userId + " having 3 or more club");
         }
         CreateClub createClub = new CreateClub();
         createClub.setOwnerId(userId);
@@ -53,21 +57,20 @@ public class CreateClubService {
     }
 
     public ResponseEntity<ResumeCreationDto> getPreviousCreateClub(Long userId, Long createclub_id) {
-        CreateClub createClub = loadCreateClubById(createclub_id);
+        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         log.info("returning previous createclub : " + createclub_id);
         return ResponseEntity.ok(new ResumeCreationDto(createClub));
     }
 
-    public ResponseEntity<Message> setCategory(User user, Long createclub_id, CategoryEnum categoryEnum) {
-        CreateClub createClub = loadCreateClubById(createclub_id);
+    public ResponseEntity<Message> setCategory(Long userId, Long createclub_id, CategoryEnum categoryEnum) {
+        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setCategory(categoryEnum);
         return ResponseEntity.ok(new MessageWithTagOptionsDto("성공", categoryEnum));
 
     }
 
-    public ResponseEntity<Message> setTag(User user, Long createclub_id, List<TagEnum> tagEnumList) {
-        CreateClub createClub = loadCreateClubById(createclub_id);
-
+    public ResponseEntity<Message> setTag(Long userId, Long createclub_id, List<TagEnum> tagEnumList) {
+        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         String newString = "0".repeat(TagEnum.values().length);
 
         StringBuilder sb = new StringBuilder(newString);
@@ -79,37 +82,37 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("성공"));
     }
 
-    public ResponseEntity<Message> setTitle(User user, Long createclub_id, String title) {
-        CreateClub createClub = loadCreateClubById(createclub_id);
+    public ResponseEntity<Message> setTitle(Long userId, Long createclub_id, String title) {
+        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setTitle(title);
         return ResponseEntity.ok(new Message("성공"));
     }
 
-    public ResponseEntity<Message> setContent(User user, Long createclub_id, String content) {
-        CreateClub createClub = loadCreateClubById(createclub_id);
+    public ResponseEntity<Message> setContent(Long userId, Long createclub_id, String content) {
+        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setContent(content);
         return ResponseEntity.ok(new Message("성공"));
     }
 
     public ResponseEntity<Message> setPolicy
-            ( User user, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum)
+            ( Long userId, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum)
     {
-        CreateClub createclub = loadCreateClubById(createclub_id);
-        createclub.setGenderPolicy(genderPolicyEnum);
-        createclub.setAgePolicy(agePolicy);   // 모두 가능할시 null로 받아서 null로 세팅 가능한지 알아봐야함
+        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
+        createClub.setGenderPolicy(genderPolicyEnum);
+        createClub.setAgePolicy(agePolicy);   // 모두 가능할시 null로 받아서 null로 세팅 가능한지 알아봐야함
 
         return ResponseEntity.ok(new Message("성공"));
     }
 
-    public ResponseEntity<Message> setMaxGroupSize(User user, Long createclub_id, Integer requestMaxSize) {
-        CreateClub createClub = loadCreateClubById(createclub_id);
+    public ResponseEntity<Message> setMaxGroupSize(Long userId, Long createclub_id, Integer requestMaxSize) {
+        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setMaxGroupSize(requestMaxSize);
         return ResponseEntity.ok(new Message("성공"));
     }
 
 
-    public ResponseEntity<Message> setImageList(User user, Long createclub_id, List<MultipartFile> imageFileList) {
-        CreateClub createClub = loadCreateClubById(createclub_id);
+    public ResponseEntity<Message> setImageList(Long userId, Long createclub_id, List<MultipartFile> imageFileList) {
+        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         List<String> imageUrlList;
         if(imageFileList == null){
             log.info("no input image : setting default image...");
@@ -124,10 +127,11 @@ public class CreateClubService {
 
         return ResponseEntity.ok(new Message("이미지 업로드 완료 !"));
     }
-    public ResponseEntity<ClubResponseDto> confirmCreation(User User, Long createclub_id) {
-        CreateClub createClub = loadCreateClubById(createclub_id);
+    public ResponseEntity<ClubResponseDto> confirmCreation(Long userId, Long createclub_id) {
+        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         ConfirmClubCreationDto confirmClubCreationDto = new ConfirmClubCreationDto(createClub);
         ClubResponseDto newClub = clubService.createClub(confirmClubCreationDto);
+        createClub.setFlagConfirmed(true);
         return ResponseEntity.ok(newClub);
     }
 
@@ -137,4 +141,18 @@ public class CreateClubService {
         return createClubRepository.findById(createclub_id)
                 .orElseThrow(() -> new NullPointerException("생성중인 클럽을 찾을 수 없습니다"));
     }
+
+    private Boolean checkCreateClubOwnerShip(CreateClub createClub, Long userId){
+        return createClub.getOwnerId().equals(userId);
+    }
+
+    private CreateClub loadAndCheckOwnerShip(Long createclub_id, Long userId){
+        CreateClub createClub = loadCreateClubById(createclub_id);
+        if(checkCreateClubOwnerShip(createClub, userId)){
+            log.info("loadCreateClub denied : user " + userId + " does not own createClub " + createclub_id);
+            throw new IllegalCallerException("내 createClub이 아닙니다");
+        }
+        return createClub;
+    }
+
 }

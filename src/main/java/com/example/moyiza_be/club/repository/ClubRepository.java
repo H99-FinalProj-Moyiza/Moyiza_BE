@@ -14,5 +14,8 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
 
     List<Club> findByTitleContaining(String q);
 
+
     Page<Club> findAllByOrderByIdDesc(Pageable pageable);
+
+    Integer countByOwnerIdAndIsDeletedFalse(Long userId);
 }
