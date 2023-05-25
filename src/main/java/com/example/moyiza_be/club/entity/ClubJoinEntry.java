@@ -1,5 +1,6 @@
 package com.example.moyiza_be.club.entity;
 
+import com.example.moyiza_be.common.utils.TimeStamped;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class ClubJoinEntry {
+public class ClubJoinEntry extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
