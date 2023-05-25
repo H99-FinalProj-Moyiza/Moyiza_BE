@@ -39,6 +39,7 @@ public class EventService {
 //        String image = null;
         // if 문 위치 for image
         Event event = new Event(eventRequestDto, user); // 이미지 넣으면 user, image로 변경
+        event.setDeleted(true);
         eventRepository.saveAndFlush(event);
 
         // 방장 자리 넣어야지

@@ -1,5 +1,6 @@
 package com.example.moyiza_be.event.entity;
 
+import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.utils.TimeStamped;
 import com.example.moyiza_be.event.dto.EventRequestDto;
 import com.example.moyiza_be.user.entity.User;
@@ -27,7 +28,7 @@ public class Event extends TimeStamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clubId")
-    private User clubId;
+    private Club clubId;
 
     @Column(nullable = false)
     private String eventTitle;
