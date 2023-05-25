@@ -1,0 +1,29 @@
+cloud:
+  aws:
+    credentials:
+      secret-key: ENC(i/B1gm7Wm9tUXLu55Z5mjsAbh9BqzYMkfoCtcvU798LQoccIK3cicxsDCDdpRUeXgmVtGktF1yQ=)
+      access-key: ENC(3wFDB1exmRXoiPVPi/lgKq+zesHQOY3aBuIdChbpq5U=)
+    s3:
+      bucket: ENC(yByVJRg3SqpPSDTLT+xD8RBRTSexMecj)
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: 'false'
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: 'true'
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: update
+  datasource:
+    password: ENC(MpLqczeZ9JMeSsYgIRaQJuYGnVx3KW31)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ENC(1RC2fLhE3xF2E+OyJP7gdA==)
+    url: ENC(FLABZ3U84RdLp+5UmSAEmbYmkafqBM20nx/9yLQEvdw9qSxsMn9gx4Js5XbNvnAvWqzNYlj0Dyzly1XTyiR5YlYIDZufFamFRXBQOI6U54iR1UH3u84bY+bbBDli0OzN)
+jwt:
+  secret:
+    key: ENC(rjg+5OS5srRHUw2KZQcREVDpUBlSXEQ4y7Hl/qE1KjNodO/mb2zH8P9bJ0mX0o81k7pPcD6EppBR6LgkE9LBrxBB35PzT/7Tjq9ja7YJAwmj5d9yLFpeLCLgcUQ8AP5HqG1c4Urael0Rqe6gVmxBbfxWOBHgmWKg+qS/w3AY7hyiFrUfLd5Xyw==)
+
