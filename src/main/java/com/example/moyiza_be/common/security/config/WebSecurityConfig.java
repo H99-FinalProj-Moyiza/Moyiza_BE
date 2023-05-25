@@ -32,7 +32,8 @@ public class WebSecurityConfig {
     private static final String[] PERMIT_URL_ARRAY = {
             "/user/login",
             "/user/signup",
-            "/user/check/**"
+            "/user/check/**",
+            "/user/test/**"
     };
 
     @Bean

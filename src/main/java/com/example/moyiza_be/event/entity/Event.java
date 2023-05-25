@@ -1,5 +1,6 @@
 package com.example.moyiza_be.event.entity;
 
+import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.utils.TimeStamped;
 import com.example.moyiza_be.event.dto.EventRequestDto;
 import com.example.moyiza_be.user.entity.User;
@@ -21,13 +22,16 @@ public class Event extends TimeStamped {
     @Column(name = "event_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    private User ownerId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "clubId")
-    private User clubId;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "userId")
+//    private User ownerId;
+    @Column(nullable = false)
+    private long ownerId;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "clubId")
+//    private Club clubId;
+    @Column(nullable = false)
+    private long clubId;
 
     @Column(nullable = false)
     private String eventTitle;
@@ -57,8 +61,9 @@ public class Event extends TimeStamped {
         attendantsNum--;
     }
 
-    public Event(EventRequestDto eventRequestDto, User user) {
-        this.ownerId = user;
+    public Event(EventRequestDto eventRequestDto, long userId, long clubId) {
+        this.ownerId = userId;
+        this.clubId = clubId;
         this.eventTitle = eventRequestDto.getEventTitle();
         this.eventContent = eventRequestDto.getEventContent();
         this.eventLocation = eventRequestDto.getEventLocation();

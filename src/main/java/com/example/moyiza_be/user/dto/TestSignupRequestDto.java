@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.Calendar;
 
 @Getter
-public class SignupRequestDto {
+public class TestSignupRequestDto {
 
     private String name;
     private String email;
@@ -14,4 +14,5 @@ public class SignupRequestDto {
     private int gender;
     private Calendar birth;
     private String phone;
+    private String imageUrl;
 }

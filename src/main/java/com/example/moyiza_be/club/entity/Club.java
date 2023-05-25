@@ -36,6 +36,9 @@ public class Club {
     @Column(nullable = false)
     private String thumbnailUrl;
 
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
+
     public Club(ConfirmClubCreationDto creationRequest) {
         this.ownerId = creationRequest.getOwnerId();
         this.title = creationRequest.getTitle();
@@ -47,5 +50,9 @@ public class Club {
         this.maxGroupSize = creationRequest.getMaxGroupSize();
         this.thumbnailUrl = creationRequest.getThumbnailUrl();
 
+    }
+
+    public void flagDeleted(Boolean deleted) {
+        this.isDeleted = deleted;
     }
 }

@@ -34,6 +34,8 @@ public class CreateClub {
     private Integer maxGroupSize;
 
     private String thumbnailUrl;
+    //true if CreateClub is confirmed and used to make actual Club
+    private Boolean flagConfirmed = false;
 
 
     public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
@@ -42,9 +44,7 @@ public class CreateClub {
         this.category = category;
     }
 
-    public void setTagString(String tagString) {
-        this.tagString = tagString;
-    }
+    public void setTagString(String tagString) { this.tagString = tagString; }
 
     public void setTitle(String title) {
         this.title = title;
@@ -58,9 +58,7 @@ public class CreateClub {
         this.genderPolicy = genderPolicy;
     }
 
-    public void setAgePolicy(Integer agePolicy) {
-        this.agePolicy = agePolicy;
-    }
+    public void setAgePolicy(Integer agePolicy) { this.agePolicy = agePolicy; }
 
     public void setMaxGroupSize(Integer maxGroupSize) {
         this.maxGroupSize = maxGroupSize;
@@ -70,6 +68,8 @@ public class CreateClub {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-
+    public void setFlagConfirmed(Boolean flagConfirmed) {
+        this.flagConfirmed = flagConfirmed;
+    }
 }
 

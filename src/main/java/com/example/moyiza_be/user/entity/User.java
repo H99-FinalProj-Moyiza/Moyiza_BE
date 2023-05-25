@@ -1,7 +1,9 @@
 package com.example.moyiza_be.user.entity;
 
 import com.example.moyiza_be.common.utils.TimeStamped;
+
 import com.example.moyiza_be.user.dto.SignupRequestDto;
+import com.example.moyiza_be.user.dto.TestSignupRequestDto;
 import com.example.moyiza_be.user.dto.UpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -34,7 +36,7 @@ public class User extends TimeStamped {
     @Lob
     private String profileImage;
 
-    public User (String password, SignupRequestDto requestDto){
+    public User (String password, SignupRequestDto requestDto, String storedFileUrl){
         this.email = requestDto.getEmail();
         this.password = password;
         this.name = requestDto.getName();
@@ -42,7 +44,19 @@ public class User extends TimeStamped {
         this.gender = requestDto.getGender();
         this.birth = requestDto.getBirth();
         this.phone = requestDto.getPhone();
-        this.profileImage = requestDto.getProfileImage();
+        this.profileImage = storedFileUrl;
+    }
+
+    //테스트
+    public User (String password, TestSignupRequestDto requestDto){
+        this.email = requestDto.getEmail();
+        this.password = password;
+        this.name = requestDto.getName();
+        this.nickname = requestDto.getNickname();
+        this.gender = requestDto.getGender();
+        this.birth = requestDto.getBirth();
+        this.phone = requestDto.getPhone();
+        this.profileImage = requestDto.getImageUrl();
     }
 
     public void updateProfile(UpdateRequestDto requestDto){
