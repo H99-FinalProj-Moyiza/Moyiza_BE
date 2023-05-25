@@ -7,10 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/test")
 public class TestController {
-
     @GetMapping
-    private String testCode() {
-        return "배포 잘 됐니?-1";
-    }
-
+    public String cicdtest(){ return "abcd";}
 }
