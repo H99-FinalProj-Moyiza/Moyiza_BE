@@ -13,6 +13,8 @@ import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +43,13 @@ public class ClubService {
     }
 
     //클럽 전체 조회
-    public ResponseEntity<List<ClubResponseDto>> getClubList() {
-        List<Club> clubList = clubRepository.findAll();
-        List<ClubResponseDto> responseDtoList = clubList.stream()
+    public ResponseEntity<List<ClubResponseDto>> getClubList(Pageable pageable) {
+        Page<Club> clubPage = clubRepository.findAllByOrderByIdDesc(pageable);
+
+        if(clubPage.isEmpty() && pageable.getPageNumber() > 0) {
+            throw new NullPointerException("페이지가 없습니다.");
+        }
+        List<ClubResponseDto> responseDtoList = clubPage.stream()
                 .map(ClubResponseDto::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responseDtoList);
@@ -142,5 +148,9 @@ public class ClubService {
                 () -> new NullPointerException()
         );
         return club;
+    }
+
+    public Integer userOwnedClubCount(Long userId) {
+        return clubRepository.countByOwnerIdAndIsDeletedFalse(userId);
     }
 }

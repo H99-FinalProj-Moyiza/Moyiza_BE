@@ -39,6 +39,7 @@ public class EventService {
 //        String image = null;
         // if 문 위치 for image
         Event event = new Event(eventRequestDto, user); // 이미지 넣으면 user, image로 변경
+        event.setDeleted(true);
         eventRepository.saveAndFlush(event);
 
         // 방장 자리 넣어야지
@@ -79,7 +80,6 @@ public class EventService {
     // 이벤트 조회
     @Transactional
     public Optional<Event> getEvent(long clubId, long eventId) {
-//        User user = Security.getCurrentUser();
         Optional<Event> eventDetailResponseDto = eventRepository.findById(eventId);
         // 있는 모임인가?
         if (eventDetailResponseDto.isEmpty()) throw new IllegalArgumentException("400 Bad Request");
@@ -110,7 +110,7 @@ public class EventService {
 
     // 이벤트 참석 / 취소
     @Transactional
-    public EventAttendantResponseDto addAttendant(long eventId, User user) {
+    public EventAttendantResponseDto addAttendant(long club_id, long eventId, User user) {
         if (user == null) throw new IllegalArgumentException("401 UnAuthorized");
 
         Event event = (Event) eventRepository.findByIdAndDeletedIsFalse(eventId).orElseThrow(

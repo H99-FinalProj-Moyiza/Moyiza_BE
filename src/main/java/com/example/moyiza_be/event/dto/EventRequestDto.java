@@ -11,5 +11,5 @@ public class EventRequestDto {
     private String eventContent;
     private String eventLocation;
     private int eventGroupSize;
-    private LocalDateTime eventStartTime;
+    private Calendar eventStartTime;
 }

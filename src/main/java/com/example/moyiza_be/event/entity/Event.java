@@ -1,5 +1,6 @@
 package com.example.moyiza_be.event.entity;
 
+import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.utils.TimeStamped;
 import com.example.moyiza_be.event.dto.EventRequestDto;
 import com.example.moyiza_be.user.entity.User;
@@ -18,6 +19,7 @@ import java.util.Calendar;
 public class Event extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "event_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,7 +28,7 @@ public class Event extends TimeStamped {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clubId")
-    private User clubId;
+    private Club clubId;
 
     @Column(nullable = false)
     private String eventTitle;
@@ -38,7 +40,7 @@ public class Event extends TimeStamped {
     private String eventLocation;
 
     @Column
-    private LocalDateTime eventStartTime;
+    private Calendar eventStartTime;
 
     @Column
     private int eventGroupSize;
