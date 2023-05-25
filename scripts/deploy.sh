@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-export JASYPT_PASSWORD=$JASYPT_PASSWORD
-
 REPOSITORY=/home/ubuntu/app
-
-echo "JASYPT_PASSWORD: $JASYPT_PASSWORD"
 
 echo "> 현재 구동 중인 애플리케이션 pid 확인"
 
