@@ -71,7 +71,8 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+#          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ap-northeast-2
 
       # S3에 zip 파일 업로드
       - name: Upload to S3
@@ -83,4 +84,5 @@ jobs:
           --deployment-config-name CodeDeployDefault.AllAtOnce --file-exists-behavior OVERWRITE
           --deployment-group-name $CODE_DEPLOY_DEPLOYMENT_GROUP_NAME
           --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=deploy/$GITHUB_SHA.zip
-          --region ${{ secrets.AWS_REGION }}
+#          --region ${{ secrets.AWS_REGION }}
+          --region ap-northeast-2
