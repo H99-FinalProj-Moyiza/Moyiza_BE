@@ -6,6 +6,9 @@ import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +30,9 @@ public class ClubController {
 
     //클럽 전체 조회
     @GetMapping
-    public ResponseEntity<List<ClubResponseDto>> getClubList() {
-        return clubService.getClubList();
+    public ResponseEntity<List<ClubResponseDto>> getClubList(@PageableDefault(page = 0, size = 8,
+            sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return clubService.getClubList(pageable);
     }
 
     //클럽 검색 조회
