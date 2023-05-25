@@ -28,7 +28,8 @@ chmod +x $JAR_NAME
 
 echo "> $JAR_NAME 실행"
 
-echo "> JASYPT_PASSWORD=$JASYPT_PASSWORD"
+#echo "> JASYPT_PASSWORD=$JASYPT_PASSWORD'"
+echo $JASYPT_PASSWORD
 
-nohup java -jar -Djasypt.password=$JASYPT_PASSWORD $JAR_NAME &
+nohup java -jar -Djasypt.password="$JASYPT_PASSWORD" $JAR_NAME &
 #java -jar -Djasypt.password=$JASYPT_PASSWORD $JAR_NAME
