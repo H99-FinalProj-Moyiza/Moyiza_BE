@@ -1,26 +1,21 @@
 package com.example.moyiza_be.club.service;
 
 import com.example.moyiza_be.club.dto.*;
-
 import com.example.moyiza_be.club.entity.ClubImageUrl;
 import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
-import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.club.repository.CreateClubRepository;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
-import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
-import com.example.moyiza_be.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -32,21 +27,22 @@ import java.util.List;
 public class CreateClubService {
     private final CreateClubRepository createClubRepository;
     private final ClubService clubService;
-
     private final AwsS3Uploader imageUploader;
     private final ClubImageUrlRepository clubImageUrlRepository;
+    private final static Integer CLUB_OWNERSHIP_MAX_COUNT = 100;
 
-    private final String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
+    private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
 
     public ResponseEntity<?> initCreateClubId(Long userId) {
         CreateClub previousCreate = createClubRepository.findByOwnerIdAndFlagConfirmedIsFalse(userId).orElse(null);
-        if(previousCreate != null){
+        if (previousCreate != null) {
             log.info("found existing club by user " + userId);
             return new ResponseEntity<>(new ResumeIdResponse(previousCreate.getId()), HttpStatus.ACCEPTED);
         }
-        if(clubService.userOwnedClubCount(userId) >= 3){
+        if (clubService.userOwnedClubCount(userId) >= CLUB_OWNERSHIP_MAX_COUNT) {
             log.info("createClub denied by user " + userId + " having 3 or more club");
+            throw new IllegalArgumentException("클럽을 " + CLUB_OWNERSHIP_MAX_COUNT + " 개 이상 가질 수 없습니다");
         }
         CreateClub createClub = new CreateClub();
         createClub.setOwnerId(userId);
@@ -74,7 +70,7 @@ public class CreateClubService {
         String newString = "0".repeat(TagEnum.values().length);
 
         StringBuilder sb = new StringBuilder(newString);
-        for(TagEnum tagEnum : tagEnumList){
+        for (TagEnum tagEnum : tagEnumList) {
             sb.setCharAt(tagEnum.ordinal(), '1');
         }
         createClub.setTagString(sb.toString());
@@ -95,8 +91,7 @@ public class CreateClubService {
     }
 
     public ResponseEntity<Message> setPolicy
-            ( Long userId, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum)
-    {
+            (Long userId, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setGenderPolicy(genderPolicyEnum);
         createClub.setAgePolicy(agePolicy);   // 모두 가능할시 null로 받아서 null로 세팅 가능한지 알아봐야함
@@ -114,11 +109,10 @@ public class CreateClubService {
     public ResponseEntity<Message> setImageList(Long userId, Long createclub_id, List<MultipartFile> imageFileList) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         List<String> imageUrlList;
-        if(imageFileList == null){
+        if (imageFileList == null) {
             log.info("no input image : setting default image...");
             imageUrlList = List.of(DEFAULT_IMAGE_URL);
-        }
-        else{
+        } else {
             imageUrlList = imageUploader.uploadMultipleImg(imageFileList);
         }
         createClub.setThumbnailUrl(imageUrlList.get(0));
@@ -127,6 +121,7 @@ public class CreateClubService {
 
         return ResponseEntity.ok(new Message("이미지 업로드 완료 !"));
     }
+
     public ResponseEntity<ClubResponseDto> confirmCreation(Long userId, Long createclub_id) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         ConfirmClubCreationDto confirmClubCreationDto = new ConfirmClubCreationDto(createClub);
@@ -138,17 +133,17 @@ public class CreateClubService {
     ///////////////////////private methods///////////////////
 
     private CreateClub loadCreateClubById(Long createclub_id) {
-        return createClubRepository.findById(createclub_id)
+        return createClubRepository.findByIdAndFlagConfirmedFalse(createclub_id)
                 .orElseThrow(() -> new NullPointerException("생성중인 클럽을 찾을 수 없습니다"));
     }
 
-    private Boolean checkCreateClubOwnerShip(CreateClub createClub, Long userId){
+    private Boolean checkCreateClubOwnerShip(CreateClub createClub, Long userId) {
         return createClub.getOwnerId().equals(userId);
     }
 
-    private CreateClub loadAndCheckOwnerShip(Long createclub_id, Long userId){
+    private CreateClub loadAndCheckOwnerShip(Long createclub_id, Long userId) {
         CreateClub createClub = loadCreateClubById(createclub_id);
-        if(checkCreateClubOwnerShip(createClub, userId)){
+        if (!checkCreateClubOwnerShip(createClub, userId)) {
             log.info("loadCreateClub denied : user " + userId + " does not own createClub " + createclub_id);
             throw new IllegalCallerException("내 createClub이 아닙니다");
         }
