@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Getter
 public class CreateClubIdResponse {
-    private final Long createClubId;
+    private final Long createclub_id;
     private final EnumOptionsDto optionList= new EnumOptionsDto();
 
     public CreateClubIdResponse(Long createClubId) {
-        this.createClubId = createClubId;
+        this.createclub_id = createClubId;
     }
 }
