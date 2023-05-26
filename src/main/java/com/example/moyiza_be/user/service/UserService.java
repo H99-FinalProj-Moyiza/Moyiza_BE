@@ -36,7 +36,7 @@ public class UserService {
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
-        String storedFileUrl = "";
+        String storedFileUrl = basicProfileUrl;
         checkDuplicatedEmail(requestDto.getEmail());
         checkDuplicatedNick(requestDto.getNickname());
         if(!imageFile.isEmpty()){
