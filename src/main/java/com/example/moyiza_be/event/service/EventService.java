@@ -23,8 +23,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -40,7 +43,7 @@ public class EventService {
         // 클럽이 유효한가
         Club club = clubRepository.findById(clubId).orElseThrow(()-> new IllegalArgumentException("404 Not Found"));
         // 작성자가 소유자인가
-        if (user.getId().equals(club.getOwnerId())) {
+        if (!user.getId().equals(club.getOwnerId())) {
             throw new IllegalArgumentException("401 UnAuthorized");
         }
         // 생성 + 삭제상태 : false + 참석자수 : 1(방장) | 참석자에 방장이 반드시 포함되어야 하는가 ? attendant 추가 : nothing change
