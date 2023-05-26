@@ -34,8 +34,8 @@ public class EventController {
 
     // ReadOne
     @GetMapping("/{club_id}/event/{event_id}")
-    public DataResponseDto<Optional<Event>> getEvent(@PathVariable long club_id, @PathVariable long event_id) {
-        return DataResponseDto.of(eventService.getEvent(club_id,event_id), "조회 성공");
+    public ResponseEntity<?> getEvent(@PathVariable Long club_id, @PathVariable Long event_id) {
+        return eventService.getEvent(club_id,event_id);
     }
 
     // Update : 보류
@@ -49,15 +49,15 @@ public class EventController {
         return eventService.deleteEvent(club_id,event_id, userDetails.getUser());
     }
 
-    // Attend
-//    @PostMapping("/{club_id}/event/join/{event_id}")
-//    public String attendEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//
-//    }
+//     Attend
+    @PostMapping("/{club_id}/event/join/{event_id}")
+    public ResponseEntity<?> joinEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return eventService.joinEvent(event_id, userDetails.getUser());
+    }
 
     // Cancel Attend
-//    @DeleteMapping("/{club_id}/event/join/{event_id}")
-//    public String attendEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//
-//    }
+    @DeleteMapping("/{club_id}/event/join/{event_id}")
+    public ResponseEntity<String> attendEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return eventService.cancelEvent(event_id, userDetails.getUser());
+    }
 }

@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 @Entity
 @Getter
@@ -60,6 +62,9 @@ public class Event extends TimeStamped {
     public void cancelAttend(){
         attendantsNum--;
     }
+
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private ArrayList<EventAttendant> eventAttendantList = new ArrayList<>();
 
     public Event(EventRequestDto eventRequestDto, long userId, long clubId) {
         this.ownerId = userId;
