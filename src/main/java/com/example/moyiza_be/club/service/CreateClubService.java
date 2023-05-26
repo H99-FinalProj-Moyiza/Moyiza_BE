@@ -41,7 +41,7 @@ public class CreateClubService {
             return new ResponseEntity<>(new ResumeIdResponse(previousCreate.getId()), HttpStatus.ACCEPTED);
         }
         if (clubService.userOwnedClubCount(userId) >= CLUB_OWNERSHIP_MAX_COUNT) {
-            log.info("createClub denied by user " + userId + " having 3 or more club");
+            log.info("createClub denied by user " + userId + " having too many club");
             throw new IllegalArgumentException("클럽을 " + CLUB_OWNERSHIP_MAX_COUNT + " 개 이상 가질 수 없습니다");
         }
         CreateClub createClub = new CreateClub();
@@ -61,7 +61,7 @@ public class CreateClubService {
     public ResponseEntity<Message> setCategory(Long userId, Long createclub_id, CategoryEnum categoryEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setCategory(categoryEnum);
-        return ResponseEntity.ok(new MessageWithTagOptionsDto("성공", categoryEnum));
+        return ResponseEntity.ok(new Message("성공"));
 
     }
 
@@ -122,10 +122,10 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("이미지 업로드 완료 !"));
     }
 
-    public ResponseEntity<ClubResponseDto> confirmCreation(Long userId, Long createclub_id) {
+    public ResponseEntity<ClubDetailResponse> confirmCreation(Long userId, Long createclub_id) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         ConfirmClubCreationDto confirmClubCreationDto = new ConfirmClubCreationDto(createClub);
-        ClubResponseDto newClub = clubService.createClub(confirmClubCreationDto);
+        ClubDetailResponse newClub = clubService.createClub(confirmClubCreationDto);
         createClub.setFlagConfirmed(true);
         return ResponseEntity.ok(newClub);
     }

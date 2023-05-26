@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface ClubJoinEntryRepository extends JpaRepository<ClubJoinEntry, Long> {
     List<ClubJoinEntry> findByClubId(Long clubId);
-
     ClubJoinEntry findByUserIdAndClubId(Long id, Long clubId);
+    Boolean existsByClubIdAndUserId(Long clubId, Long userId);
+
+    void deleteByClubId(Long clubId);
 }

@@ -14,12 +14,10 @@ public class EventAttendantResponseDto {
     private long attendantId;
     private long eventId;
     private long userId;
-    private boolean entrance;
 
     public EventAttendantResponseDto(EventAttendant attendant) {
         this.attendantId = attendant.getId();
-        this.eventId = attendant.getEvent().getId();
-        this.userId = attendant.getUser().getId();
-        this.entrance = attendant.isEntrance();
+        this.eventId = attendant.getEventId();
+        this.userId = attendant.getUserId();
     }
 }

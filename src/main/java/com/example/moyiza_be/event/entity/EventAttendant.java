@@ -11,27 +11,26 @@ import lombok.NoArgsConstructor;
 public class EventAttendant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "eventId")
-    private Event event;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    private User user;
-
+    private Long id;
     @Column
-    private boolean entrance;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "eventId")
+    private Long eventId;
+    @Column
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "userId")
+    private Long userId;
 
-    public EventAttendant(Event event, User user) {
-        this.event = event;
-        this.user = user;
-        this.entrance = false;
+//    @Column
+//    private boolean entrance;
+
+    public EventAttendant(Long EventId, Long userId) {
+        this.eventId = EventId;
+        this.userId = userId;
     }
 
-    public void cancelAttendant(Event event) {
-        this.event = event;
-        this.entrance = false;
-    }
+//    public void cancelAttendant(Event event) {
+//        this.event = event;
+//        this.entrance = false;
+//    }
 }

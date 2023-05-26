@@ -16,5 +16,7 @@ public interface EventRepository extends JpaRepository<Event, User> {
     Optional<Event> findById(long id);
 
     void deleteById(long id);
+
+    void deleteByClubId(Long clubId);
     Optional<Event> findByIdAndDeletedIsFalse(long eventId);
 }
