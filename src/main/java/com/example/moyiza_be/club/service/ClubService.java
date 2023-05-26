@@ -1,9 +1,7 @@
 package com.example.moyiza_be.club.service;
 
-import com.example.moyiza_be.club.dto.ClubDetailResponse;
-import com.example.moyiza_be.club.dto.ClubListResponse;
-import com.example.moyiza_be.club.dto.ClubMemberResponse;
-import com.example.moyiza_be.club.dto.ConfirmClubCreationDto;
+import com.amazonaws.Response;
+import com.example.moyiza_be.club.dto.*;
 import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.entity.ClubImageUrl;
 import com.example.moyiza_be.club.entity.ClubJoinEntry;
@@ -12,6 +10,8 @@ import com.example.moyiza_be.club.repository.ClubJoinEntryRepository;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.utils.Message;
+import com.example.moyiza_be.event.entity.Event;
+import com.example.moyiza_be.event.service.EventService;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +36,7 @@ public class ClubService {
 
     private final ClubRepository clubRepository;
     private final ClubJoinEntryRepository clubJoinEntryRepository;
+    private final EventService eventService;
     private final UserService userService;
     private final ClubImageUrlRepository clubImageUrlRepository;
 
@@ -103,7 +104,6 @@ public class ClubService {
 
     //클럽 탈퇴
     public ResponseEntity<Message> goodbyeClub(Long clubId, User user) {
-        loadClubByClubId(clubId);
 
         ClubJoinEntry joinEntry = clubJoinEntryRepository.findByUserIdAndClubId(user.getId(), clubId);
         if (joinEntry != null) {
@@ -111,19 +111,22 @@ public class ClubService {
             Message message = new Message("클럽에서 탈퇴되었습니다.");
             return ResponseEntity.ok(message);
         } else {
-            Message message = new Message("클럽 가입 정보가 없습니다.");
+            Message message = new Message("클럽이 존재하지 않거나, 가입 정보가 없습니다.");
             return ResponseEntity.ok(message);
         }
     }
 
     //클럽 강퇴
-    public ResponseEntity<Message> banclub(Long clubId, User user) {
-        loadClubByClubId(clubId);
-
-        ClubJoinEntry joinEntry = clubJoinEntryRepository.findByUserIdAndClubId(user.getId(), clubId);
+    public ResponseEntity<Message> banClub(Long clubId, Long userId, BanRequest banRequest) {
+        if(!clubRepository.existsByIdAndOwnerIdEquals(clubId, userId)){
+            return new ResponseEntity<>(new Message("권한이 없거나, 클럽이 없습니다"), HttpStatus.BAD_REQUEST);
+        }
+        ClubJoinEntry joinEntry = clubJoinEntryRepository.findByUserIdAndClubId(banRequest.getBanUserId(), clubId);
         if (joinEntry != null) {
             clubJoinEntryRepository.delete(joinEntry);
-            Message message = new Message("클럽에서 강퇴되었습니다.");
+            log.info("user " + userId + " banned user " + banRequest.getBanUserId() + " from club " + clubId);
+            //추방 후 가입 제한 추가시 여기에 logic
+            Message message = new Message(String.format("user %d 가 클럽에서 강퇴되었습니다",banRequest.getBanUserId()));
             return ResponseEntity.ok(message);
         } else {
             Message message = new Message("클럽 가입 정보가 없습니다.");
@@ -145,7 +148,15 @@ public class ClubService {
 
     ////////////////////private method///////////////////////
 
+    public ResponseEntity<List<Event>> getClubEventList(User user, Long clubId) {
+        List<Event> eventList = eventService.getEventList(clubId);
+        return ResponseEntity.ok(eventList);
+    }
+
+
+    /////////////////////private method///////////////////////
     //클럽id Null 체크
+
     private Club loadClubByClubId(Long clubId) {
         Club club = clubRepository.findById(clubId).orElse(null);
         if(club == null){
