@@ -14,6 +14,7 @@ public class EventDetailResponseDto {
 //    private Tag tag;
     private Calendar eventStartTime;
     private int eventGroupSize;
+    private boolean deleted;
 //    private String image;
 
 
