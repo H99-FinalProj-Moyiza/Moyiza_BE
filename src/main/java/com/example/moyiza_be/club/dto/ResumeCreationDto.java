@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class ResumeCreationDto {
     private final CreateClubResponseDto createClub;
-    private final EnumOptionsDto optionList= new EnumOptionsDto();
+    private final EnumOptions optionList= new EnumOptions();
 
     public ResumeCreationDto(CreateClub createClub) {
         this.createClub = new CreateClubResponseDto(createClub);

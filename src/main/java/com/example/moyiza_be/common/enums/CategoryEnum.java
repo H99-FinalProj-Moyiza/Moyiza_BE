@@ -4,7 +4,24 @@ import jdk.jfr.Category;
 
 public enum CategoryEnum {
     SPORTS("스포츠"),
-    TRAVEL("여행");
+    FITNESS("운동"),
+    TRAVEL("여행"),
+
+    CULTURE("문화"),
+
+    ART("예술"),
+
+    ACTIVITY("액티비티"),
+
+    FOOD("음식"),
+
+    SELFDEV("자기계발"),
+
+    HOBBY("취미"),
+
+    DATE("연애");
+
+
 
     private final String category;
 

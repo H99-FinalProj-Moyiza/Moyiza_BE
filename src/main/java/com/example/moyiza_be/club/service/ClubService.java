@@ -11,6 +11,7 @@ import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.entity.Event;
+import com.example.moyiza_be.event.repository.EventRepository;
 import com.example.moyiza_be.event.service.EventService;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.service.UserService;
@@ -39,6 +40,7 @@ public class ClubService {
     private final EventService eventService;
     private final UserService userService;
     private final ClubImageUrlRepository clubImageUrlRepository;
+    private final EventRepository eventRepository;
 
 
     //클럽 가입
@@ -152,8 +154,24 @@ public class ClubService {
         return ResponseEntity.ok(eventList);
     }
 
+    public ResponseEntity<Message> deleteClub(User user, Long clubId) {
+        //임시구현, 로직 변경 필요할듯 (softdelete ? orphanremoval ?
+        Club club = loadClubByClubId(clubId);
+        if(!club.getOwnerId().equals(user.getId())){
+            return new ResponseEntity<>(new Message("내 클럽이 아닙니다"), HttpStatus.UNAUTHORIZED);
+        }
+        else{
+            club.flagDeleted(true);
+            return ResponseEntity.ok(new Message("삭제되었습니다"));
+        }
+    }
+
+
+
+
 
     /////////////////////private method///////////////////////
+
     //클럽id Null 체크
 
     private Club loadClubByClubId(Long clubId) {
@@ -162,7 +180,10 @@ public class ClubService {
             log.info("failed to find Club with id : " + clubId);
             throw new NullPointerException("해당 클럽을 찾을 수 없습니다");
         }
-        else{return club;}
+        else if(club.getIsDeleted().equals(true)){
+            throw new NullPointerException("삭제된 클럽입니다");
+        }
+        return club;
     }
 
     public Integer userOwnedClubCount(Long userId) {
