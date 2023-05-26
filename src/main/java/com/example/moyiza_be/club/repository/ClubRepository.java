@@ -1,6 +1,8 @@
 package com.example.moyiza_be.club.repository;
 
 import com.example.moyiza_be.club.entity.Club;
+import com.example.moyiza_be.common.enums.CategoryEnum;
+import jdk.jfr.Category;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,11 +10,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ClubRepository extends JpaRepository<Club, Long> {
-    List<Club> findByCategoryAndTitleContaining(String category, String q);
+    Page<Club> findByCategoryAndTitleContaining(Pageable pageable, CategoryEnum category, String q);
 
-    List<Club> findByCategory(String category);
+    Page<Club> findByCategory(Pageable pageable, CategoryEnum category);
 
-    List<Club> findByTitleContaining(String q);
+    Page<Club> findByTitleContaining(Pageable pageable, String q);
 
 
     Page<Club> findAllByOrderByIdDesc(Pageable pageable);
