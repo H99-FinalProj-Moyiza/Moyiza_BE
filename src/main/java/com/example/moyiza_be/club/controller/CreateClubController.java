@@ -1,7 +1,7 @@
 package com.example.moyiza_be.club.controller;
 
 
-import com.example.moyiza_be.club.dto.ClubResponseDto;
+import com.example.moyiza_be.club.dto.ClubDetailResponse;
 import com.example.moyiza_be.club.dto.ResumeCreationDto;
 import com.example.moyiza_be.club.dto.createclub.*;
 import com.example.moyiza_be.club.service.CreateClubService;
@@ -124,7 +124,7 @@ public class CreateClubController {
 
 
     @PostMapping("/{createclub_id}/confirm")
-    public ResponseEntity<ClubResponseDto> confirmCreation(
+    public ResponseEntity<ClubDetailResponse> confirmCreation(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long createclub_id
     ){

@@ -122,15 +122,15 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("이미지 업로드 완료 !"));
     }
 
-    public ResponseEntity<ClubResponseDto> confirmCreation(Long userId, Long createclub_id) {
+    public ResponseEntity<ClubDetailResponse> confirmCreation(Long userId, Long createclub_id) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         ConfirmClubCreationDto confirmClubCreationDto = new ConfirmClubCreationDto(createClub);
-        ClubResponseDto newClub = clubService.createClub(confirmClubCreationDto);
+        ClubDetailResponse newClub = clubService.createClub(confirmClubCreationDto);
         createClub.setFlagConfirmed(true);
         return ResponseEntity.ok(newClub);
     }
 
-    ///////////////////////private methods///////////////////
+    //////////////////////private methods///////////////////
 
     private CreateClub loadCreateClubById(Long createclub_id) {
         return createClubRepository.findByIdAndFlagConfirmedFalse(createclub_id)

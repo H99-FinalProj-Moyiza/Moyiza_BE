@@ -63,8 +63,8 @@ public class Event extends TimeStamped {
         attendantsNum--;
     }
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ArrayList<EventAttendant> eventAttendantList = new ArrayList<>();
+//    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private ArrayList<EventAttendant> eventAttendantList = new ArrayList<>();
 
     public Event(EventRequestDto eventRequestDto, long userId, long clubId) {
         this.ownerId = userId;

@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -111,12 +108,15 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(()->
                 new NoSuchElementException("사용자가 존재하지 않습니다."));
     }
+
+
     public void checkDuplicatedEmail(String email){
         Optional<User> findUserByEmail = userRepository.findByEmail(email);
         if (findUserByEmail.isPresent()) {
             throw new IllegalArgumentException("중복된 이메일 사용");
         }
     }
+
     public void checkDuplicatedNick(String nickname){
         Optional<User> findUserByNickname = userRepository.findByNickname(nickname);
         if (findUserByNickname.isPresent()) {
@@ -127,7 +127,6 @@ public class UserService {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
-
     public ResponseEntity<?> uploadTest(MultipartFile image) {
         if(image.isEmpty()){
             return new ResponseEntity<>(basicProfileUrl, HttpStatus.OK);
@@ -145,4 +144,13 @@ public class UserService {
         userRepository.save(user);
         return new ResponseEntity<>("🎊테스트 성공!!🎊 고생하셨어요ㅠㅠ", HttpStatus.OK);
     }
+
+    public List<User> loadUserListByIdList(List<Long> userIdList){    // club멤버조회 시 사용
+        return userRepository.findAllById(userIdList);
+    }
+
+
+
+
+
 }
