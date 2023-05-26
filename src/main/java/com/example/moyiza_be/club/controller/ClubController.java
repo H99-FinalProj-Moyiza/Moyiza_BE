@@ -1,5 +1,6 @@
 package com.example.moyiza_be.club.controller;
 
+import com.example.moyiza_be.club.dto.BanRequest;
 import com.example.moyiza_be.club.dto.ClubDetailResponse;
 import com.example.moyiza_be.club.dto.ClubListResponse;
 import com.example.moyiza_be.club.dto.ClubMemberResponse;
@@ -7,6 +8,8 @@ import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
+import com.example.moyiza_be.event.entity.Event;
+import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -75,8 +78,20 @@ public class ClubController {
 
     //클럽 강퇴
     @PostMapping("/{club_id}/ban")
-    public ResponseEntity<Message> banClub(@PathVariable Long club_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return clubService.banclub(club_id, userDetails.getUser());
+    public ResponseEntity<Message> banClub(
+            @PathVariable Long club_id, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody BanRequest banRequest
+    ) {
+        User user = userDetails.getUser();
+        return clubService.banClub(club_id, user.getId(), banRequest);
+    }
+
+    @GetMapping("/{club_id}/eventlist")
+    public ResponseEntity<List<Event>> getClubEventList(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id
+    ) {
+        User user = userDetails.getUser();
+        return clubService.getClubEventList(user, club_id);
     }
 
 }
