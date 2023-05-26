@@ -130,7 +130,7 @@ public class CreateClubService {
         return ResponseEntity.ok(newClub);
     }
 
-    ///////////////////////private methods///////////////////
+    //////////////////////private methods///////////////////
 
     private CreateClub loadCreateClubById(Long createclub_id) {
         return createClubRepository.findByIdAndFlagConfirmedFalse(createclub_id)

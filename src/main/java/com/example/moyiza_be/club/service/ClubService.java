@@ -146,6 +146,7 @@ public class ClubService {
         return new ClubDetailResponse(club, clubImageUrlList); // querydsl에서 List로 projection이 가능한가 확인해봐야함
     }
 
+    ////////////////////private method///////////////////////
 
     public ResponseEntity<List<Event>> getClubEventList(User user, Long clubId) {
         List<Event> eventList = eventService.getEventList(clubId);
