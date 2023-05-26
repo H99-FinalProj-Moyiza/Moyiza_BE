@@ -80,7 +80,7 @@ jobs:
       # S3에 업로드한 파일을 CodeDeploy에 배포 요청!!
       - name: Code Deploy
         run: aws deploy create-deployment --application-name $CODE_DEPLOY_APPLICATION_NAME
-          --deployment-config-name CodeDeployDefault.OneAtTime --file-exists-behavior OVERWRITE
+          --deployment-config-name CodeDeployDefault.OneAtATime --file-exists-behavior OVERWRITE
           --deployment-group-name $CODE_DEPLOY_DEPLOYMENT_GROUP_NAME
           --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=deploy/$GITHUB_SHA.zip
           --region ${{ secrets.AWS_REGION }}
