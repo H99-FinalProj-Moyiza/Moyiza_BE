@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface EventAttendantRepository extends JpaRepository<EventAttendant, Long> {
 
+    EventAttendant findByEventIdAndUserId(Long eventId, Long id);
     Optional<Object> findByEventAndUser(Event event, User user);
 }
