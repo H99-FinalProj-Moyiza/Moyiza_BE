@@ -25,7 +25,7 @@ public class EventController {
 
     // create
     @PostMapping("/{club_id}/event")
-    public ResponseEntity<?> createEvent(@PathVariable long club_id, @RequestBody EventRequestDto eventRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+    public ResponseEntity<?> createEvent(@PathVariable Long club_id, @RequestBody EventRequestDto eventRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return eventService.createEvent(eventRequestDto, userDetails.getUser(), club_id);
     }
 
