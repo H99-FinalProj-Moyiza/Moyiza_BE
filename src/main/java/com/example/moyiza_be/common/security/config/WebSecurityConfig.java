@@ -33,7 +33,8 @@ public class WebSecurityConfig {
             "/user/login",
             "/user/signup",
             "/user/check/**",
-            "/user/test/**"
+            "/user/test/**",
+            "/enums"
     };
 
     @Bean
