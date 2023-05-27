@@ -13,7 +13,7 @@ public class ClubResponseDto {
     private String clubCategory;
     private String clubTag;
     private String clubTitle;
-//    private Integer nowMemberCount; club쪽에서 fix 된 후 반영
+    private Integer nowMemberCount = 11111; //club쪽에서 fix 된 후 반영
     private String thumbnailUrl;
 
     public ClubResponseDto(Club club) {
