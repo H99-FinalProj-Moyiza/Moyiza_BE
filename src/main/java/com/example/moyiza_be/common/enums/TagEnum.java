@@ -88,6 +88,7 @@ public enum TagEnum {
     }
 
     public static List<String> parseTag(String tagString){
+        if(tagString == null){return null;}
         List<String> tagList= new ArrayList<>();
         TagEnum[] tagValues = TagEnum.values();
         int i = 0;
