@@ -1,6 +1,10 @@
 package com.example.moyiza_be.common.enums;
 
 import jdk.jfr.Category;
+import org.hibernate.engine.jdbc.BinaryStream;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public enum TagEnum {
     //스포츠
@@ -81,5 +85,20 @@ public enum TagEnum {
             }
         }
         throw new IllegalArgumentException(String.format("%s에 해당하는 Tag를 찾을 수 없습니다",tag));
+    }
+
+    public static List<String> parseTag(String tagString){
+        List<String> tagList= new ArrayList<>();
+        TagEnum[] tagValues = TagEnum.values();
+        int i = 0;
+        while(i <= tagString.length() -1){
+             int idx = tagString.indexOf('1',i);
+             if(idx == -1){break;}
+             else{
+                 tagList.add(tagValues[idx].getTag());
+                 i = idx+1;
+             }
+        }
+        return tagList;
     }
 }

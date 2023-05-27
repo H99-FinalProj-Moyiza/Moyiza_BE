@@ -1,7 +1,10 @@
 package com.example.moyiza_be.club.dto.createclub;
 
 import com.example.moyiza_be.club.entity.CreateClub;
+import com.example.moyiza_be.common.enums.TagEnum;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 public class CreateClubResponseDto {
@@ -9,7 +12,7 @@ public class CreateClubResponseDto {
     private final Long ownerId;
     private final String clubTitle;
     private final String clubCategory;
-    private final String clubTag;
+    private final List<String> clubTag;
     private final String clubContent;
     private final Integer agePolicy;
     private final String genderPolicy;
@@ -21,7 +24,7 @@ public class CreateClubResponseDto {
         this.ownerId = createClub.getOwnerId();
         this.clubTitle = createClub.getTitle();
         this.clubCategory = (createClub.getCategory() != null) ? createClub.getCategory().getCategory() : null;
-        this.clubTag = createClub.getTagString();
+        this.clubTag = TagEnum.parseTag(createClub.getTagString());
         this.clubContent = createClub.getContent();
         this.agePolicy = createClub.getAgePolicy();
         this.genderPolicy = (createClub.getGenderPolicy() != null) ? createClub.getGenderPolicy().getGenderPolicy() : null;
