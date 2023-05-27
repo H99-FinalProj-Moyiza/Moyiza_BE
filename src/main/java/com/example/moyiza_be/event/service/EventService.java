@@ -5,6 +5,7 @@ import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventAttendantResponseDto;
+import com.example.moyiza_be.event.dto.EventDetailResponseDto;
 import com.example.moyiza_be.event.dto.EventRequestDto;
 import com.example.moyiza_be.event.dto.EventUpdateRequestDto;
 import com.example.moyiza_be.event.entity.Event;
@@ -87,16 +88,8 @@ public class EventService {
         Event event = eventRepository.findById(eventId).orElseThrow(()->new IllegalArgumentException("400 Bad Request"));
         // 참석한 사람들
         List<EventAttendant> attendantList = attendantRepository.findByEventId(eventId);
-//        List<EventAttendant> attendantList = event.getEventAttendantList();
-//        List<User> userList = new ArrayList<>();
-//        for (EventAttendant eventAttendant : attendantList) {
-//            User user = eventAttendant.getUser();
-//            userList.add(user);
-//        }
-//        ArrayList<Object> dataSet = new ArrayList<>();
-//        dataSet.add(event);
-//        dataSet.add(userList);
-        return new ResponseEntity(attendantList, HttpStatus.OK);
+        EventDetailResponseDto detailResponseDto = new EventDetailResponseDto(event, attendantList, attendantList.size());
+        return new ResponseEntity(detailResponseDto, HttpStatus.OK);
     }
 
     // 전체 이벤트 조회 : 보류긴 한데
