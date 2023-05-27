@@ -86,6 +86,8 @@ public class EventService {
     public ResponseEntity<?> getEvent(long clubId, long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(()->new IllegalArgumentException("400 Bad Request"));
         // 참석한 사람들
+        List<EventAttendant> attendantList = attendantRepository.findByEventId(eventId);
+
 //        List<EventAttendant> attendantList = event.getEventAttendantList();
 //        List<User> userList = new ArrayList<>();
 //        for (EventAttendant eventAttendant : attendantList) {
@@ -125,6 +127,7 @@ public class EventService {
     // 이벤트 참석 / 취소
 
     public ResponseEntity<String> joinEvent(Long eventId, User user) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 EventNot Found"));
         EventAttendant eventAttendant = new EventAttendant(eventId, user.getId());
         attendantRepository.save(eventAttendant);
         return ResponseEntity.ok("참석되었습니다.");
