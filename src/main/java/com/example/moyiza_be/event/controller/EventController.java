@@ -57,7 +57,7 @@ public class EventController {
 
     // Cancel Attend
     @DeleteMapping("/{club_id}/event/join/{event_id}")
-    public ResponseEntity<String> attendEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> attendEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return eventService.cancelEvent(event_id, userDetails.getUser());
     }
 }
