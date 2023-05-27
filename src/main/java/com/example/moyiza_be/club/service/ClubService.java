@@ -60,15 +60,15 @@ public class ClubService {
         Page<ClubListResponse> responseList;
         if (category != null && q != null) {
             //카테고리와 검색어를 모두 입력한 경우
-             responseList = clubRepository.findByCategoryAndTitleContaining(pageable, category, q).map(ClubListResponse::new);
+             responseList = clubRepository.findByCategoryAndIsDeletedFalseAndTitleContaining(pageable, category, q).map(ClubListResponse::new);
         } else if (category != null) {
             //카테고리만 입력한 경우
-            responseList = clubRepository.findByCategory(pageable, category).map(ClubListResponse::new);
+            responseList = clubRepository.findByCategoryAndIsDeletedFalse(pageable, category).map(ClubListResponse::new);
         } else if (q != null) {
-            responseList = clubRepository.findByTitleContaining(pageable, q).map(ClubListResponse::new);
+            responseList = clubRepository.findByIsDeletedFalseAndTitleContaining(pageable, q).map(ClubListResponse::new);
         } else {
             //카테고리와 검색어가 모두 입력되지 않은 경우 전체 클럽 조회
-            responseList = clubRepository.findAll(pageable).map(ClubListResponse::new);
+            responseList = clubRepository.findAllByIsDeletedFalse(pageable).map(ClubListResponse::new);
         }
         return ResponseEntity.ok(responseList);
     }
@@ -120,7 +120,7 @@ public class ClubService {
 
     //클럽 강퇴
     public ResponseEntity<Message> banClub(Long clubId, Long userId, BanRequest banRequest) {
-        if(!clubRepository.existsByIdAndOwnerIdEquals(clubId, userId)){
+        if(!clubRepository.existsByIdAndIsDeletedFalseAndOwnerIdEquals(clubId, userId)){
             return new ResponseEntity<>(new Message("권한이 없거나, 클럽이 없습니다"), HttpStatus.BAD_REQUEST);
         }
         ClubJoinEntry joinEntry = clubJoinEntryRepository.findByUserIdAndClubId(banRequest.getBanUserId(), clubId);
