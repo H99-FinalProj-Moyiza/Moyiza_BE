@@ -23,4 +23,6 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     Boolean existsByIdAndIsDeletedFalseAndOwnerIdEquals(Long clubId, Long userId);
     Page<Club> findAllByIsDeletedFalse(Pageable pageable);
     Optional<Club> findByIdAndIsDeletedFalse(Long clubId);
+
+    List<Club> findByOwnerId(Long userId);
 }
