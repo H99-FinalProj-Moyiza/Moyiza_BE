@@ -30,6 +30,8 @@ public class WebSecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
 
     private static final String[] PERMIT_URL_ARRAY = {
+            "/*",
+            "/chat/**",
             "/user/login",
             "/user/signup",
             "/user/check/**",
@@ -59,6 +61,7 @@ public class WebSecurityConfig {
                         .httpBasic().disable()
                         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                         .authorizeHttpRequests().requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                        .requestMatchers("ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/club/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
                         .anyRequest().authenticated().and()
