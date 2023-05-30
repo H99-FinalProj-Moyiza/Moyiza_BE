@@ -20,4 +20,13 @@ public class EventAttendantResponseDto {
         this.eventId = attendant.getEventId();
         this.userId = attendant.getUserId();
     }
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    // 메인리스트의 attendantsList 용
+    public static class simpleResponseDto{
+        private Long userId;
+        private String userProfileImg;
+    }
 }

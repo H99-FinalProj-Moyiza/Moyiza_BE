@@ -8,6 +8,7 @@ public class EventDto {
     private String eventTitle;
     private String eventContent;
     private String eventLocation;
+    private String eventLatitude;
+    private String eventLongitude;
     private long ownerId;
-
 }
