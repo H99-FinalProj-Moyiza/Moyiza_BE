@@ -16,6 +16,8 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         return message;
+
+
 //        System.out.println("bearerToken = " + bearerToken);
 //        if (bearerToken == null){
 //            throw new IllegalArgumentException("유저정보를 찾을 수 없습니다");
