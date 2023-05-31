@@ -4,6 +4,7 @@ import com.example.moyiza_be.common.security.SecurityExceptionDto;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,6 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
             if (jwtUtil.validateToken(access_token)) {
+//                jwtUtil.checkTokenClaims(access_token);
                 setAuthentication(jwtUtil.getUserInfoFromToken(access_token));
             } else if (refresh_token != null && jwtUtil.refreshTokenValid(refresh_token)) {
                 //Refresh토큰으로 유저명 가져오기
@@ -47,7 +49,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 //유저명으로 유저 정보 가져오기
                 User user = userRepository.findByEmail(userEmail).get();
                 //새로운 ACCESS TOKEN 발급
-                String newAccessToken = jwtUtil.createToken(userEmail, "Access");
+                String newAccessToken = jwtUtil.createToken(user, "Access");
                 //Header에 ACCESS TOKEN 추가
                 jwtUtil.setHeaderAccessToken(response, newAccessToken);
                 setAuthentication(userEmail);
