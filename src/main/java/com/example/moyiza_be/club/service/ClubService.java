@@ -1,6 +1,7 @@
 package com.example.moyiza_be.club.service;
 
 import com.amazonaws.Response;
+import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.club.dto.*;
 import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.entity.ClubImageUrl;
@@ -9,6 +10,7 @@ import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
 import com.example.moyiza_be.club.repository.ClubJoinEntryRepository;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.enums.CategoryEnum;
+import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.event.repository.EventRepository;
@@ -41,6 +43,7 @@ public class ClubService {
     private final UserService userService;
     private final ClubImageUrlRepository clubImageUrlRepository;
     private final EventRepository eventRepository;
+    private final ChatService chatService;
 
 
     //클럽 가입
@@ -52,6 +55,7 @@ public class ClubService {
         clubJoinEntryRepository.save(joinEntry);
         //미래에 조건검증 추가
         Message message = new Message("가입이 승인되었습니다.");
+        chatService.joinChat(clubId, ChatTypeEnum.CLUB, user);
         return ResponseEntity.ok(message);
     }
 
@@ -111,6 +115,7 @@ public class ClubService {
         if (joinEntry != null) {
             clubJoinEntryRepository.delete(joinEntry);
             Message message = new Message("클럽에서 탈퇴되었습니다.");
+            chatService.leaveChat(clubId, ChatTypeEnum.CLUB, user);
             return ResponseEntity.ok(message);
         } else {
             Message message = new Message("클럽이 존재하지 않거나, 가입 정보가 없습니다.");
@@ -145,6 +150,7 @@ public class ClubService {
                 .peek(image->image.setClubId(club.getId()))
                 .map(ClubImageUrl::getImageUrl)
                 .toList();
+        chatService.makeChat(club.getId(), ChatTypeEnum.CLUB);
         return new ClubDetailResponse(club, clubImageUrlList); // querydsl에서 List로 projection이 가능한가 확인해봐야함
     }
 

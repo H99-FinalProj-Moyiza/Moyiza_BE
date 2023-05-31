@@ -1,30 +1,56 @@
 package com.example.moyiza_be.chat.controller;
 
-
-import com.example.moyiza_be.chat.dto.ChatMessageDto;
+import com.example.moyiza_be.chat.dto.ChatMessageInput;
+import com.example.moyiza_be.chat.dto.ChatRecordDto;
+import com.example.moyiza_be.chat.dto.ChatRoomInfo;
+import com.example.moyiza_be.chat.dto.ChatUserInfo;
 import com.example.moyiza_be.chat.service.ChatService;
+import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
 
 
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
     private final ChatService chatService;
-    private final SimpMessageSendingOperations sendingOperations;
 
 
-    @MessageMapping("/send/clubchat/{clubId}")
-    public void sendClubChat(@DestinationVariable Long clubId, ChatMessageDto chatMessageInput) {
-        chatService.sendClubChat(clubId, chatMessageInput);
+    //채팅 메시지 전송, 수신
+    @MessageMapping("/chat/{chatId}")
+    public void receiveAndSendChat(
+            @DestinationVariable Long chatId, ChatMessageInput chatMessageInput,
+            @AuthenticationPrincipal ChatUserInfo userInfo
+            ) {
+        chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
     }
 
-    @MessageMapping("/send/onedaychat/{onedayId}")
-    public void sendOneDayChat(@DestinationVariable Long onedayId, ChatMessageDto chatMessageInput){;
-        chatService.sendOneDayChat(onedayId, chatMessageInput);
+    //채팅방 목록 조회
+    @GetMapping("/chat")
+    public ResponseEntity<List<ChatRoomInfo>> getChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return chatService.getChatRoomList(userDetails.getUser());
     }
+
+    //채팅 내역 조회
+    @GetMapping("/chat/{chatId}")
+    public ResponseEntity<Page<ChatRecordDto>> getChatRecordList(
+            @PageableDefault(page = 0, size = 50, sort = "CreatedAt", direction = Sort.Direction.ASC) Pageable pageable,
+            @PathVariable Long chatId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return chatService.getChatRoomRecord(userDetails.getUser(), chatId, pageable);
+    }
+
 }
