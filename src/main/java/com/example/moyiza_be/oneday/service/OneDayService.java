@@ -1,5 +1,6 @@
 package com.example.moyiza_be.oneday.service;
 
+import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.oneday.dto.OneDayDetailResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayRequestDto;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,12 +28,18 @@ import java.util.Objects;
 public class OneDayService {
     private final OneDayRepository oneDayRepository;
     private final OneDayAttendantRepository attendantRepository;
+    private final AwsS3Uploader awsS3Uploader;
 
     // 원데이 생성
     @Transactional
-    public ResponseEntity<?> createOneDay (OneDayRequestDto requestDto, User user) {
+    public ResponseEntity<?> createOneDay (OneDayRequestDto requestDto, User user, MultipartFile imageFile) {
+        // image 확인
+        String storedFileUrl = "";
+        if(!imageFile.isEmpty()) {
+            storedFileUrl = awsS3Uploader.uploadFile(imageFile);
+        }
         // 생성
-        OneDay oneDay = new OneDay(requestDto, user.getId());
+        OneDay oneDay = new OneDay(requestDto, user.getId(), storedFileUrl);
         oneDay.setDeleted(false);
         oneDay.setAttendantsNum(1);
         oneDayRepository.saveAndFlush(oneDay);
@@ -50,6 +58,10 @@ public class OneDayService {
             throw new IllegalArgumentException("404 Already Deleted");
         }
         // 이미지 처리
+        String storedFileUrl = "";
+        if (!Objects.isNull(requestDto.getImage()) && !requestDto.getImage().isEmpty()) {
+            storedFileUrl = awsS3Uploader.uploadFile(requestDto.getImage());
+        }
         // 작성자는 맞는가
         if (Objects.equals(user.getId(),oneDay.getOwnerId())) {
             oneDay.updateOneDay(requestDto);

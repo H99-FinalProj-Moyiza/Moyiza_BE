@@ -1,6 +1,7 @@
 package com.example.moyiza_be.oneday.dto;
 
 import lombok.Getter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Calendar;
 
@@ -13,4 +14,5 @@ public class OneDayRequestDto {
     private String oneDayLongitude;
     private int oneDayGroupSize;
     private Calendar oneDayStartTime;
+    private MultipartFile image;
 }

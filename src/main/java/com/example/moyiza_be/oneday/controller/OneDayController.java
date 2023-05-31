@@ -5,9 +5,11 @@ import com.example.moyiza_be.oneday.dto.OneDayRequestDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
 import com.example.moyiza_be.oneday.service.OneDayService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -18,9 +20,12 @@ public class OneDayController {
     private final OneDayService oneDayService;
 
     // Create
-    @PostMapping
-    public ResponseEntity<?> createOneDay(@RequestBody OneDayRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        return oneDayService.createOneDay(requestDto, userDetails.getUser());
+    @RequestMapping(value = "/", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
+//    @PostMapping
+    public ResponseEntity<?> createOneDay(@RequestPart(value = "data") OneDayRequestDto requestDto,
+                                          @RequestPart(value = "imageFile") MultipartFile storedFileUrl,
+                                          @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        return oneDayService.createOneDay(requestDto, userDetails.getUser(), storedFileUrl);
     }
     // ReadAll
     @GetMapping

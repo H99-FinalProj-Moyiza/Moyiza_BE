@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Calendar;
 
@@ -39,8 +40,11 @@ public class OneDay extends TimeStamped {
     private boolean deleted;
     @Column
     private int attendantsNum;
+    @Column(name = "image_url")
+    @Lob
+    private String  oneDayImage;
 
-    public OneDay(OneDayRequestDto requestDto, Long userId) {
+    public OneDay(OneDayRequestDto requestDto, Long userId, String storedFileUrl) {
         this.ownerId = userId;
         this.oneDayTitle = requestDto.getOneDayTitle();
         this.oneDayContent = requestDto.getOneDayContent();
@@ -49,6 +53,7 @@ public class OneDay extends TimeStamped {
         this.oneDayLongitude = requestDto.getOneDayLongitude();
         this.oneDayGroupSize = requestDto.getOneDayGroupSize();
         this.oneDayStartTime = requestDto.getOneDayStartTime();
+        this.oneDayImage = storedFileUrl;
     }
 
     public void oneDayAttend(){
@@ -67,6 +72,10 @@ public class OneDay extends TimeStamped {
         this.oneDayLongitude = requestDto.getOneDayLongitude();
         this.oneDayGroupSize = requestDto.getOneDayGroupSize();
         this.oneDayStartTime = requestDto.getOneDayStartTime();
+    }
+
+    public void updateOneDayImage(String storedFileUrl) {
+        this.oneDayImage = storedFileUrl;
     }
 
 }

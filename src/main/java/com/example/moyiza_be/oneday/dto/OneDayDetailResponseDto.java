@@ -22,7 +22,7 @@ public class OneDayDetailResponseDto {
     private Calendar oneDayStartTime;
     private int oneDayGroupSize;
     private boolean deleted;
-    //    private String image;
+    private String image;
     private List<OneDayAttendant> oneDayAttendantList;
     private int oneDayAttendantListSize;
     public OneDayDetailResponseDto(OneDay oneDay, List<OneDayAttendant> attendantList, int people) {
@@ -35,6 +35,7 @@ public class OneDayDetailResponseDto {
         this.oneDayStartTime = oneDay.getOneDayStartTime();
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
         this.deleted = oneDay.isDeleted();
+        this.image = oneDay.getOneDayImage();
         this.oneDayAttendantList = attendantList;
         this.oneDayAttendantListSize = people;
     }
