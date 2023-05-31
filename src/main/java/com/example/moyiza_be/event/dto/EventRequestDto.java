@@ -8,6 +8,8 @@ public class EventRequestDto {
     private  String eventTitle;
     private String eventContent;
     private String eventLocation;
+    private String eventLatitude;
+    private String eventLongitude;
     private int eventGroupSize;
     private Calendar eventStartTime;
 }
