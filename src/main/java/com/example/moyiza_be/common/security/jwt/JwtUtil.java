@@ -57,6 +57,13 @@ public class JwtUtil {
         return null;
     }
 
+    public String removePrefix(String bearerToken){
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
     // 토큰 생성
     public JwtTokenDto createAllToken(String email) {
         return new JwtTokenDto(createToken(email, "Access"), createToken(email, "Refresh"));
