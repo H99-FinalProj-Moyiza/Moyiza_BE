@@ -2,6 +2,7 @@ package com.example.moyiza_be.chat.dto;
 
 
 import lombok.Getter;
+import org.springframework.security.core.userdetails.User;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
@@ -11,6 +12,7 @@ public class ChatUserPrincipal implements Principal {
     private final Long userId;
     private final String userNickname;
     private final String profileUrl;
+
 
     @Override
     public String getName() {

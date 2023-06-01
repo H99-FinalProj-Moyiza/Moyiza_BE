@@ -1,5 +1,6 @@
 package com.example.moyiza_be.user.dto;
 
+import com.example.moyiza_be.common.enums.GenderEnum;
 import lombok.Getter;
 
 import java.util.Calendar;
@@ -11,7 +12,7 @@ public class SignupRequestDto {
     private String email;
     private String password;
     private String nickname;
-    private int gender;
+    private GenderEnum gender;
     private Calendar birth;
     private String phone;
 }

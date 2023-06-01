@@ -1,5 +1,6 @@
 package com.example.moyiza_be.user.entity;
 
+import com.example.moyiza_be.common.enums.GenderEnum;
 import com.example.moyiza_be.common.utils.TimeStamped;
 
 import com.example.moyiza_be.user.dto.SignupRequestDto;
@@ -27,7 +28,7 @@ public class User extends TimeStamped {
     @Column(nullable = false)
     private String nickname;
     @Column(nullable = false)
-    private Integer gender;  // 0 : 여성,  1 : 남성
+    private GenderEnum gender;  // 0 : 남자,  1 : 여자
     @Column(nullable = false)
     private Calendar birth;
     @Column(nullable = false)

@@ -25,7 +25,7 @@ function setConnected2(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('http://43.200.169.48/chat/connect');
+    var socket = new SockJS('http://localhost:8080/chat/connect');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
@@ -45,7 +45,7 @@ function disconnect() {
 }
 
 function connect2() {
-    var socket = new SockJS('http://43.200.169.48/chat/connect');
+    var socket = new SockJS('http://localhost:8080/chat/connect');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected2(true);
