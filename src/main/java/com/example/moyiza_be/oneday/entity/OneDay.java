@@ -1,5 +1,7 @@
 package com.example.moyiza_be.oneday.entity;
 
+import com.example.moyiza_be.common.enums.CategoryEnum;
+import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.utils.TimeStamped;
 import com.example.moyiza_be.oneday.dto.OneDayRequestDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
@@ -18,6 +20,7 @@ import java.util.Calendar;
 public class OneDay extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "oneDayId")
     private Long id;
 
     @Column(nullable = false)
@@ -27,6 +30,10 @@ public class OneDay extends TimeStamped {
     @Column(nullable = false)
     private String oneDayContent;
     @Column
+    private CategoryEnum category;
+    @Column
+    private String tagString;
+    @Column
     private String oneDayLocation;
     @Column
     private String oneDayLatitude;
@@ -35,11 +42,15 @@ public class OneDay extends TimeStamped {
     @Column
     private Calendar oneDayStartTime;
     @Column
-    private int oneDayGroupSize;
+    private GenderPolicyEnum genderPolicy;
     @Column
-    private boolean deleted;
+    private Integer agePolicy;
     @Column
-    private int attendantsNum;
+    private Integer oneDayGroupSize;
+    @Column
+    private Boolean deleted;
+    @Column
+    private Integer attendantsNum;
     @Column(name = "image_url")
     @Lob
     private String  oneDayImage;
@@ -48,6 +59,10 @@ public class OneDay extends TimeStamped {
         this.ownerId = userId;
         this.oneDayTitle = requestDto.getOneDayTitle();
         this.oneDayContent = requestDto.getOneDayContent();
+        this.category = requestDto.getCategory();
+        this.tagString = requestDto.getTagString();
+        this.agePolicy = requestDto.getAgePolicy();
+        this.genderPolicy = requestDto.getGenderPolicy();
         this.oneDayLocation = requestDto.getOneDayLocation();
         this.oneDayLatitude = requestDto.getOneDayLatitude();
         this.oneDayLongitude = requestDto.getOneDayLongitude();
@@ -67,6 +82,10 @@ public class OneDay extends TimeStamped {
     public void updateOneDay(OneDayUpdateRequestDto requestDto) {
         this.oneDayTitle = requestDto.getOneDayTitle();
         this.oneDayContent = requestDto.getOneDayContent();
+        this.category = requestDto.getCategory();
+        this.tagString = requestDto.getTagString();
+        this.agePolicy = requestDto.getAgePolicy();
+        this.genderPolicy = requestDto.getGenderPolicy();
         this.oneDayLocation = requestDto.getOneDayLocation();
         this.oneDayLatitude = requestDto.getOneDayLatitude();
         this.oneDayLongitude = requestDto.getOneDayLongitude();

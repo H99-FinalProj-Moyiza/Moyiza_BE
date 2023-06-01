@@ -54,7 +54,7 @@ public class OneDayService {
         // 원데이 가져오기
         OneDay oneDay = oneDayRepository.findById(id).orElseThrow(()->new IllegalArgumentException("404 OneDay NOT FOUND"));
         // 존재하는 글인가
-        if (oneDay.isDeleted()) {
+        if (oneDay.getDeleted()) {
             throw new IllegalArgumentException("404 Already Deleted");
         }
         // 이미지 처리
@@ -75,7 +75,7 @@ public class OneDayService {
     @Transactional
     public ResponseEntity<?> deleteOneDay(Long oneDayId, User user) {
         OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()-> new IllegalArgumentException("404 oneDay NOT FOUND"));
-        if (oneDay.isDeleted()) {
+        if (oneDay.getDeleted()) {
             throw new IllegalArgumentException("404 Already Deleted");
         }
         // 만료처리 추가해야 하는데...
