@@ -17,6 +17,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final StompHandler stompHandler; // jwt 인증
+//    private final MoyizaHandShakeHandler moyizaHandShakeHandler;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {

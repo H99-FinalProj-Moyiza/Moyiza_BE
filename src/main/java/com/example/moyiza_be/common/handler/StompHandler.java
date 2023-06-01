@@ -8,6 +8,8 @@ import com.example.moyiza_be.common.security.userDetails.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -29,6 +31,7 @@ public class StompHandler implements ChannelInterceptor {
     private final UserDetailsServiceImpl userDetailsService;
 
     @Override
+    @Order(Ordered.HIGHEST_PRECEDENCE + 99)
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         //
@@ -55,10 +58,44 @@ public class StompHandler implements ChannelInterceptor {
         }
 
         Claims claims = jwtUtil.getClaimsFromToken(token);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getId());
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        headerAccessor.setUser(authentication);
-        //
+        System.out.println("check3 -> claims.get(\"userId\") = " + claims.get("userId"));
+        System.out.println("claims.get(\"userId\").toString() = " + claims.get("userId").toString());
+        System.out.println("(Long) claims.toString() = " + Long.valueOf(claims.get("userId").toString()));
+        System.out.println("check3 -> claims.get(\"nickName\") = " + claims.get("nickName"));
+        System.out.println("claims.get(\"profileUrl\") = " + claims.get("profileUrl"));
+
+        ChatUserPrincipal userPrincipal;
+        try{
+            userPrincipal = new ChatUserPrincipal(
+                    Long.valueOf(claims.get("userId").toString()),
+                    claims.get("nickName").toString(),
+                    claims.get("profileUrl").toString()
+            );
+        } catch(RuntimeException e){
+            log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
+            throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
+        }
+
+//        Authentication authentication = new UsernamePasswordAuthenticationToken(userPrincipal,null, null);
+
+//        headerAccessor.setUser(authentication);
+//        headerAccessor.setHeader("auth", userPrincipal);
+
+        System.out.println("handler headerAccessor = " + headerAccessor);
+        System.out.println("handler headerAccessor.getUser() = " + headerAccessor.getUser());
+        System.out.println("((ChatUserPrincipal) headerAccessor.getUser()) = " + ((ChatUserPrincipal) headerAccessor.getUser()));
+
+
+//        SecurityContext context = SecurityContextHolder.createEmptyContext();
+//        Authentication authentication = new UsernamePasswordAuthenticationToken(userInfo, null, null);
+//        System.out.println("check4 -> authentication.isAuthenticated() = " + authentication.isAuthenticated());
+//        System.out.println("check4 -> authentication.getPrincipal() = " + authentication.getPrincipal());
+//        System.out.println("(authentication.getPrincipal() instanceof ChatUserInfo) = " + (authentication.getPrincipal() instanceof ChatUserInfo));
+//        context.setAuthentication(authentication);
+//        SecurityContextHolder.setContext(context);
+//
+//        System.out.println("SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof  ChatUserInfo = " + (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof  ChatUserInfo));
+
 
         return message;
     }
