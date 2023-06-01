@@ -25,7 +25,7 @@ function setConnected2(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('http://3.34.182.174/chat/connect');
+    var socket = new SockJS('http://localhost:8080/chat/connect');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
@@ -45,7 +45,7 @@ function disconnect() {
 }
 
 function connect2() {
-    var socket = new SockJS('http://3.34.182.174/chat/connect');
+    var socket = new SockJS('http://localhost:8080/chat/connect');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected2(true);
@@ -72,7 +72,7 @@ function sendName() {
 }
 
 function sendName2() {
-    stompClient.send("/app/send/onedaychat", {}, JSON.stringify({
+    stompClient.send("/app/send/onedaychat/1", {}, JSON.stringify({
         'senderNickname': $("#name2").val(),
         'content' : 'temponedaychat1'
     }));

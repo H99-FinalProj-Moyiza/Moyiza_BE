@@ -55,7 +55,7 @@ public class UserService {
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 틀립니다.");
         }
-                    JwtTokenDto tokenDto = jwtUtil.createAllToken(email);
+                    JwtTokenDto tokenDto = jwtUtil.createAllToken(user);
             Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(user.getEmail());
             if (refreshToken.isPresent()) {
                 refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));

@@ -1,15 +1,19 @@
 package com.example.moyiza_be.club.service;
 
+import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.club.dto.*;
 import com.example.moyiza_be.club.entity.ClubImageUrl;
 import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
 import com.example.moyiza_be.club.repository.CreateClubRepository;
 import com.example.moyiza_be.common.enums.CategoryEnum;
+import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
+import com.example.moyiza_be.user.entity.User;
+import com.example.moyiza_be.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +33,8 @@ public class CreateClubService {
     private final ClubService clubService;
     private final AwsS3Uploader imageUploader;
     private final ClubImageUrlRepository clubImageUrlRepository;
+    private final UserRepository userRepository;
+    private final ChatService chatService;
     private final static Integer CLUB_OWNERSHIP_MAX_COUNT = 100;
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
