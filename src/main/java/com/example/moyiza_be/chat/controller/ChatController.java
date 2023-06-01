@@ -3,6 +3,7 @@ package com.example.moyiza_be.chat.controller;
 import com.example.moyiza_be.chat.dto.*;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
+import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,12 +15,15 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.security.Principal;
 import java.util.List;
 
 
@@ -33,12 +37,24 @@ public class ChatController {
     @MessageMapping("/chat/{chatId}")
     public void receiveAndSendChat(
             @DestinationVariable Long chatId, ChatMessageInput chatMessageInput,
-            Message<?> message
+            StompHeaderAccessor headerAccessor
      ) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-        ChatUserPrincipal userInfo = (ChatUserPrincipal) headerAccessor.getUser();
+        Principal principal = headerAccessor.getUser();
 
-        chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
+        if (principal instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) principal;
+            if (userDetails instanceof CustomUserDetails) {
+                CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+                User user = customUserDetails.getUserEntity();
+                ChatUserInfo chatUserInfo = new ChatUserInfo(user);
+                chatService.receiveAndSendChat(chatUserInfo, chatId, chatMessageInput);
+            }
+        }
+
+//        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+//        ChatUserPrincipal userInfo = (ChatUserPrincipal) headerAccessor.getUser();
+
+
     }
 
     //채팅방 목록 조회
