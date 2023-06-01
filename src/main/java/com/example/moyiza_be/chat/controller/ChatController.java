@@ -46,7 +46,7 @@ public class ChatController {
     @MessageMapping("/chat/{chatId}")
     public void receiveAndSendChat(
             @DestinationVariable Long chatId, ChatMessageInput chatMessageInput,
-            StompHeaderAccessor headerAccessor
+            Message<?> message
      ) {
 
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
@@ -71,7 +71,6 @@ public class ChatController {
             log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
             throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
         }
-        System.out.println("테스트성공 !!!!!!!!!!!!!!!!!!!!!!!!!");
         chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
 
     }

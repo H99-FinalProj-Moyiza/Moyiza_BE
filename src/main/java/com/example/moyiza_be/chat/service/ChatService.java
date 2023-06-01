@@ -30,7 +30,7 @@ public class ChatService {
     private final ChatJoinEntryRepository chatJoinEntryRepository;
     private final ChatRepository chatRepository;
 
-    public void receiveAndSendChat(ChatUserInfo userInfo, Long chatId, ChatMessageInput chatMessageInput) {
+    public void receiveAndSendChat(ChatUserPrincipal userInfo, Long chatId, ChatMessageInput chatMessageInput) {
         //필터링 ? some logic
         ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userInfo.getUserId());
         chatRecordRepository.save(chatRecord);
@@ -92,7 +92,7 @@ public class ChatService {
         }
 
         //구독자들한테 JOIN메시지 보내기
-        ChatUserInfo adminInfo = new ChatUserInfo(-1L, "admin", "adminProfileImage");
+        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage");
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다", "admin"));
 
     }
@@ -109,7 +109,7 @@ public class ChatService {
         }
 
         //구독자들한테 LEAVE메시지 보내기
-        ChatUserInfo adminInfo = new ChatUserInfo(-1L, "admin", "asdf");
+        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf");
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다", "admin"));
     }
 
