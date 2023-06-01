@@ -43,6 +43,7 @@ public class ChatService {
     //채팅방 목록 조회
     public ResponseEntity<List<ChatRoomInfo>> getChatRoomList(User user) {
         //나중에 쿼리 바꿀 대상
+
         List<Long> joinedChatIdList = chatJoinEntryRepository.findAllByUserIdAndIsCurrentlyJoinedTrue(user.getId())
                 .stream()
                 .map(ChatJoinEntry::getChatId)
