@@ -1,9 +1,6 @@
 package com.example.moyiza_be.chat.controller;
 
-import com.example.moyiza_be.chat.dto.ChatMessageInput;
-import com.example.moyiza_be.chat.dto.ChatRecordDto;
-import com.example.moyiza_be.chat.dto.ChatRoomInfo;
-import com.example.moyiza_be.chat.dto.ChatUserInfo;
+import com.example.moyiza_be.chat.dto.*;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +9,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,8 +33,11 @@ public class ChatController {
     @MessageMapping("/chat/{chatId}")
     public void receiveAndSendChat(
             @DestinationVariable Long chatId, ChatMessageInput chatMessageInput,
-            @AuthenticationPrincipal ChatUserInfo userInfo
-            ) {
+            Message<?> message
+     ) {
+        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+        ChatUserPrincipal userInfo = (ChatUserPrincipal) headerAccessor.getUser();
+
         chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
     }
 
