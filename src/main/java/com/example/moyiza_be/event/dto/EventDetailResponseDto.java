@@ -4,6 +4,8 @@ import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.event.entity.EventAttendant;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class EventDetailResponseDto {
     private String eventLatitude;
     private String eventLongitude;
 //    private Tag tag;
-    private Calendar eventStartTime;
+    private LocalDateTime eventStartTime;
     private int eventGroupSize;
     private boolean deleted;
 //    private String image;

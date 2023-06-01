@@ -8,8 +8,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -42,7 +44,8 @@ public class Event extends TimeStamped {
     private String eventLongitude;
 
     @Column
-    private Calendar eventStartTime;
+    @DateTimeFormat(pattern = "YYYY-MM-dd'T'HH:mm")
+    private LocalDateTime eventStartTime;
 
     @Column
     private int eventGroupSize;
