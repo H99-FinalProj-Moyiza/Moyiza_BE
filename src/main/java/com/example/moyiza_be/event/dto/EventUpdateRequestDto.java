@@ -4,6 +4,7 @@ import com.example.moyiza_be.event.entity.Event;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 
 @Getter
@@ -11,11 +12,11 @@ public class EventUpdateRequestDto {
 
     private final String eventTitle;
     private final String eventContent;
-    private final Calendar eventStartTime;
+    private final LocalDateTime eventStartTime;
     private final String eventLocation;
     private final String eventLatitude;
     private final String eventLongitude;
-    private final int eventGroupsize;
+    private final int eventGroupSize;
 //    private String image;
 // 수정할 때 not null 메세지 있어야 하지 않을까
     public EventUpdateRequestDto(Event event) {
@@ -25,7 +26,7 @@ public class EventUpdateRequestDto {
         this.eventLocation = event.getEventLocation();
         this.eventLatitude = event.getEventLatitude();
         this.eventLongitude = event.getEventLongitude();
-        this.eventGroupsize = event.getEventGroupSize();
+        this.eventGroupSize = event.getEventGroupSize();
 //        this.image = event.getImage();
     }
 
