@@ -1,14 +1,15 @@
 package com.example.moyiza_be.common.security.config;
 
+import com.example.moyiza_be.common.oauth2.handler.OAuth2LoginFailureHandler;
+import com.example.moyiza_be.common.oauth2.handler.OAuth2LoginSuccessHandler;
+import com.example.moyiza_be.common.oauth2.service.CustomOAuth2UserService;
 import com.example.moyiza_be.common.security.jwt.JwtAuthFilter;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,12 +29,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     private static final String[] PERMIT_URL_ARRAY = {
             "/user/login",
             "/user/signup",
             "/user/check/**",
-            "/user/test/**"
+            "/user/test/**",
+            "/oauth2/authorization/**"
     };
 
     @Bean
@@ -45,7 +50,6 @@ public class WebSecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         // resources 접근 허용 설정
         return (web) -> web.ignoring()
-
 //                .requestMatchers(PathRequest.toH2Console())
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
@@ -54,21 +58,20 @@ public class WebSecurityConfig {
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
 
         http.cors().and()
-                        .csrf().disable()
-                        .httpBasic().disable()
-                        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                        .authorizeHttpRequests().requestMatchers(PERMIT_URL_ARRAY).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/club/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
-                        .anyRequest().authenticated().and()
-                        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-
-        //로그아웃 기능
-//        http.logout()
-//                .deleteCookies(JwtUtil.ACCESS_TOKEN, JwtUtil.REFRESH_TOKEN)
-//                .logoutUrl("/user/logout")
-//                .logoutSuccessUrl("/");
+                .csrf().disable()
+                .formLogin().disable()
+                .httpBasic().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .authorizeHttpRequests().requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                .requestMatchers(HttpMethod.GET, "/club/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
+                .anyRequest().authenticated().and()
+                //== 소셜 로그인 설정 ==//
+                .oauth2Login()
+                .successHandler(oAuth2LoginSuccessHandler)
+                .failureHandler(oAuth2LoginFailureHandler)
+                .userInfoEndpoint().userService(customOAuth2UserService);
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -97,4 +100,14 @@ public class WebSecurityConfig {
 
         return source;
     }
+
+//    @Bean
+//    public CustomJsonUsernamePasswordAuthenticationFilter customJsonUsernamePasswordAuthenticationFilter() {
+//        CustomJsonUsernamePasswordAuthenticationFilter customJsonUsernamePasswordLoginFilter
+//                = new CustomJsonUsernamePasswordAuthenticationFilter(objectMapper);
+//        customJsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
+//        customJsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessHandler());
+//        customJsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
+//        return customJsonUsernamePasswordLoginFilter;
+//    }
 }

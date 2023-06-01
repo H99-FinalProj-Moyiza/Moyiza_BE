@@ -43,6 +43,7 @@ public class UserService {
             storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
         }
         User user = new User(password, requestDto, storedFileUrl);
+        user.authorizeUser();
         userRepository.save(user);
         return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
     }
