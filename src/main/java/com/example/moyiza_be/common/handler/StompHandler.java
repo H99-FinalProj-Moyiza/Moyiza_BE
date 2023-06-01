@@ -31,18 +31,17 @@ public class StompHandler implements ChannelInterceptor {
     private final UserDetailsServiceImpl userDetailsService;
 
     @Override
-    @Order(Ordered.HIGHEST_PRECEDENCE + 99)
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         //
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+        System.out.println("headerAccessor.getCommand() = " + headerAccessor.getCommand());
         if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) ||
                 StompCommand.DISCONNECT.equals(headerAccessor.getCommand()) ||
                     StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())
         ) {
         return message;
     }
-        System.out.println("headerAccessor.getCommand() = " + headerAccessor.getCommand());
         System.out.println("String.valueOf(headerAccessor.getNativeHeader(\"ACCESS_TOKEN\")) = " + String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN")));
         String bearerToken = String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN"))
                 .replaceAll("[\\[\\]]", "");  // token 앞뒤의 []를 제거
