@@ -6,11 +6,16 @@ import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -20,6 +25,7 @@ public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
 
     @Override
+    @Order(Ordered.HIGHEST_PRECEDENCE + 99)
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
@@ -65,7 +71,16 @@ public class StompHandler implements ChannelInterceptor {
             log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
             throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
         }
-        headerAccessor.setUser(userPrincipal);
+
+//        Authentication authentication = new UsernamePasswordAuthenticationToken(userPrincipal,null, null);
+
+//        headerAccessor.setUser(authentication);
+//        headerAccessor.setHeader("auth", userPrincipal);
+
+        System.out.println("handler headerAccessor = " + headerAccessor);
+        System.out.println("handler headerAccessor.getUser() = " + headerAccessor.getUser());
+        System.out.println("((ChatUserPrincipal) headerAccessor.getUser()) = " + ((ChatUserPrincipal) headerAccessor.getUser()));
+
 
 //        SecurityContext context = SecurityContextHolder.createEmptyContext();
 //        Authentication authentication = new UsernamePasswordAuthenticationToken(userInfo, null, null);
