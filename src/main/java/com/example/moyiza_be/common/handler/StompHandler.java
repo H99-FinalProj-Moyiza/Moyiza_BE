@@ -35,13 +35,13 @@ public class StompHandler implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         //
-        StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) ||
                 StompCommand.DISCONNECT.equals(headerAccessor.getCommand()) ||
                     StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())
         ) {
-            return message;
-        }
+        return message;
+    }
         System.out.println("headerAccessor.getCommand() = " + headerAccessor.getCommand());
         System.out.println("String.valueOf(headerAccessor.getNativeHeader(\"ACCESS_TOKEN\")) = " + String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN")));
         String bearerToken = String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN"))
