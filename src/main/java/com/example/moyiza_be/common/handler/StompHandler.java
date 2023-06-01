@@ -31,8 +31,9 @@ public class StompHandler implements ChannelInterceptor {
                 StompCommand.DISCONNECT.equals(headerAccessor.getCommand()) ||
                     StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())
         ) {
-        return message;
-    }
+            return message;
+        }
+        System.out.println("headerAccessor = " + headerAccessor);
         System.out.println("String.valueOf(headerAccessor.getNativeHeader(\"ACCESS_TOKEN\")) = " + String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN")));
         String bearerToken = String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN"))
                 .replaceAll("[\\[\\]]", "");  // token 앞뒤의 []를 제거
