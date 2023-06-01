@@ -4,7 +4,9 @@ import com.example.moyiza_be.chat.dto.*;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
+
 import io.jsonwebtoken.Claims;
+import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,8 +22,10 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,8 +46,9 @@ public class ChatController {
     @MessageMapping("/chat/{chatId}")
     public void receiveAndSendChat(
             @DestinationVariable Long chatId, ChatMessageInput chatMessageInput,
-            Message<?> message
+            StompHeaderAccessor headerAccessor
      ) {
+
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         String bearerToken = String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN"))
                 .replaceAll("[\\[\\]]","");
@@ -67,8 +72,8 @@ public class ChatController {
             throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
         }
         System.out.println("테스트성공 !!!!!!!!!!!!!!!!!!!!!!!!!");
-
         chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
+
     }
 
     //채팅방 목록 조회
