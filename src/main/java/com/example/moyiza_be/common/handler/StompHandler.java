@@ -38,11 +38,12 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
         if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) ||
                 StompCommand.DISCONNECT.equals(headerAccessor.getCommand()) ||
-                StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())
+                    StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())
         ) {
             return message;
         }
-
+        System.out.println("headerAccessor.getCommand() = " + headerAccessor.getCommand());
+        System.out.println("String.valueOf(headerAccessor.getNativeHeader(\"ACCESS_TOKEN\")) = " + String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN")));
         String bearerToken = String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN"))
                 .replaceAll("[\\[\\]]", "");  // token 앞뒤의 []를 제거
         System.out.println("check1 -> bearerToken = " + bearerToken);
