@@ -150,7 +150,7 @@ public class ClubService {
                 .peek(image->image.setClubId(club.getId()))
                 .map(ClubImageUrl::getImageUrl)
                 .toList();
-        chatService.makeChat(club.getId(), ChatTypeEnum.CLUB);
+        chatService.makeChat(club.getId(), ChatTypeEnum.CLUB, club.getTitle());
         return new ClubDetailResponse(club, clubImageUrlList); // querydsl에서 List로 projection이 가능한가 확인해봐야함
     }
 
