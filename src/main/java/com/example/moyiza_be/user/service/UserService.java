@@ -36,13 +36,14 @@ public class UserService {
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
-        String storedFileUrl = "";
+        String storedFileUrl = basicProfileUrl;
         checkDuplicatedEmail(requestDto.getEmail());
         checkDuplicatedNick(requestDto.getNickname());
         if(!imageFile.isEmpty()){
             storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
         }
         User user = new User(password, requestDto, storedFileUrl);
+        user.authorizeUser();
         userRepository.save(user);
         return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
     }
