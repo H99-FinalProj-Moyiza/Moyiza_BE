@@ -41,6 +41,7 @@ public class WebSecurityConfig {
             "/user/check/**",
             "/user/test/**",
             "/oauth2/authorization/**",
+            "/login/**",
             "/enums"
     };
 
