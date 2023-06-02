@@ -1,6 +1,7 @@
 package com.example.moyiza_be.club.dto;
 
 import com.example.moyiza_be.club.entity.Club;
+import com.example.moyiza_be.common.enums.TagEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +14,7 @@ public class ClubDetailResponse {
     private String ownerNickname;
     private String clubTitle;
     private String clubCategory;
-    private String tagString;
+    private List<String> clubTag;
     private String clubContent;
     private Integer agePolicy;
     private String genderPolicy;
@@ -27,7 +28,7 @@ public class ClubDetailResponse {
         this.ownerNickname = "추후반영예정";    // 쿼리 수정할 때 닉네임 가져오게하기
         this.clubTitle = club.getTitle();
         this.clubCategory = club.getCategory().getCategory();
-        this.tagString = club.getTagString();
+        this.clubTag = TagEnum.parseTag(club.getTagString());
         this.clubContent = club.getContent();
         this.agePolicy = club.getAgePolicy();
         this.genderPolicy = club.getGenderPolicy().getGenderPolicy();

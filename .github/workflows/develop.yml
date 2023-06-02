@@ -3,8 +3,8 @@ name: Moyiza server CI/CD
 on:
   push:
     branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
+#  pull_request:
+#    branches: [ develop ]
 
 #버킷 이름, CodeDeploy App Name, CodeDeploy 배포 그룹 이름
 env:

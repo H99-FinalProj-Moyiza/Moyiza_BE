@@ -39,6 +39,7 @@ public class WebSecurityConfig {
             "/user/check/**",
             "/user/test/**",
             "/oauth2/authorization/**"
+            "/enums"
     };
 
     @Bean
@@ -66,7 +67,6 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/club/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
                 .anyRequest().authenticated().and()
-                //== 소셜 로그인 설정 ==//
                 .oauth2Login()
                 .successHandler(oAuth2LoginSuccessHandler)
                 .failureHandler(oAuth2LoginFailureHandler)
@@ -101,13 +101,4 @@ public class WebSecurityConfig {
         return source;
     }
 
-//    @Bean
-//    public CustomJsonUsernamePasswordAuthenticationFilter customJsonUsernamePasswordAuthenticationFilter() {
-//        CustomJsonUsernamePasswordAuthenticationFilter customJsonUsernamePasswordLoginFilter
-//                = new CustomJsonUsernamePasswordAuthenticationFilter(objectMapper);
-//        customJsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
-//        customJsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessHandler());
-//        customJsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
-//        return customJsonUsernamePasswordLoginFilter;
-//    }
 }
