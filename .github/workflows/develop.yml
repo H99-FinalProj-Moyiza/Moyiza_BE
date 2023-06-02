@@ -45,6 +45,10 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build
 
+      - name: Start WebSocket Server
+        run: |
+          ./gradlew bootRun --args='--spring.config.location=classpath:application.yml'  
+
       # 디렉토리 생성
       - name: Make Directory
         run: mkdir -p deploy

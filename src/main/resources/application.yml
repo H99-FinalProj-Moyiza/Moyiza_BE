@@ -78,7 +78,17 @@ spring:
       port: 6379
       host: 127.0.0.1
 
+  # WebSocket 관련 설정
+  mvc:
+    websocket:
+      enabled: true
+  # STOMP 관련 설정
+  messaging:
+    stomp:
+      enabled: true
+
 jwt:
   secret:
     key: ENC(rjg+5OS5srRHUw2KZQcREVDpUBlSXEQ4y7Hl/qE1KjNodO/mb2zH8P9bJ0mX0o81k7pPcD6EppBR6LgkE9LBrxBB35PzT/7Tjq9ja7YJAwmj5d9yLFpeLCLgcUQ8AP5HqG1c4Urael0Rqe6gVmxBbfxWOBHgmWKg+qS/w3AY7hyiFrUfLd5Xyw==)
+
 

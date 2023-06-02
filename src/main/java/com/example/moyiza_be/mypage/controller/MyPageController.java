@@ -16,7 +16,7 @@ public class MyPageController {
     private final MyPageService myPageService;
 
     @GetMapping("")
-    public PageResponseDto getEvent(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public PageResponseDto getMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return myPageService.getMyPage(userDetails.getUser());
     }
 }

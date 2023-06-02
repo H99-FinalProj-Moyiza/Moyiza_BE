@@ -34,6 +34,8 @@ public class WebSecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
 
     private static final String[] PERMIT_URL_ARRAY = {
+            "/*",
+            "/chat/**",
             "/user/login",
             "/user/signup/**",
             "/user/check/**",

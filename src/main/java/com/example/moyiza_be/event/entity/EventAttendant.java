@@ -20,13 +20,15 @@ public class EventAttendant {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "userId")
     private Long userId;
+    private String userName;
 
 //    @Column
 //    private boolean entrance;
 
-    public EventAttendant(Long EventId, Long userId) {
+    public EventAttendant(Long EventId, Long userId, String userName) {
         this.eventId = EventId;
         this.userId = userId;
+        this.userName = userName;
     }
 
 //    public void cancelAttendant(Event event) {
