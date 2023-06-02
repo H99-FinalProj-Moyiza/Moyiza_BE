@@ -19,15 +19,15 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
+    password: ENC(MpLqczeZ9JMeSsYgIRaQJuYGnVx3KW31)
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/test?serverTimezone=Asia/Seoul
-    username: root
-    password: root
-#    datasource:
-#      password: ENC(MpLqczeZ9JMeSsYgIRaQJuYGnVx3KW31)
-#      driver-class-name: com.mysql.cj.jdbc.Driver
-#      username: ENC(1RC2fLhE3xF2E+OyJP7gdA==)
-#      url: ENC(FLABZ3U84RdLp+5UmSAEmbYmkafqBM20nx/9yLQEvdw9qSxsMn9gx4Js5XbNvnAvWqzNYlj0Dyzly1XTyiR5YlYIDZufFamFRXBQOI6U54iR1UH3u84bY+bbBDli0OzN)
+    username: ENC(1RC2fLhE3xF2E+OyJP7gdA==)
+    url: ENC(FLABZ3U84RdLp+5UmSAEmbYmkafqBM20nx/9yLQEvdw9qSxsMn9gx4Js5XbNvnAvWqzNYlj0Dyzly1XTyiR5YlYIDZufFamFRXBQOI6U54iR1UH3u84bY+bbBDli0OzN)
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/test?serverTimezone=Asia/Seoul
+#    username: root
+#    password: root
 
   security:
     oauth2.client:
