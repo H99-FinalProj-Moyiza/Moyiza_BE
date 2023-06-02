@@ -55,13 +55,13 @@ public class ChatService {
         return ResponseEntity.ok(chatRoomInfoList);
     }
 
-    public void makeChat(Long roomIdentifier, ChatTypeEnum chatType){
+    public void makeChat(Long roomIdentifier, ChatTypeEnum chatType, String roomName){
         Chat chat = chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatType).orElse(null);
         if(chat != null){
             log.info("chat room already exists by id = " + chat.getId());
             throw new NullPointerException("chat room already exists by id = " + chat.getId());
         }
-        Chat new_chat = new Chat(roomIdentifier,chatType);
+        Chat new_chat = new Chat(roomIdentifier,chatType, roomName);
         chatRepository.save(new_chat);
     }
 
