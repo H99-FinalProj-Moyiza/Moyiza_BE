@@ -13,11 +13,13 @@ public class ChatRoomInfo {
     private Long chatId;
     private ChatTypeEnum chatType;
     private Long roomIdentifier;
+    private String roomName;
 
     public ChatRoomInfo(Chat chat) {
         this.chatId = chat.getId();
         this.chatType = chat.getChatType();
         this.roomIdentifier = chat.getRoomIdentifier();
+        this.roomName = chat.getRoomName();
     }
 
 }
