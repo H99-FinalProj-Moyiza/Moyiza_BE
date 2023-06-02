@@ -142,15 +142,16 @@ public class ClubService {
     }
 
     //클럽 생성
-    public ClubDetailResponse createClub(ConfirmClubCreationDto creationRequest){
+    public ClubDetailResponse createClub(ConfirmClubCreationDto creationRequest, User user){
         Club club = new Club(creationRequest);
         clubRepository.saveAndFlush(club);
+        chatService.makeChat(club.getId(), ChatTypeEnum.CLUB);
+        joinClub(club.getId(), user);
         List<String> clubImageUrlList = clubImageUrlRepository.findAllByClubId(creationRequest.getCreateClubId())
                 .stream()
                 .peek(image->image.setClubId(club.getId()))
                 .map(ClubImageUrl::getImageUrl)
                 .toList();
-        chatService.makeChat(club.getId(), ChatTypeEnum.CLUB);
         return new ClubDetailResponse(club, clubImageUrlList); // querydsl에서 List로 projection이 가능한가 확인해봐야함
     }
 

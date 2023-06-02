@@ -11,15 +11,19 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class ChatMessageOutput {
+    private Long chatRecordId;
     private Long senderId;
     private String senderNickname;
+    private String senderProfileUrl;
     private String content;
     private LocalDateTime sentAt;
     private LocalDateTime modifiedAt;
 
-    public ChatMessageOutput(ChatRecord chatRecord, String senderNickname) {
+    public ChatMessageOutput(ChatRecord chatRecord, ChatUserPrincipal userPrincipal) {
         this.senderId = chatRecord.getSenderId();
-        this.senderNickname = senderNickname;
+        this.senderProfileUrl = userPrincipal.getProfileUrl();
+        this.senderNickname = userPrincipal.getUserNickname();
+        this.chatRecordId = chatRecord.getId();
         this.content = chatRecord.getContent();
         this.sentAt = chatRecord.getCreatedAt();
         this.modifiedAt = chatRecord.getModifiedAt();

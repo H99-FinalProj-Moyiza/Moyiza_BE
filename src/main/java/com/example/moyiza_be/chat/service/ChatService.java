@@ -30,12 +30,12 @@ public class ChatService {
     private final ChatJoinEntryRepository chatJoinEntryRepository;
     private final ChatRepository chatRepository;
 
-    public void receiveAndSendChat(ChatUserPrincipal userInfo, Long chatId, ChatMessageInput chatMessageInput) {
+    public void receiveAndSendChat(ChatUserPrincipal userPrincipal, Long chatId, ChatMessageInput chatMessageInput) {
         //필터링 ? some logic
-        ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userInfo.getUserId());
-        chatRecordRepository.save(chatRecord);
+        ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userPrincipal.getUserId());
+        chatRecordRepository.save(chatRecord);  // id받아오려면 saveAndFlush로 변경
         String destination = "/chat/" + chatId;
-        ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, chatMessageInput.getSenderNickname());
+        ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal);
         sendingOperations.convertAndSend(destination, messageOutput);
     }
 
@@ -93,7 +93,7 @@ public class ChatService {
 
         //구독자들한테 JOIN메시지 보내기
         ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage");
-        receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다", "admin"));
+        receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다"));
 
     }
 
@@ -110,7 +110,7 @@ public class ChatService {
 
         //구독자들한테 LEAVE메시지 보내기
         ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf");
-        receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다", "admin"));
+        receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다"));
     }
 
     private Chat loadChat(Long roomIdentifier, ChatTypeEnum chatTypeEnum){
