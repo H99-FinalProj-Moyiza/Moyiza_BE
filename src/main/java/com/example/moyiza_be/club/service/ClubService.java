@@ -145,7 +145,7 @@ public class ClubService {
     public ClubDetailResponse createClub(ConfirmClubCreationDto creationRequest, User user){
         Club club = new Club(creationRequest);
         clubRepository.saveAndFlush(club);
-        chatService.makeChat(club.getId(), ChatTypeEnum.CLUB);
+        chatService.makeChat(club.getId(), ChatTypeEnum.CLUB, club.getTitle());
         joinClub(club.getId(), user);
         List<String> clubImageUrlList = clubImageUrlRepository.findAllByClubId(creationRequest.getCreateClubId())
                 .stream()
