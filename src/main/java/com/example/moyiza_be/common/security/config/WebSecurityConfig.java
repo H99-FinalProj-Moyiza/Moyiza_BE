@@ -35,7 +35,7 @@ public class WebSecurityConfig {
 
     private static final String[] PERMIT_URL_ARRAY = {
             "/user/login",
-            "/user/signup",
+            "/user/signup/**",
             "/user/check/**",
             "/user/test/**",
             "/oauth2/authorization/**"
