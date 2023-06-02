@@ -12,15 +12,13 @@ import lombok.Setter;
 public class ChatMessageInput {
 
     private String content;
-    private String senderNickname;
 //
 //    public enum MessageTypeEnum {
 //        CHAT, JOIN, LEAVE
 //    }
 
-    public ChatMessageInput(String content, String senderNickname) {
+    public ChatMessageInput(String content) {
         this.content = content;
-        this.senderNickname = senderNickname;
     }
 
     public ChatRecord toChatRecord(Long chatId, Long userId){
