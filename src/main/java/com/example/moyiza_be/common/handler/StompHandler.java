@@ -33,55 +33,59 @@ public class StompHandler implements ChannelInterceptor {
         ) {
             return message;
         }
-
-        if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
+        if(StompCommand.CONNECT.equals(headerAccessor.getCommand())){
             String sessionId = headerAccessor.getSessionId();
             System.out.println("Connect시 sessionId = " + sessionId);
         }
 
+        if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
+            String sessionId = headerAccessor.getSessionId();
+            System.out.println("DisConnect시 sessionId = " + sessionId);
+        }
+
         System.out.println("headerAccessor = " + headerAccessor);
-        System.out.println("String.valueOf(headerAccessor.getNativeHeader(\"ACCESS_TOKEN\")) = " + String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN")));
+//        System.out.println("String.valueOf(headerAccessor.getNativeHeader(\"ACCESS_TOKEN\")) = " + String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN")));
         String bearerToken = String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN"))
                 .replaceAll("[\\[\\]]", "");  // token 앞뒤의 []를 제거
-        System.out.println("check1 -> bearerToken = " + bearerToken);
+//        System.out.println("check1 -> bearerToken = " + bearerToken);
 
         if (bearerToken.equals("null")) {
             throw new IllegalArgumentException("유저정보를 찾을 수 없습니다");
         }
         String token = jwtUtil.removePrefix(bearerToken);
-        System.out.println("check2 -> token = " + token);
+//        System.out.println("check2 -> token = " + token);
 
         if (!jwtUtil.validateToken(token)) {
             throw new IllegalArgumentException("토큰이 유효하지 않습니다");
         }
 
-        Claims claims = jwtUtil.getClaimsFromToken(token);
-        System.out.println("check3 -> claims.get(\"userId\") = " + claims.get("userId"));
-        System.out.println("claims.get(\"userId\").toString() = " + claims.get("userId").toString());
-        System.out.println("(Long) claims.toString() = " + Long.valueOf(claims.get("userId").toString()));
-        System.out.println("check3 -> claims.get(\"nickName\") = " + claims.get("nickName"));
-        System.out.println("claims.get(\"profileUrl\") = " + claims.get("profileUrl"));
+//        Claims claims = jwtUtil.getClaimsFromToken(token);
+//        System.out.println("check3 -> claims.get(\"userId\") = " + claims.get("userId"));
+//        System.out.println("claims.get(\"userId\").toString() = " + claims.get("userId").toString());
+//        System.out.println("(Long) claims.toString() = " + Long.valueOf(claims.get("userId").toString()));
+//        System.out.println("check3 -> claims.get(\"nickName\") = " + claims.get("nickName"));
+//        System.out.println("claims.get(\"profileUrl\") = " + claims.get("profileUrl"));
 
-        ChatUserPrincipal userPrincipal;
-        try{
-            userPrincipal = new ChatUserPrincipal(
-                    Long.valueOf(claims.get("userId").toString()),
-                    claims.get("nickName").toString(),
-                    claims.get("profileUrl").toString()
-            );
-        } catch(RuntimeException e){
-            log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
-            throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
-        }
+//        ChatUserPrincipal userPrincipal;
+//        try{
+//            userPrincipal = new ChatUserPrincipal(
+//                    Long.valueOf(claims.get("userId").toString()),
+//                    claims.get("nickName").toString(),
+//                    claims.get("profileUrl").toString()
+//            );
+//        } catch(RuntimeException e){
+//            log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
+//            throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
+//        }
 
 //        Authentication authentication = new UsernamePasswordAuthenticationToken(userPrincipal,null, null);
 
 //        headerAccessor.setUser(authentication);
 //        headerAccessor.setHeader("auth", userPrincipal);
 
-        System.out.println("handler headerAccessor = " + headerAccessor);
-        System.out.println("handler headerAccessor.getUser() = " + headerAccessor.getUser());
-        System.out.println("((ChatUserPrincipal) headerAccessor.getUser()) = " + ((ChatUserPrincipal) headerAccessor.getUser()));
+//        System.out.println("handler headerAccessor = " + headerAccessor);
+//        System.out.println("handler headerAccessor.getUser() = " + headerAccessor.getUser());
+//        System.out.println("((ChatUserPrincipal) headerAccessor.getUser()) = " + ((ChatUserPrincipal) headerAccessor.getUser()));
 
 
 //        SecurityContext context = SecurityContextHolder.createEmptyContext();
