@@ -28,11 +28,17 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         System.out.println("headerAccessor.getCommand() = " + headerAccessor.getCommand());
         if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) ||
-                StompCommand.DISCONNECT.equals(headerAccessor.getCommand()) ||
+//                StompCommand.DISCONNECT.equals(headerAccessor.getCommand()) ||
                     StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())
         ) {
             return message;
         }
+
+        if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
+            String sessionId = headerAccessor.getSessionId();
+            System.out.println("sessionId = " + sessionId);
+        }
+
         System.out.println("headerAccessor = " + headerAccessor);
         System.out.println("String.valueOf(headerAccessor.getNativeHeader(\"ACCESS_TOKEN\")) = " + String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN")));
         String bearerToken = String.valueOf(headerAccessor.getNativeHeader("ACCESS_TOKEN"))
