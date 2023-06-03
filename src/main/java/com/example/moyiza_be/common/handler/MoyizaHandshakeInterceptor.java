@@ -25,8 +25,8 @@ public class MoyizaHandshakeInterceptor implements HandshakeInterceptor {
         System.out.println("handshakeInterceptor activated");
         System.out.println("request = " + request);
         System.out.println("request.getHeaders() = " + request.getHeaders());
-        if(request instanceof HttpServletRequest){
-            System.out.println("ServerHttpRequest is instance of ServletRequest....");
+        if(!(request instanceof HttpServletRequest)){
+            System.out.println("ServerHttpRequest is not instance of ServletRequest....");
         }
         HttpServletRequest servletRequest = (HttpServletRequest) request;
         System.out.println("request.getHeaders().get(\"ACCESS_TOKEN\"); = " + request.getHeaders().get("ACCESS_TOKEN"));
