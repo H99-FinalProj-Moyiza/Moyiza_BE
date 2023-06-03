@@ -67,11 +67,10 @@ public class ChatService {
 
     //채팅 내역 조회
     public ResponseEntity<Page<ChatRecordDto>> getChatRoomRecord(User user, Long chatId, Pageable pageable){
-        //나중에 쿼리 다듬기
+        //나중에 쿼리 다듬기  ==> senderId, user Join해서, id, nickname, profileUrl도 가져와야함
         ChatJoinEntry chatJoinEntry =
                 chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
                 .orElse(null);
-
         if(chatJoinEntry == null){ throw new NullPointerException("채팅방을 찾을 수 없습니다"); }
 
         Page<ChatRecordDto> chatRecordDtoPage = chatRecordRepository.findAllByChatIdAndCreatedAtAfter

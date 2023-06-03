@@ -36,7 +36,7 @@ public class StompHandler implements ChannelInterceptor {
 
         if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
             String sessionId = headerAccessor.getSessionId();
-            System.out.println("sessionId = " + sessionId);
+            System.out.println("Connect시 sessionId = " + sessionId);
         }
 
         System.out.println("headerAccessor = " + headerAccessor);
