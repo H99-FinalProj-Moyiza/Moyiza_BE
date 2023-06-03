@@ -100,7 +100,6 @@ public class StompHandler implements ChannelInterceptor {
         }
         return Long.valueOf(destination.replaceAll("\\D", ""));
     }
-    @Transactional
     public void unsubscribe(ChatUserPrincipal userPrincipal, String sessionId){
         log.info(userPrincipal.getUserId() + " unsubscribing chatroom " + userPrincipal.getSubscribedChatId());
         ChatJoinEntry chatJoinEntry =

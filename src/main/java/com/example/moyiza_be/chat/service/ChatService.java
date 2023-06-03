@@ -80,7 +80,7 @@ public class ChatService {
         if(chatJoinEntry == null){ throw new NullPointerException("채팅방을 찾을 수 없습니다"); }
 
         Page<ChatRecordDto> chatRecordDtoPage = chatRecordRepository.findAllByChatIdAndCreatedAtAfter
-                                                (pageable, chatId, chatJoinEntry.getModifiedAt())
+                                                (pageable, chatId, chatJoinEntry.getCreatedAt())
                                                     .map(ChatRecordDto::new);
         return ResponseEntity.ok(chatRecordDtoPage);
     }
