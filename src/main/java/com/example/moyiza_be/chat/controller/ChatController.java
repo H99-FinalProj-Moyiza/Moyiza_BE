@@ -75,7 +75,7 @@ public class ChatController {
         System.out.println("getUserInfoFromCache : " + userInfo.getUserNickname());
         System.out.println("getUserInfoFromCache : " + userInfo.getProfileUrl());
 
-        chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
+        chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput, null);
     }
 
     //채팅방 목록 조회
