@@ -12,6 +12,9 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -36,6 +39,7 @@ public class StompHandler implements ChannelInterceptor {
         if(StompCommand.CONNECT.equals(headerAccessor.getCommand())){
             String sessionId = headerAccessor.getSessionId();
             System.out.println("Connect시 sessionId = " + sessionId);
+
         }
 
         if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
@@ -66,17 +70,18 @@ public class StompHandler implements ChannelInterceptor {
         System.out.println("check3 -> claims.get(\"nickName\") = " + claims.get("nickName"));
 //        System.out.println("claims.get(\"profileUrl\") = " + claims.get("profileUrl"));
 
-//        ChatUserPrincipal userPrincipal;
-//        try{
-//            userPrincipal = new ChatUserPrincipal(
-//                    Long.valueOf(claims.get("userId").toString()),
-//                    claims.get("nickName").toString(),
-//                    claims.get("profileUrl").toString()
-//            );
-//        } catch(RuntimeException e){
-//            log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
-//            throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
-//        }
+        ChatUserPrincipal userPrincipal;
+        try{
+            userPrincipal = new ChatUserPrincipal(
+                    Long.valueOf(claims.get("userId").toString()),
+                    claims.get("nickName").toString(),
+                    claims.get("profileUrl").toString()
+            );
+        } catch(RuntimeException e){
+            log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
+            throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
+        }
+        headerAccessor.setHeader("asdfasdf", userPrincipal);
 
 //        Authentication authentication = new UsernamePasswordAuthenticationToken(userPrincipal,null, null);
 
@@ -99,7 +104,7 @@ public class StompHandler implements ChannelInterceptor {
 //        System.out.println("SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof  ChatUserInfo = " + (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof  ChatUserInfo));
 
 
-        return message;
+        return MessageBuilder.createMessage(message.getPayload(),message.getHeaders());
     }
 }
 

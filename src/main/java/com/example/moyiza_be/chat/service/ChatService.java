@@ -14,7 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +32,15 @@ public class ChatService {
     private final ChatJoinEntryRepository chatJoinEntryRepository;
     private final ChatRepository chatRepository;
 
-    public void receiveAndSendChat(ChatUserPrincipal userPrincipal, Long chatId, ChatMessageInput chatMessageInput) {
+    public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
+                                   Long chatId,
+                                   ChatMessageInput chatMessageInput,
+                                   Message<?> message
+    ) {
         //필터링 ? some logic
+        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+        System.out.println("controller headerAccessor = " + headerAccessor);
+
         ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userPrincipal.getUserId());
         chatRecordRepository.save(chatRecord);  // id받아오려면 saveAndFlush로 변경
         String destination = "/chat/" + chatId;
