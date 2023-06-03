@@ -53,10 +53,13 @@ public class StompHandler implements ChannelInterceptor {
             Claims claims = jwtUtil.getClaimsFromToken(token);
             ChatUserPrincipal userInfo;
             try{
+                System.out.println("headerAccessor.getDestination().toString() = " + headerAccessor.getDestination());
+//                Long subscribedChatId = getChatIdFromDestination(headerAccessor.getDestination());
                 userInfo = new ChatUserPrincipal(
                         Long.valueOf(claims.get("userId").toString()),
                         claims.get("nickName").toString(),
-                        claims.get("profileUrl").toString()
+                        claims.get("profileUrl").toString(),
+                        null
                 );
             } catch(RuntimeException e){
                 log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
@@ -75,5 +78,9 @@ public class StompHandler implements ChannelInterceptor {
         }
 
         return message;
+    }
+
+    private Long getChatIdFromDestination(String destination){
+        return null;
     }
 }
