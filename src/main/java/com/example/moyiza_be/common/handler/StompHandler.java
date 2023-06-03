@@ -41,6 +41,7 @@ public class StompHandler implements ChannelInterceptor {
 //                StompCommand.DISCONNECT.equals(headerAccessor.getCommand()) ||
 //                    StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())
         ) {
+            System.out.println("headerAccessor.getDestination() = " + headerAccessor.getDestination());
             return message;
         }
 
@@ -59,7 +60,7 @@ public class StompHandler implements ChannelInterceptor {
                         Long.valueOf(claims.get("userId").toString()),
                         claims.get("nickName").toString(),
                         claims.get("profileUrl").toString(),
-                        null
+                        -1L
                 );
             } catch(RuntimeException e){
                 log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
