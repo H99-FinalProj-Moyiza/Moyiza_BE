@@ -19,6 +19,7 @@ public class ChatMessageOutput {
     private LocalDateTime sentAt;
     private LocalDateTime modifiedAt;
 
+
     public ChatMessageOutput(ChatRecord chatRecord, ChatUserPrincipal userPrincipal) {
         this.senderId = chatRecord.getSenderId();
         this.senderProfileUrl = userPrincipal.getProfileUrl();
