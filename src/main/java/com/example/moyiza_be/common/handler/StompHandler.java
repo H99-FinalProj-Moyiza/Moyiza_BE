@@ -77,6 +77,7 @@ public class StompHandler implements ChannelInterceptor {
 
         if(StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
+            log.info("UNSUBSCRIBE COMMAND FROM USER " + userPrincipal.getUserId());
             unsubscribe(userPrincipal, sessionId);
         }
 
@@ -99,7 +100,7 @@ public class StompHandler implements ChannelInterceptor {
         return Long.valueOf(destination.replaceAll("\\D", ""));
     }
     private void unsubscribe(ChatUserPrincipal userPrincipal, String sessionId){
-        log.info("for disconnect -> activating unsubscribe");
+        log.info(userPrincipal.getUserId() + " unsubscribing chatroom " + userPrincipal.getSubscribedChatId());
         ChatJoinEntry chatJoinEntry =
                 chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue
                                 (userPrincipal.getUserId(), userPrincipal.getSubscribedChatId())
