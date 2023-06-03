@@ -97,7 +97,7 @@ public class ChatService {
         }
 
         //구독자들한테 JOIN메시지 보내기
-        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage");
+        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage", null);
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다"));
 
     }
@@ -114,7 +114,7 @@ public class ChatService {
         }
 
         //구독자들한테 LEAVE메시지 보내기
-        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf");
+        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf", null);
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다"));
     }
 

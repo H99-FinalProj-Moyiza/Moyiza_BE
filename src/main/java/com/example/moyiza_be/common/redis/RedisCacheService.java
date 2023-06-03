@@ -30,6 +30,7 @@ public class RedisCacheService {
         userInfoMap.put("userId", userInfo.getUserId());
         userInfoMap.put("nickname", userInfo.getUserNickname());
         userInfoMap.put("profileUrl", userInfo.getProfileUrl());
+        userInfoMap.put("subscribedChatId", userInfo.getSubscribedChatId());
         hashOperations.putAll(sessionId, userInfoMap);
         log.info("saving user : " + userInfo.getUserId() + " for sessionId : " + sessionId);
     }
@@ -42,17 +43,18 @@ public class RedisCacheService {
         Long userId = Long.valueOf(userInfoMap.get("userId").toString());
         String nickname = userInfoMap.get("nickname").toString();
         String profileUrl = userInfoMap.get("profileUrl").toString();
-        return new ChatUserPrincipal(userId, nickname, profileUrl);
+        Long subscribedChatId = Long.valueOf(userInfoMap.get("subscribedChatId").toString());
+        return new ChatUserPrincipal(userId, nickname, profileUrl, subscribedChatId);
     }
 
-
-//    public ChatUserPrincipal getUserInfoFromCache(String sessionId) {
-//        RedisConnection connection = redisConnectionFactory.getConnection();
-//        try {
-//            RedisAsyncCommands<String, ChatUserPrincipal> commands = connection.async();
-//            RedisFuture<ChatUserPrincipal> future = commands.get(sessionId);
-//            return future.get();
-//        } catch (InterruptedException | ExecutionException e) {
+//
+////    public ChatUserPrincipal getUserInfoFromCache(String sessionId) {
+////        RedisConnection connection = redisConnectionFactory.getConnection();
+////        try {
+////            RedisAsyncCommands<String, ChatUserPrincipal> commands = connection.async();
+////            RedisFuture<ChatUserPrincipal> future = commands.get(sessionId);
+////            return future.get();
+////        } catch (InterruptedException | ExecutionException e) {
 //            throw new IllegalArgumentException();
 //        } finally {
 //            connection.close();;
