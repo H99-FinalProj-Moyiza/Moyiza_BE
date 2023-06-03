@@ -59,11 +59,11 @@ public class StompHandler implements ChannelInterceptor {
             throw new IllegalArgumentException("토큰이 유효하지 않습니다");
         }
 
-//        Claims claims = jwtUtil.getClaimsFromToken(token);
-//        System.out.println("check3 -> claims.get(\"userId\") = " + claims.get("userId"));
+        Claims claims = jwtUtil.getClaimsFromToken(token);
+        System.out.println("check3 -> claims.get(\"userId\") = " + claims.get("userId"));
 //        System.out.println("claims.get(\"userId\").toString() = " + claims.get("userId").toString());
 //        System.out.println("(Long) claims.toString() = " + Long.valueOf(claims.get("userId").toString()));
-//        System.out.println("check3 -> claims.get(\"nickName\") = " + claims.get("nickName"));
+        System.out.println("check3 -> claims.get(\"nickName\") = " + claims.get("nickName"));
 //        System.out.println("claims.get(\"profileUrl\") = " + claims.get("profileUrl"));
 
 //        ChatUserPrincipal userPrincipal;
