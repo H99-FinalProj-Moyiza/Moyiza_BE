@@ -23,12 +23,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Component
 @Slf4j
 public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisCacheService redisCacheService;
+    private final ChatJoinEntryRepository chatJoinEntryRepository;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -41,7 +44,10 @@ public class StompHandler implements ChannelInterceptor {
 //                StompCommand.DISCONNECT.equals(headerAccessor.getCommand()) ||
 //                    StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())
         ) {
-            System.out.println("headerAccessor.getDestination() = " + headerAccessor.getDestination());
+            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
+            String destination = headerAccessor.getDestination();
+            userPrincipal.setSubscribedChatId(getChatIdFromDestination(destination));
+            redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
             return message;
         }
 
@@ -70,11 +76,16 @@ public class StompHandler implements ChannelInterceptor {
         }
 
         if(StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
-            System.out.println("headerAccessor.getDestination() = " + headerAccessor.getDestination());
+            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
+            unsubscribe(userPrincipal, sessionId);
+        }
 
-//            ChatUserPrincipal userInfo = redisCacheService.getUserInfoFromCache(sessionId);
-//            ChatJoinEntry joinEntry =
-//                    chatService.loadChatJoinEntryByUserIdAndChatId(userInfo.getUserId())
+        if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
+            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
+            if(userPrincipal.getSubscribedChatId().equals(-1L)){return message;}
+            else{
+                unsubscribe(userPrincipal,sessionId);
+            }
 
         }
 
@@ -82,6 +93,19 @@ public class StompHandler implements ChannelInterceptor {
     }
 
     private Long getChatIdFromDestination(String destination){
-        return null;
+        if(destination == null){
+            throw new NullPointerException("subscribe destination not defined");
+        }
+        return Long.valueOf(destination.replaceAll("\\D", ""));
+    }
+    private void unsubscribe(ChatUserPrincipal userPrincipal, String sessionId){
+        log.info("for disconnect -> activating unsubscribe");
+        ChatJoinEntry chatJoinEntry =
+                chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue
+                                (userPrincipal.getUserId(), userPrincipal.getSubscribedChatId())
+                        .orElseThrow( () -> new NullPointerException("채팅방의 유저정보를 찾을 수 없습니다"));
+        chatJoinEntry.setLastDisconnected(LocalDateTime.now());
+        userPrincipal.setSubscribedChatId(-1L);
+        redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
     }
 }

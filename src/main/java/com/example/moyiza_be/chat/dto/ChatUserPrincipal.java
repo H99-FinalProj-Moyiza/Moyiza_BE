@@ -12,7 +12,7 @@ public class ChatUserPrincipal implements Principal {
     private final Long userId;
     private final String userNickname;
     private final String profileUrl;
-    private final Long subscribedChatId;
+    private Long subscribedChatId;
 
 
     @Override
@@ -29,5 +29,8 @@ public class ChatUserPrincipal implements Principal {
         this.userNickname = userNickname;
         this.profileUrl = profileUrl;
         this.subscribedChatId = subscriptionChatId;
+    }
+    public void setSubscribedChatId(Long subscribedChatId){
+        this.subscribedChatId = subscribedChatId;
     }
 }
