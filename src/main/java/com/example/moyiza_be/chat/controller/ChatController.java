@@ -1,12 +1,14 @@
 package com.example.moyiza_be.chat.controller;
 
-import com.example.moyiza_be.chat.dto.*;
+import com.example.moyiza_be.chat.dto.ChatMessageInput;
+import com.example.moyiza_be.chat.dto.ChatRecordDto;
+import com.example.moyiza_be.chat.dto.ChatRoomInfo;
+import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
 import com.example.moyiza_be.chat.service.ChatService;
+import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
-
 import io.jsonwebtoken.Claims;
-import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -15,22 +17,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.security.Principal;
 import java.util.List;
 
 
@@ -40,6 +34,7 @@ import java.util.List;
 public class ChatController {
     private final ChatService chatService;
     private final JwtUtil jwtUtil;
+    private final RedisCacheService redisCacheService;
 
 
     //채팅 메시지 전송, 수신
@@ -71,8 +66,16 @@ public class ChatController {
             log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
             throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
         }
-        chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
 
+        String sessionId = headerAccessor.getSessionId();
+        System.out.println("getSessionId() : " + sessionId);
+        redisCacheService.saveUserInfoToCache(sessionId, userInfo);
+        userInfo = redisCacheService.getUserInfoFromCache(sessionId);
+        System.out.println("getUserInfoFromCache : " + userInfo.getUserId());
+        System.out.println("getUserInfoFromCache : " + userInfo.getUserNickname());
+        System.out.println("getUserInfoFromCache : " + userInfo.getProfileUrl());
+
+        chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
     }
 
     //채팅방 목록 조회
