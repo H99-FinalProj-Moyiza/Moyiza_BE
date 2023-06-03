@@ -34,12 +34,9 @@ public class ChatService {
 
     public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
                                    Long chatId,
-                                   ChatMessageInput chatMessageInput,
-                                   Message<?> message
+                                   ChatMessageInput chatMessageInput
     ) {
         //필터링 ? some logic
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-        System.out.println("controller headerAccessor = " + headerAccessor);
 
         ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userPrincipal.getUserId());
         chatRecordRepository.save(chatRecord);  // id받아오려면 saveAndFlush로 변경
@@ -125,6 +122,10 @@ public class ChatService {
         return chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatTypeEnum)
                 .orElseThrow(() -> new NullPointerException("채팅방을 찾을 수 없습니다"));
 
+    }
+
+    public ChatJoinEntry loadChatJoinEntryByUserIdAndChatId(Long userId, Long chatId){
+        load
     }
 
 }

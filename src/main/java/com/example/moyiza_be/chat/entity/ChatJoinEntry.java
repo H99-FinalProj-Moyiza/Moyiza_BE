@@ -7,6 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.joda.time.LocalDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -20,6 +23,8 @@ public class ChatJoinEntry extends TimeStamped {
     private Long userId;
 
     private Boolean isCurrentlyJoined;
+
+    private LocalDateTime lastDisconnected = LocalDateTime.now();
     public void setCurrentlyJoined(Boolean currentlyJoined) {
         isCurrentlyJoined = currentlyJoined;
     }
@@ -30,4 +35,7 @@ public class ChatJoinEntry extends TimeStamped {
         this.isCurrentlyJoined = true;
     }
 
+    public void setLastDisconnected(LocalDateTime lastDisconnected) {
+        this.lastDisconnected = lastDisconnected;
+    }
 }
