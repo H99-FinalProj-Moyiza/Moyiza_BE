@@ -18,5 +18,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 () -> new NullPointerException("유저를 찾을 수 없습니다")
         );
         return new UserDetailsImpl(user);
+//        return (UserDetailsImpl) org.springframework.security.core.userdetails.User.builder()
+//                .username(user.getEmail())
+//                .password(user.getPassword())
+//                .roles(user.getRole().name())
+//                .build();
     }
 }
