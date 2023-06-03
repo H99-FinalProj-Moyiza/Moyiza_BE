@@ -98,7 +98,7 @@ public class ChatService {
 
         //구독자들한테 JOIN메시지 보내기
         ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage");
-        receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다"), null);
+        receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다"));
 
     }
 
@@ -115,17 +115,13 @@ public class ChatService {
 
         //구독자들한테 LEAVE메시지 보내기
         ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf");
-        receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다"),null);
+        receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다"));
     }
 
     private Chat loadChat(Long roomIdentifier, ChatTypeEnum chatTypeEnum){
         return chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatTypeEnum)
                 .orElseThrow(() -> new NullPointerException("채팅방을 찾을 수 없습니다"));
 
-    }
-
-    public ChatJoinEntry loadChatJoinEntryByUserIdAndChatId(Long userId, Long chatId){
-        load
     }
 
 }

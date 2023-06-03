@@ -29,8 +29,6 @@ import org.springframework.stereotype.Component;
 public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisCacheService redisCacheService;
-    private final ChatJoinEntryRepository chatJoinEntryRepository;
-    private final ChatService chatService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
