@@ -22,6 +22,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -99,13 +100,15 @@ public class StompHandler implements ChannelInterceptor {
         }
         return Long.valueOf(destination.replaceAll("\\D", ""));
     }
-    private void unsubscribe(ChatUserPrincipal userPrincipal, String sessionId){
+    @Transactional
+    public void unsubscribe(ChatUserPrincipal userPrincipal, String sessionId){
         log.info(userPrincipal.getUserId() + " unsubscribing chatroom " + userPrincipal.getSubscribedChatId());
         ChatJoinEntry chatJoinEntry =
                 chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue
                                 (userPrincipal.getUserId(), userPrincipal.getSubscribedChatId())
                         .orElseThrow( () -> new NullPointerException("채팅방의 유저정보를 찾을 수 없습니다"));
         chatJoinEntry.setLastDisconnected(LocalDateTime.now());
+        chatJoinEntryRepository.save(chatJoinEntry);
         userPrincipal.setSubscribedChatId(-1L);
         redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
     }
