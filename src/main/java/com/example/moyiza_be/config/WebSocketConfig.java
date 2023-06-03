@@ -32,7 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat/connect")
                 .setAllowedOriginPatterns("*")
-                .addInterceptors(moyizaHandshakeInterceptor)
+//                .addInterceptors(moyizaHandshakeInterceptor)
                 .withSockJS();
     }
 
