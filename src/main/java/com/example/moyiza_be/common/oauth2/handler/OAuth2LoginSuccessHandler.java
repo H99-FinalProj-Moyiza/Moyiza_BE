@@ -40,8 +40,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
             loginSuccess(response, findUser);
             if(oAuth2User.getRole() == Role.GUEST) {
-                response.sendRedirect("/user/signup");
+                response.sendRedirect("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/signup");
+            } else {
+                response.sendRedirect("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/");
             }
+
         } catch (Exception e) {
             throw e;
         }
