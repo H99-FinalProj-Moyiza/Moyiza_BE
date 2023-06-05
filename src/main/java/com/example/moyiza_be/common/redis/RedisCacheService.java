@@ -79,8 +79,12 @@ public class RedisCacheService {
         if (recentChatList == null){
             return new PageImpl<>(new LinkedList<>(), pageable, 0L);
         }
-
         return new PageImpl<>(recentChatList, pageable, -1L);
+    }
+
+    public ChatMessageOutput loadRecentChat(String chatId){
+        ListOperations<String, ChatMessageOutput> listOperations = redisRecentChatTemplate.opsForList();
+        return listOperations.index(chatId + RECENTCHAT_IDENTIFIER, 0);
     }
 
     public void addSubscriptionToChatId(String chatId, String sessionId){

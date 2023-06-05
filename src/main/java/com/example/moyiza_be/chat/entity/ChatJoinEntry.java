@@ -24,7 +24,8 @@ public class ChatJoinEntry extends TimeStamped {
 
     private Boolean isCurrentlyJoined;
 
-    private LocalDateTime lastDisconnected = LocalDateTime.now();
+//    private LocalDateTime lastDisconnected = LocalDateTime.now();
+    private Long lastReadMessageId = 0L;
     public void setCurrentlyJoined(Boolean currentlyJoined) {
         isCurrentlyJoined = currentlyJoined;
     }
@@ -35,7 +36,7 @@ public class ChatJoinEntry extends TimeStamped {
         this.isCurrentlyJoined = true;
     }
 
-    public void setLastDisconnected(LocalDateTime lastDisconnected) {
-        this.lastDisconnected = lastDisconnected;
+    public void setLastReadMessageId(Long lastReadMessageId) {
+        this.lastReadMessageId = lastReadMessageId;
     }
 }
