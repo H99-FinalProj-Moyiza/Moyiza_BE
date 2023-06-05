@@ -16,7 +16,7 @@ public class ChatMessageOutput {
     private String senderNickname;
     private String senderProfileUrl;
     private String content;
-    private LocalDateTime sentAt;
+    private String sentAt;
     private LocalDateTime modifiedAt;
 
 
@@ -26,7 +26,7 @@ public class ChatMessageOutput {
         this.senderNickname = userPrincipal.getUserNickname();
         this.chatRecordId = chatRecord.getId();
         this.content = chatRecord.getContent();
-        this.sentAt = chatRecord.getCreatedAt();
+        this.sentAt = chatRecord.getCreatedAt().toString();
         this.modifiedAt = chatRecord.getModifiedAt();
     }
 
@@ -36,7 +36,7 @@ public class ChatMessageOutput {
         this.senderNickname = chatRecord.getSenderId().toString();
         this.chatRecordId = chatRecord.getId();
         this.content = chatRecord.getContent();
-        this.sentAt = chatRecord.getCreatedAt();
+        this.sentAt = chatRecord.getCreatedAt().toString();
         this.modifiedAt = chatRecord.getModifiedAt();
     }
 }
