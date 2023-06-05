@@ -22,16 +22,17 @@ import com.example.moyiza_be.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.*;
 
 @Slf4j
 @Service
@@ -184,4 +185,28 @@ public class OneDayService {
             return new ResponseEntity<>("승인 요청되었습니다.",HttpStatus.OK);
         }
     }
+
+    //거리기반 위치 추천
+    public ResponseEntity<List<OneDay>> recommendByDistance(double nowLatitude, double nowLongitude) {
+        String location = "POINT(" + nowLongitude + " " + nowLatitude + ")";
+        List<OneDay> aroundOneDayList = oneDayRepository.findAroundOneDayList(location);
+        return new ResponseEntity<>(aroundOneDayList, HttpStatus.OK);
+    }
+
+//    //거리기반 위치 추천 테스트
+//    public ResponseEntity<List<OneDay>> recommendByDistanceTest(double nowLatitude, double nowLongitude) {
+//        //m당 y 좌표 이동 값
+//        double mForLatitude =(1 /(6371 * 1 * (Math.PI/180)))/1000;
+//        //m당 x 좌표 이동 값
+//        double mForLongitude =(1 /(6371 * 1 * (Math.PI/180)* Math.cos(Math.toRadians(nowLatitude))))/1000;
+//
+//        //현재 위치 기준 검색 거리 좌표
+//        double maxY = nowLatitude + (1000 * mForLatitude);
+//        double minY = nowLatitude - (1000 * mForLatitude);
+//        double maxX = nowLongitude + (1000 * mForLongitude);
+//        double minX = nowLongitude - (1000 * mForLongitude);
+//
+//        List<OneDay> aroundOnedayList = oneDayRepository.findAroundOneDayList(maxY, maxX, minY, minX);
+//        return new ResponseEntity<>(aroundOnedayList, HttpStatus.OK);
+//    }
 }

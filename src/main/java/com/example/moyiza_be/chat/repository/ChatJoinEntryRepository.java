@@ -12,4 +12,5 @@ public interface ChatJoinEntryRepository extends JpaRepository<ChatJoinEntry, Lo
     List<ChatJoinEntry> findAllByUserIdAndIsCurrentlyJoinedTrue(Long id);
     Optional<ChatJoinEntry> findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(Long userId, Long chatId);
     Optional<ChatJoinEntry> findByChatIdAndUserId(Long chatId, Long userId);
+    Long countByChatIdAndAndIsCurrentlyJoinedTrue(Long chatId);
 }

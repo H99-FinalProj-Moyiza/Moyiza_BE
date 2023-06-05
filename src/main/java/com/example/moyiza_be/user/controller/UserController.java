@@ -2,9 +2,12 @@ package com.example.moyiza_be.user.controller;
 
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.user.dto.*;
+import com.example.moyiza_be.user.email.EmailRequestDto;
+import com.example.moyiza_be.user.email.EmailService;
 import com.example.moyiza_be.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
 
     private final UserService userService;
+    private final EmailService emailService;
 
     //회원가입
     @RequestMapping (value = "/signup", method = RequestMethod.POST,
@@ -35,6 +39,16 @@ public class UserController {
     @PostMapping("/test/signup")
     public ResponseEntity<?> signupTest(@RequestBody TestSignupRequestDto testRequestDto){
         return userService.signupTest(testRequestDto);
+    }
+    //이메일 인증 - 이메일 전송
+    @PostMapping("/signup/confirmEmail")
+    public ResponseEntity<?> confirmEmail(@RequestBody EmailRequestDto requestDto) throws Exception {
+        return emailService.sendSimpleMessage(requestDto);
+    }
+
+    @PostMapping("/signup/verifyCode")
+    public ResponseEntity<?> verifyCode(@RequestBody String code) throws ChangeSetPersister.NotFoundException {
+        return emailService.verifyCode(code);
     }
 
     //로그인

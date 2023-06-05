@@ -128,10 +128,10 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("이미지 업로드 완료 !"));
     }
 
-    public ResponseEntity<ClubDetailResponse> confirmCreation(Long userId, Long createclub_id) {
-        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
+    public ResponseEntity<ClubDetailResponse> confirmCreation(User user, Long createclub_id) {
+        CreateClub createClub = loadAndCheckOwnerShip(createclub_id, user.getId());
         ConfirmClubCreationDto confirmClubCreationDto = new ConfirmClubCreationDto(createClub);
-        ClubDetailResponse newClub = clubService.createClub(confirmClubCreationDto);
+        ClubDetailResponse newClub = clubService.createClub(confirmClubCreationDto, user);
         createClub.setFlagConfirmed(true);
         return ResponseEntity.ok(newClub);
     }

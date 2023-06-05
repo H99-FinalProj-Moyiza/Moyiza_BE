@@ -17,9 +17,11 @@ public class Chat {
     private Long id;
     private ChatTypeEnum chatType;
     private Long roomIdentifier; // club이나 oneday일 경우 clubId 혹은 onedayId
+    private String roomName;
 
-    public Chat(Long roomIdentifier, ChatTypeEnum chatType) {
+    public Chat(Long roomIdentifier, ChatTypeEnum chatType, String roomName) {
         this.chatType = chatType;
         this.roomIdentifier = roomIdentifier;
+        this.roomName = roomName;
     }
 }
