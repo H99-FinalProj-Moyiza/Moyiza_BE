@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -26,6 +27,9 @@ public class RedisCacheService {
 //    private static final String SESSION_PREFIX = "session:";
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, ChatMessageOutput> redisRecentChatTemplate;
+    private final RedisTemplate<String, String> redisStringListTemplate;
+    private final String RECENTCHAT_IDENTIFIER = ":recentChat";
+    private final String CONNECTED_SESSIONS_IDENTIFIER = ":subscriptions";
 
 
     //세션id 생성
@@ -65,18 +69,33 @@ public class RedisCacheService {
 
     public void addRecentChatToList(String chatId, ChatMessageOutput messageOutput){
         ListOperations<String, ChatMessageOutput> listOperations = redisRecentChatTemplate.opsForList();
-        listOperations.leftPush(chatId,messageOutput);
+        listOperations.leftPush(chatId + RECENTCHAT_IDENTIFIER,messageOutput);
         listOperations.trim(chatId, 0, 50);
     }
 
     public Page<ChatMessageOutput> loadRecentChatList(String chatId, Pageable pageable){
         ListOperations<String, ChatMessageOutput> listOperations = redisRecentChatTemplate.opsForList();
-        List<ChatMessageOutput> recentChatList = listOperations.range(chatId, 0, 50);
+        List<ChatMessageOutput> recentChatList = listOperations.range(chatId + RECENTCHAT_IDENTIFIER, 0, 50);
         if (recentChatList == null){
             return new PageImpl<>(new LinkedList<>(), pageable, 0L);
         }
 
         return new PageImpl<>(recentChatList, pageable, -1L);
+    }
+
+    public void addSubscriptionToChatId(String chatId, String sessionId){
+        SetOperations<String, String> setOperations = redisStringListTemplate.opsForSet();
+        setOperations.add(chatId + CONNECTED_SESSIONS_IDENTIFIER);
+    }
+
+    public void removeSubscriptionFromChatId(String chatId, String sessionId){
+        SetOperations<String, String> setOperations = redisStringListTemplate.opsForSet();
+        setOperations.remove(chatId + CONNECTED_SESSIONS_IDENTIFIER, sessionId);
+    }
+
+    public void countSubscriptionToChatId(String chatId){
+        SetOperations<String, String> setOperations = redisStringListTemplate.opsForSet();
+        setOperations.size(chatId + CONNECTED_SESSIONS_IDENTIFIER);
     }
 
 //
