@@ -77,14 +77,14 @@ public class ChatService {
     }
 
     //채팅 내역 조회
-    public ResponseEntity<Page<ChatMessageOutput>> getChatRoomRecord(User user, Long chatId, Pageable pageable){
-        //나중에 쿼리 다듬기  ==> senderId, user Join해서, id, nickname, profileUrl도 가져와야함
-        if(pageable.getPageNumber() == 0){
-            return ResponseEntity.ok(cacheService.loadRecentChatList(chatId.toString(), pageable));
-        }
+        public ResponseEntity<Page<ChatMessageOutput>> getChatRoomRecord(User user, Long chatId, Pageable pageable){
+            //나중에 쿼리 다듬기  ==> senderId, user Join해서, id, nickname, profileUrl도 가져와야함
+            if(pageable.getPageNumber() == 0){
+                return ResponseEntity.ok(cacheService.loadRecentChatList(chatId.toString(), pageable));
+            }
 
-        ChatJoinEntry chatJoinEntry =
-                chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
+            ChatJoinEntry chatJoinEntry =
+                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
                 .orElse(null);
         if(chatJoinEntry == null){ throw new NullPointerException("채팅방을 찾을 수 없습니다"); }
 
