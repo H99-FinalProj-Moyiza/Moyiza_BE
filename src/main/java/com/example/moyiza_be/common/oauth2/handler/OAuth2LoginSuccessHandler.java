@@ -37,9 +37,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
             User findUser = userRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(
                     () -> new NoSuchElementException("회원이 존재하지 않습니다."));
-            // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
             loginSuccess(response, findUser);
             if(oAuth2User.getRole() == Role.GUEST) {
+                // User의 Role이 GUEST일 경우 회원정보가 부족한 회원이므로 회원가입 페이지로 리다이렉트
                 response.sendRedirect("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/signup");
             } else {
                 response.sendRedirect("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/");
