@@ -60,10 +60,10 @@ public class Club extends TimeStamped {
     }
 
     public void addAttend() {
-        nowMemberCount++;
+        this.nowMemberCount++;
     }
 
     public void cancelAttend() {
-        nowMemberCount--;
+        this.nowMemberCount--;
     }
 }
