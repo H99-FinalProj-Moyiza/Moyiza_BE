@@ -85,7 +85,7 @@ public class RedisCacheService {
 
     public void addSubscriptionToChatId(String chatId, String sessionId){
         SetOperations<String, String> setOperations = redisStringListTemplate.opsForSet();
-        setOperations.add(chatId + CONNECTED_SESSIONS_IDENTIFIER);
+        setOperations.add(chatId + CONNECTED_SESSIONS_IDENTIFIER, sessionId);
     }
 
     public void removeSubscriptionFromChatId(String chatId, String sessionId){
