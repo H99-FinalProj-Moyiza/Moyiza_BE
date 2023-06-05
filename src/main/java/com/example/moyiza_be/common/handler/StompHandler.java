@@ -1,6 +1,7 @@
 package com.example.moyiza_be.common.handler;
 
 
+import com.example.moyiza_be.chat.dto.ChatMessageOutput;
 import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
 import com.example.moyiza_be.chat.entity.ChatJoinEntry;
 import com.example.moyiza_be.chat.repository.ChatJoinEntryRepository;
@@ -9,10 +10,12 @@ import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.broker.SubscriptionRegistry;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -33,6 +36,7 @@ public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisCacheService redisCacheService;
     private final ChatJoinEntryRepository chatJoinEntryRepository;
+    private final SimpMessageSendingOperations sendingOperations;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -51,6 +55,12 @@ public class StompHandler implements ChannelInterceptor {
             userPrincipal.setSubscribedChatId(chatId);
             redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
             redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
+            ChatJoinEntry chatJoinEntry =
+                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
+                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
+            headerAccessor.setHeader("lastReadMessage", chatJoinEntry.getLastReadMessageId());
+            sendingOperations.send(message);
+
             return message;
         }
 
@@ -105,13 +115,22 @@ public class StompHandler implements ChannelInterceptor {
     }
     public void unsubscribe(ChatUserPrincipal userPrincipal, String sessionId){
         log.info(userPrincipal.getUserId() + " unsubscribing chatroom " + userPrincipal.getSubscribedChatId());
+        Long chatId = userPrincipal.getSubscribedChatId();
         ChatJoinEntry chatJoinEntry =
                 chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue
                                 (userPrincipal.getUserId(), userPrincipal.getSubscribedChatId())
                         .orElseThrow( () -> new NullPointerException("채팅방의 유저정보를 찾을 수 없습니다"));
-        chatJoinEntry.setLastDisconnected(LocalDateTime.now());
+
+        ChatMessageOutput recentMessage = redisCacheService.loadRecentChat(chatId.toString());
+        if(recentMessage == null){
+            return;
+        }
+        else{
+            chatJoinEntry.setLastReadMessageId(recentMessage.getChatRecordId());
+        }
+
         chatJoinEntryRepository.save(chatJoinEntry);
-        redisCacheService.removeSubscriptionFromChatId(userPrincipal.getSubscribedChatId().toString(), sessionId);
+        redisCacheService.removeSubscriptionFromChatId(chatId.toString(), sessionId);
         userPrincipal.setSubscribedChatId(-1L);
         redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
     }
