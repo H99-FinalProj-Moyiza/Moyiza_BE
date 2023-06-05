@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 public class OneDay extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "oneDayId")
+    @Column(name = "oneDayId")
     private Long id;
 
     @Column(nullable = false)
