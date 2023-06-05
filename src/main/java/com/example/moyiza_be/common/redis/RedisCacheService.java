@@ -63,7 +63,7 @@ public class RedisCacheService {
 
     public void deleteUserInfoFromCache(String sessionId) {
         HashOperations<String, Object, Object> hashOperations = redisTemplate.opsForHash();
-        hashOperations.delete(sessionId);
+        redisTemplate.delete(sessionId);
         log.info("removed userInfo cache for sessionId : "+ sessionId);
     }
 

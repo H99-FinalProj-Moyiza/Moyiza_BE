@@ -36,7 +36,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOriginPatterns("*")
 //                .addInterceptors(moyizaHandshakeInterceptor)
                 .withSockJS();
-        registry.setErrorHandler(chatErrorHandler);
     }
 
     @Override
