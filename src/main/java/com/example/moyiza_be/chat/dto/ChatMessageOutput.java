@@ -38,5 +38,6 @@ public class ChatMessageOutput {
         this.content = chatRecord.getContent();
         this.sentAt = chatRecord.getCreatedAt().toString();
         this.modifiedAt = chatRecord.getModifiedAt().toString();
+        this.unreadCount = 11111L;
     }
 }

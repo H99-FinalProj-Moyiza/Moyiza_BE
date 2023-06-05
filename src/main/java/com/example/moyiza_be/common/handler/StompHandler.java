@@ -30,70 +30,69 @@ public class StompHandler implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         //
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-        String sessionId = headerAccessor.getSessionId();
-        System.out.println("headerAccessor.getCommand() = " + headerAccessor.getCommand());
-        if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())
-        ) {
-            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
-            log.info("SUBSCRIBE : loaded userPrincipal : " + userPrincipal.toString());
-            String destination = headerAccessor.getDestination();
-            Long chatId = getChatIdFromDestination(destination);
-            log.info("SUBSCRIBE : destinationChatId : " + chatId);
-            userPrincipal.setSubscribedChatId(chatId);
-            redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
-            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
-            ChatJoinEntry chatJoinEntry =
-                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
-                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
-            return message;
-        }
+//        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+//        String sessionId = headerAccessor.getSessionId();
+//        System.out.println("headerAccessor.getCommand() = " + headerAccessor.getCommand());
+//        if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())
+//        ) {
+//            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
+//            log.info("SUBSCRIBE : loaded userPrincipal : " + userPrincipal.toString());
+//            String destination = headerAccessor.getDestination();
+//            Long chatId = getChatIdFromDestination(destination);
+//            log.info("SUBSCRIBE : destinationChatId : " + chatId);
+//            userPrincipal.setSubscribedChatId(chatId);
+//            redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
+//            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
+//            ChatJoinEntry chatJoinEntry =
+//                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
+//                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
+//            return message;
+//        }
 
-        if(StompCommand.CONNECT.equals(headerAccessor.getCommand())){
-            String bearerToken = headerAccessor.getFirstNativeHeader("ACCESS_TOKEN");
-            String token = jwtUtil.removePrefix(bearerToken);
-            if(!jwtUtil.validateToken(token)){
-                throw new IllegalArgumentException("토큰이 유효하지 않습니다");
-            }
-            Claims claims = jwtUtil.getClaimsFromToken(token);
-            ChatUserPrincipal userInfo;
-            try{
-//                Long subscribedChatId = getChatIdFromDestination(headerAccessor.getDestination());
-                userInfo = new ChatUserPrincipal(
-                        Long.valueOf(claims.get("userId").toString()),
-                        claims.get("nickName").toString(),
-                        claims.get("profileUrl").toString(),
-                        -1L
-                );
-                System.out.println("userInfo = " + userInfo.getUserNickname());
-                System.out.println("userInfo.getSubscribedChatId() = " + userInfo.getSubscribedChatId());
-                System.out.println("userInfo.getUserId() = " + userInfo.getUserId());
-                System.out.println("userInfo.getProfileUrl() = " + userInfo.getProfileUrl());
-            } catch(RuntimeException e){
-                log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
-                throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
-            }
-            redisCacheService.saveUserInfoToCache(sessionId, userInfo);
-        }
+//        if(StompCommand.CONNECT.equals(headerAccessor.getCommand())){
+//            String bearerToken = headerAccessor.getFirstNativeHeader("ACCESS_TOKEN");
+//            String token = jwtUtil.removePrefix(bearerToken);
+//            if(!jwtUtil.validateToken(token)){
+//                throw new IllegalArgumentException("토큰이 유효하지 않습니다");
+//            }
+//            Claims claims = jwtUtil.getClaimsFromToken(token);
+//            ChatUserPrincipal userInfo;
+//            try{
+////                Long subscribedChatId = getChatIdFromDestination(headerAccessor.getDestination());
+//                userInfo = new ChatUserPrincipal(
+//                        Long.valueOf(claims.get("userId").toString()),
+//                        claims.get("nickName").toString(),
+//                        claims.get("profileUrl").toString(),
+//                        -1L
+//                );
+//                System.out.println("userInfo = " + userInfo.getUserNickname());
+//                System.out.println("userInfo.getSubscribedChatId() = " + userInfo.getSubscribedChatId());
+//                System.out.println("userInfo.getUserId() = " + userInfo.getUserId());
+//                System.out.println("userInfo.getProfileUrl() = " + userInfo.getProfileUrl());
+//            } catch(RuntimeException e){
+//                log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
+//                throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
+//            }
+//            redisCacheService.saveUserInfoToCache(sessionId, userInfo);
+//        }
 
-        if(StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
-            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
-            log.info("UNSUBSCRIBE COMMAND FROM USER " + userPrincipal.getUserId());
-            unsubscribe(userPrincipal, sessionId);
+//        if(StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
+//            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
+//            log.info("UNSUBSCRIBE COMMAND FROM USER " + userPrincipal.getUserId());
+//            unsubscribe(userPrincipal, sessionId);
+//        }
 
-        }
-
-        if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
-            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
-            log.info("DISCONNECT SESSIONID : " + sessionId);
-            if(userPrincipal.getSubscribedChatId().equals(-1L)){
-                log.info("User is not subscribed to any chat .. continue DISCONNECT");
-            }
-            else{
-                unsubscribe(userPrincipal,sessionId);
-            }
-            redisCacheService.deleteUserInfoFromCache(sessionId);
-        }
+//        if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
+//            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
+//            log.info("DISCONNECT SESSIONID : " + sessionId);
+//            if(userPrincipal.getSubscribedChatId().equals(-1L)){
+//                log.info("User is not subscribed to any chat .. continue DISCONNECT");
+//            }
+//            else{
+//                unsubscribe(userPrincipal,sessionId);
+//            }
+//            redisCacheService.deleteUserInfoFromCache(sessionId);
+//        }
 
         return message;
     }
