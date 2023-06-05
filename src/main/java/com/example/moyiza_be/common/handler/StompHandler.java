@@ -39,16 +39,13 @@ public class StompHandler implements ChannelInterceptor {
             log.info("SUBSCRIBE : loaded userPrincipal : " + userPrincipal.toString());
             String destination = headerAccessor.getDestination();
             Long chatId = getChatIdFromDestination(destination);
-            log.info("SUBSCRIBE : destination chatId : " + chatId);
             userPrincipal.setSubscribedChatId(chatId);
             redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
-            log.info("SUBSCRIBE : UserInfo cache updated");
             redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
-            log.info("SUBSCRIBE : Subscription added to chatId : " + chatId);
             ChatJoinEntry chatJoinEntry =
                     chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
                                     .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
-//            return message;
+            return message;
         }
 
         if(StompCommand.CONNECT.equals(headerAccessor.getCommand())){
@@ -113,6 +110,7 @@ public class StompHandler implements ChannelInterceptor {
 
         ChatMessageOutput recentMessage = redisCacheService.loadRecentChat(chatId.toString());
         if(recentMessage == null){
+            log.info("recent message not present for chatId : " + chatId);
             return;
         }
         else{

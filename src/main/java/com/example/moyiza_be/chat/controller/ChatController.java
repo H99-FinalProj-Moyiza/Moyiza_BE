@@ -8,6 +8,7 @@ import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -57,6 +58,9 @@ public class ChatController {
     //채팅방 목록 조회
     @GetMapping("/chat")
     public ResponseEntity<List<ChatRoomInfo>> getChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails == null){
+            throw new NullPointerException("사용자 정보가 없습니다");
+        }
         return chatService.getChatRoomList(userDetails.getUser());
     }
 
