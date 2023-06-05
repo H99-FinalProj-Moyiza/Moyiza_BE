@@ -50,16 +50,6 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-    @Bean
-    RedisTemplate<String, String> redisStringSetTemplate(){
-        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-
-        return redisTemplate;
-    }
-
     //Redis를 캐시로 사용하기 위한 CacheManager 설정
     @Bean
     public CacheManager cacheManager() {
