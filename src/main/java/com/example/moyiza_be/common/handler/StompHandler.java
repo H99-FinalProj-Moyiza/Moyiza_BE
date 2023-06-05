@@ -123,4 +123,5 @@ public class StompHandler implements ChannelInterceptor {
         userPrincipal.setSubscribedChatId(-1L);
         redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
     }
+
 }
