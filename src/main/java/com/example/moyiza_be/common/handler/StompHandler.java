@@ -5,29 +5,17 @@ import com.example.moyiza_be.chat.dto.ChatMessageOutput;
 import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
 import com.example.moyiza_be.chat.entity.ChatJoinEntry;
 import com.example.moyiza_be.chat.repository.ChatJoinEntryRepository;
-import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
-import com.example.moyiza_be.common.security.userDetails.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.broker.SubscriptionRegistry;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.support.AbstractSubscribableChannel;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Component
@@ -78,7 +66,10 @@ public class StompHandler implements ChannelInterceptor {
                         claims.get("profileUrl").toString(),
                         -1L
                 );
-                log.info("user " + userInfo.getUserNickname() + " connected to websocket");
+                System.out.println("userInfo = " + userInfo.getUserNickname());
+                System.out.println("userInfo.getSubscribedChatId() = " + userInfo.getSubscribedChatId());
+                System.out.println("userInfo.getUserId() = " + userInfo.getUserId());
+                System.out.println("userInfo.getProfileUrl() = " + userInfo.getProfileUrl());
             } catch(RuntimeException e){
                 log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
                 throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
