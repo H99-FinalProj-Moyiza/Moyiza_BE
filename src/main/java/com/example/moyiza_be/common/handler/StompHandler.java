@@ -84,9 +84,9 @@ public class StompHandler implements ChannelInterceptor {
 
         if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
+            log.info("DISCONNECT SESSIONID : " + sessionId);
             if(userPrincipal.getSubscribedChatId().equals(-1L)){
-                log.info("User is not subscribed to any chat .. forcing DISCONNECT");
-                return message;
+                log.info("User is not subscribed to any chat .. continue DISCONNECT");
             }
             else{
                 unsubscribe(userPrincipal,sessionId);
