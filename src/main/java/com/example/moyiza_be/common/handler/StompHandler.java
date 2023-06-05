@@ -46,8 +46,6 @@ public class StompHandler implements ChannelInterceptor {
         String sessionId = headerAccessor.getSessionId();
         System.out.println("headerAccessor.getCommand() = " + headerAccessor.getCommand());
         if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())
-//                StompCommand.DISCONNECT.equals(headerAccessor.getCommand()) ||
-//                    StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())
         ) {
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             String destination = headerAccessor.getDestination();
