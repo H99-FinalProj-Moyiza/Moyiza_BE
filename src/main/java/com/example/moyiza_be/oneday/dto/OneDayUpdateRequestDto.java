@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 
 @Getter
@@ -17,7 +18,7 @@ public class OneDayUpdateRequestDto {
     private final String tagString;
     private final GenderPolicyEnum genderPolicy;
     private final Integer agePolicy;
-    private final Calendar oneDayStartTime;
+    private final LocalDateTime oneDayStartTime;
     private final String oneDayLocation;
     private final String oneDayLatitude;
     private final String oneDayLongitude;

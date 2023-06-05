@@ -1,13 +1,10 @@
 package com.example.moyiza_be.oneday.dto;
 
-import com.example.moyiza_be.event.entity.Event;
-import com.example.moyiza_be.event.entity.EventAttendant;
 import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.oneday.entity.OneDayAttendant;
-import com.example.moyiza_be.oneday.repository.OneDayAttendantRepository;
 import lombok.Getter;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -19,13 +16,13 @@ public class OneDayDetailResponseDto {
     private String oneDayLatitude;
     private String oneDayLongitude;
     //    private Tag tag;
-    private Calendar oneDayStartTime;
+    private LocalDateTime oneDayStartTime;
     private int oneDayGroupSize;
     private boolean deleted;
-    private String image;
+    private List<String> imageList;
     private List<OneDayAttendant> oneDayAttendantList;
     private int oneDayAttendantListSize;
-    public OneDayDetailResponseDto(OneDay oneDay, List<OneDayAttendant> attendantList, int people) {
+    public OneDayDetailResponseDto(OneDay oneDay,List<String> oneDayImageUrlList, List<OneDayAttendant> attendantList, Integer people) {
         this.id = oneDay.getId();
         this.oneDayTitle = oneDay.getOneDayTitle();
         this.oneDayContent = oneDay.getOneDayContent();
@@ -34,8 +31,8 @@ public class OneDayDetailResponseDto {
         this.oneDayLongitude = oneDay.getOneDayLongitude();
         this.oneDayStartTime = oneDay.getOneDayStartTime();
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
-        this.deleted = oneDay.isDeleted();
-        this.image = oneDay.getOneDayImage();
+        this.deleted = oneDay.getDeleted();
+        this.imageList = oneDayImageUrlList;
         this.oneDayAttendantList = attendantList;
         this.oneDayAttendantListSize = people;
     }

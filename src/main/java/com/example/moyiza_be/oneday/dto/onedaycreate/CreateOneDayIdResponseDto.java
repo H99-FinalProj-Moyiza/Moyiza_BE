@@ -1,4 +1,4 @@
-package com.example.moyiza_be.oneday.dto;
+package com.example.moyiza_be.oneday.dto.onedaycreate;
 
 import com.example.moyiza_be.club.dto.EnumOptions;
 import lombok.Getter;
