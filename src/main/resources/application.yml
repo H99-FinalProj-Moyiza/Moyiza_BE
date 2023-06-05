@@ -50,7 +50,8 @@ spring:
           client-secret: ENC(f/EoiRbGMepGr4d9w2+dhrgRheoEgAkHzfRmwuOXWfFz08TPuV8j51i1W5a+AuJo)
           client-authentication-method: POST
           authorization-grant-type: authorization_code
-          redirect-uri: http://moyiza.s3-website.ap-northeast-2.amazonaws.com/login/oauth2/code/kakao
+#          redirect-uri: http://moyiza.s3-website.ap-northeast-2.amazonaws.com/login/oauth2/code/kakao
+          redirect-uri: http://3.34.182.174/login/oauth2/code/kakao
           scope:
             - account_email
             - profile_nickname
