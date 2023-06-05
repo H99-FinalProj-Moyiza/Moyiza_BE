@@ -36,7 +36,7 @@ public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisCacheService redisCacheService;
     private final ChatJoinEntryRepository chatJoinEntryRepository;
-    private final SimpMessageSendingOperations sendingOperations;
+//    private final SimpMessageSendingOperations sendingOperations;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -59,7 +59,6 @@ public class StompHandler implements ChannelInterceptor {
                     chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
                                     .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
             headerAccessor.setHeader("lastReadMessage", chatJoinEntry.getLastReadMessageId());
-            sendingOperations.send(message);
 
             return message;
         }
