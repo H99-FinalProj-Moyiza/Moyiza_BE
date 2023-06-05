@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -45,6 +46,11 @@ public class ChatController {
 
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         String sessionId = headerAccessor.getSessionId();
+        if(StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())){
+            System.out.println("\"SUBSCRIBE message comming through to controller\" = " + "SUBSCRIBE message comming through to controller");
+            System.out.println("headerAccessor = " + headerAccessor);
+            return;
+        }
         ChatUserPrincipal userInfo = redisCacheService.getUserInfoFromCache(sessionId);
         chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
     }
