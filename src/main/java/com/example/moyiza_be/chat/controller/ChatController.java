@@ -1,14 +1,13 @@
 package com.example.moyiza_be.chat.controller;
 
 import com.example.moyiza_be.chat.dto.ChatMessageInput;
-import com.example.moyiza_be.chat.dto.ChatRecordDto;
+import com.example.moyiza_be.chat.dto.ChatMessageOutput;
 import com.example.moyiza_be.chat.dto.ChatRoomInfo;
 import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -47,7 +46,6 @@ public class ChatController {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         String sessionId = headerAccessor.getSessionId();
         ChatUserPrincipal userInfo = redisCacheService.getUserInfoFromCache(sessionId);
-
         chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
     }
 
@@ -59,7 +57,7 @@ public class ChatController {
 
     //채팅 내역 조회
     @GetMapping("/chat/{chatId}")
-    public ResponseEntity<Page<ChatRecordDto>> getChatRecordList(
+    public ResponseEntity<Page<ChatMessageOutput>> getChatRecordList(
             @PageableDefault(page = 0, size = 50, sort = "CreatedAt", direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable Long chatId,
             @AuthenticationPrincipal UserDetailsImpl userDetails

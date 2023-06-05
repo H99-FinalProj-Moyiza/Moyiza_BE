@@ -29,4 +29,14 @@ public class ChatMessageOutput {
         this.sentAt = chatRecord.getCreatedAt();
         this.modifiedAt = chatRecord.getModifiedAt();
     }
+
+    public ChatMessageOutput(ChatRecord chatRecord){
+        this.senderId = chatRecord.getSenderId();
+        this.senderProfileUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/20fa6d6a-09ba-4cf1-800b-6f225703c85c_shawn_raboutou2.jpg";
+        this.senderNickname = chatRecord.getSenderId().toString();
+        this.chatRecordId = chatRecord.getId();
+        this.content = chatRecord.getContent();
+        this.sentAt = chatRecord.getCreatedAt();
+        this.modifiedAt = chatRecord.getModifiedAt();
+    }
 }

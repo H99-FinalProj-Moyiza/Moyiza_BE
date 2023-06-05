@@ -8,15 +8,14 @@ import com.example.moyiza_be.chat.repository.ChatJoinEntryRepository;
 import com.example.moyiza_be.chat.repository.ChatRecordRepository;
 import com.example.moyiza_be.chat.repository.ChatRepository;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
+import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +30,7 @@ public class ChatService {
     private final ChatRecordRepository chatRecordRepository;
     private final ChatJoinEntryRepository chatJoinEntryRepository;
     private final ChatRepository chatRepository;
+    private final RedisCacheService cacheService;
 
     public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
                                    Long chatId,
@@ -42,6 +42,7 @@ public class ChatService {
         chatRecordRepository.save(chatRecord);  // id받아오려면 saveAndFlush로 변경
         String destination = "/chat/" + chatId;
         ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal);
+        cacheService.addRecentChatToList(chatId.toString(), messageOutput);
         sendingOperations.convertAndSend(destination, messageOutput);
     }
 
@@ -72,16 +73,20 @@ public class ChatService {
     }
 
     //채팅 내역 조회
-    public ResponseEntity<Page<ChatRecordDto>> getChatRoomRecord(User user, Long chatId, Pageable pageable){
+    public ResponseEntity<Page<ChatMessageOutput>> getChatRoomRecord(User user, Long chatId, Pageable pageable){
         //나중에 쿼리 다듬기  ==> senderId, user Join해서, id, nickname, profileUrl도 가져와야함
+        if(pageable.getPageNumber() == 0){
+            return ResponseEntity.ok(cacheService.loadRecentChatList(chatId.toString(), pageable));
+        }
+
         ChatJoinEntry chatJoinEntry =
                 chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
                 .orElse(null);
         if(chatJoinEntry == null){ throw new NullPointerException("채팅방을 찾을 수 없습니다"); }
 
-        Page<ChatRecordDto> chatRecordDtoPage = chatRecordRepository.findAllByChatIdAndCreatedAtAfter
+        Page<ChatMessageOutput> chatRecordDtoPage = chatRecordRepository.findAllByChatIdAndCreatedAtAfter
                                                 (pageable, chatId, chatJoinEntry.getCreatedAt())
-                                                    .map(ChatRecordDto::new);
+                                                    .map(ChatMessageOutput::new);
         return ResponseEntity.ok(chatRecordDtoPage);
     }
 
