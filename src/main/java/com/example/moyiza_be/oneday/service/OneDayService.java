@@ -32,7 +32,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.*;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -55,7 +55,7 @@ public class OneDayService {
                 .peek(image->image.setOneDayId(oneDay.getId()))
                 .map(OneDayImageUrl::getImageUrl)
                 .toList();
-        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY);
+        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         oneDay.setDeleted(false);
         oneDay.setAttendantsNum(1);
         oneDayRepository.saveAndFlush(oneDay);
