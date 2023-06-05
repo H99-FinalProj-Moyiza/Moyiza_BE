@@ -3,6 +3,7 @@ package com.example.moyiza_be.oneday.controller;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.oneday.dto.OneDayRequestDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
+import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.oneday.service.OneDayService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,4 +59,15 @@ public class OneDayController {
     public ResponseEntity<?> cancelOneDay(@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return oneDayService.cancelOneDay(oneDayId, userDetails.getUser());
     }
+
+    //거리기반 원데이 추천
+    @GetMapping("/recommend")
+    public ResponseEntity<List<OneDay>> recommendByDistance(@RequestParam("lat") double nowLatitude, @RequestParam("lon") double nowLongitude) {
+        return oneDayService.recommendByDistance(nowLatitude, nowLongitude);
+    }
+//    //거리기반 원데이 추천 테스트
+//    @GetMapping("/{lat}/{lon}")
+//    public ResponseEntity<List<OneDay>> recommendByDistanceTest(@PathVariable(name = "lat") double nowLatitude, @PathVariable(name = "lon") double nowLongitude){
+//        return oneDayService.recommendByDistanceTest(nowLatitude, nowLongitude);
+//    }
 }
