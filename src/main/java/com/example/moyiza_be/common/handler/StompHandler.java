@@ -33,22 +33,6 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         String sessionId = headerAccessor.getSessionId();
         System.out.println("headerAccessor.getCommand() = " + headerAccessor.getCommand());
-//        if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())
-//        ) {
-//            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
-//            log.info("SUBSCRIBE : loaded userPrincipal : " + userPrincipal.toString());
-//            String destination = headerAccessor.getDestination();
-//            Long chatId = getChatIdFromDestination(destination);
-//            log.info("SUBSCRIBE : destinationChatId : " + chatId);
-//            userPrincipal.setSubscribedChatId(chatId);
-//            redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
-//            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
-//            ChatJoinEntry chatJoinEntry =
-//                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
-//                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
-//            return message;
-//        }
-
         if(StompCommand.CONNECT.equals(headerAccessor.getCommand())){
             String bearerToken = headerAccessor.getFirstNativeHeader("ACCESS_TOKEN");
             String token = jwtUtil.removePrefix(bearerToken);
@@ -74,6 +58,23 @@ public class StompHandler implements ChannelInterceptor {
                 throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
             }
             redisCacheService.saveUserInfoToCache(sessionId, userInfo);
+            return message;
+        }
+
+        if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())
+        ) {
+            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
+            log.info("SUBSCRIBE : loaded userPrincipal : " + userPrincipal.toString());
+//            String destination = headerAccessor.getDestination();
+//            Long chatId = getChatIdFromDestination(destination);
+//            log.info("SUBSCRIBE : destinationChatId : " + chatId);
+//            userPrincipal.setSubscribedChatId(chatId);
+//            redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
+//            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
+//            ChatJoinEntry chatJoinEntry =
+//                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
+//                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
+            return message;
         }
 
 //        if(StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
