@@ -56,7 +56,7 @@ public class StompHandler implements ChannelInterceptor {
             ChatJoinEntry chatJoinEntry =
                     chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
                                     .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
-            return message;
+//            return message;
         }
 
         if(StompCommand.CONNECT.equals(headerAccessor.getCommand())){
@@ -68,7 +68,6 @@ public class StompHandler implements ChannelInterceptor {
             Claims claims = jwtUtil.getClaimsFromToken(token);
             ChatUserPrincipal userInfo;
             try{
-                System.out.println("headerAccessor.getDestination().toString() = " + headerAccessor.getDestination());
 //                Long subscribedChatId = getChatIdFromDestination(headerAccessor.getDestination());
                 userInfo = new ChatUserPrincipal(
                         Long.valueOf(claims.get("userId").toString()),
@@ -76,6 +75,7 @@ public class StompHandler implements ChannelInterceptor {
                         claims.get("profileUrl").toString(),
                         -1L
                 );
+                log.info("user " + userInfo.getUserNickname() + " connected to websocket");
             } catch(RuntimeException e){
                 log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
                 throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
