@@ -1,11 +1,13 @@
 package com.example.moyiza_be.oneday.controller;
 
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
-import com.example.moyiza_be.oneday.dto.OneDayRequestDto;
+import com.example.moyiza_be.oneday.dto.OneDayDetailResponse;
+import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
 import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.oneday.service.OneDayService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,20 +26,20 @@ public class OneDayController {
     // Create
     @RequestMapping(value = "/", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
 //    @PostMapping
-    public ResponseEntity<?> createOneDay(@RequestPart(value = "data") OneDayRequestDto requestDto,
-                                          @RequestPart(value = "imageFile") MultipartFile storedFileUrl,
-                                          @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        return oneDayService.createOneDay(requestDto, userDetails.getUser(), storedFileUrl);
+    public OneDayDetailResponse createOneDay(@RequestPart(value = "data") OneDayCreateConfirmDto requestDto,
+                                             @RequestPart(value = "imageFile") MultipartFile storedFileUrl,
+                                             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        return oneDayService.createOneDay(requestDto);
     }
     // ReadAll
     @GetMapping
     public ResponseEntity<?> getOneDayList() {
-        return oneDayService.getOneDayList();
+        return oneDayService.getOneDayList(Pageable.unpaged(), null, null);
     }
     // ReadOne
     @GetMapping("/{oneDayId}")
     public ResponseEntity<?> getOneDay(@PathVariable Long oneDayId) {
-        return oneDayService.getOneDay(oneDayId);
+        return oneDayService.getOneDayDetail(oneDayId);
     }
     // Update
     @PutMapping("/{oneDayId}")
@@ -47,7 +49,7 @@ public class OneDayController {
     // Delete
     @DeleteMapping("/{oneDayId}")
     public ResponseEntity<?> deleteOneDay(@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return oneDayService.deleteOneDay(oneDayId, userDetails.getUser());
+        return oneDayService.deleteOneDay(userDetails.getUser(), oneDayId);
     }
     // Attend
     @PostMapping("/{oneDayId}/join")

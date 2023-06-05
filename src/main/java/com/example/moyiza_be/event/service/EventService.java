@@ -123,7 +123,7 @@ public class EventService {
         if(attendantRepository.findByEventIdAndUserId(eventId, user.getId()) != null) {
             return new ResponseEntity<>(new Message("중복 가입 불가"), HttpStatus.FORBIDDEN);
         }
-        EventAttendant eventAttendant = new EventAttendant(eventId, user.getId(), user.getNickname());
+        EventAttendant eventAttendant = new EventAttendant(eventId, user.getId(), user);
         attendantRepository.save(eventAttendant);
         return ResponseEntity.ok("참석되었습니다.");
     }
