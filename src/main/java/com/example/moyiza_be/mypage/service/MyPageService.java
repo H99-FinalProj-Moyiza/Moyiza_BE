@@ -42,6 +42,7 @@ public class MyPageService {
                         .clubTag(club.getTagString())
                         .clubTitle(club.getTitle())
                         .thumbnailUrl(club.getThumbnailUrl())
+                        .nowMemberCount(club.getNowMemberCount())
                                 .build())
                 .collect(Collectors.toList());
 
@@ -59,6 +60,7 @@ public class MyPageService {
                         .clubTag(club.getTagString())
                         .clubTitle(club.getTitle())
                         .thumbnailUrl(club.getThumbnailUrl())
+                        .nowMemberCount(club.getNowMemberCount())
                         .build())
                 .collect(Collectors.toList());
 

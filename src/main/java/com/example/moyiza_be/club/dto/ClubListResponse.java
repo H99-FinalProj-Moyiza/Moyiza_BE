@@ -3,7 +3,6 @@ package com.example.moyiza_be.club.dto;
 import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.enums.TagEnum;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class ClubListResponse {
         this.clubTitle = club.getTitle();
         this.clubTag = TagEnum.parseTag(club.getTagString());
         this.maxGroupSize = club.getMaxGroupSize();
-        this.nowMemberCount = 11111;   // queryDSL 이후 수정
+        this.nowMemberCount = club.getNowMemberCount();   // queryDSL 이후 수정
         this.thumbnailUrl = club.getThumbnailUrl();
     }
 }

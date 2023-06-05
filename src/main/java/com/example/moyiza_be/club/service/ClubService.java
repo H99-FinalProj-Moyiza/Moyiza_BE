@@ -53,6 +53,8 @@ public class ClubService {
         }
         ClubJoinEntry joinEntry = new ClubJoinEntry(user.getId(), clubId);
         clubJoinEntryRepository.save(joinEntry);
+        Club club = new Club();
+        club.addAttend();
         //미래에 조건검증 추가
         Message message = new Message("가입이 승인되었습니다.");
         chatService.joinChat(clubId, ChatTypeEnum.CLUB, user);
@@ -115,6 +117,8 @@ public class ClubService {
         if (joinEntry != null) {
             clubJoinEntryRepository.delete(joinEntry);
             Message message = new Message("클럽에서 탈퇴되었습니다.");
+            Club club = new Club();
+            club.cancelAttend();
             chatService.leaveChat(clubId, ChatTypeEnum.CLUB, user);
             return ResponseEntity.ok(message);
         } else {
@@ -132,6 +136,8 @@ public class ClubService {
         if (joinEntry != null) {
             clubJoinEntryRepository.delete(joinEntry);
             log.info("user " + userId + " banned user " + banRequest.getBanUserId() + " from club " + clubId);
+            Club club = new Club();
+            club.cancelAttend();
             //추방 후 가입 제한 추가시 여기에 logic
             Message message = new Message(String.format("user %d 가 클럽에서 강퇴되었습니다",banRequest.getBanUserId()));
             return ResponseEntity.ok(message);
