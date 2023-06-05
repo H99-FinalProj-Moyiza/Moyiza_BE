@@ -79,6 +79,7 @@ public class StompHandler implements ChannelInterceptor {
         if(StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             log.info("UNSUBSCRIBE COMMAND FROM USER " + userPrincipal.getUserId());
+
             unsubscribe(userPrincipal, sessionId);
         }
 
@@ -89,7 +90,6 @@ public class StompHandler implements ChannelInterceptor {
                 unsubscribe(userPrincipal,sessionId);
             }
             redisCacheService.deleteUserInfoFromCache(sessionId);
-
         }
 
         return message;
