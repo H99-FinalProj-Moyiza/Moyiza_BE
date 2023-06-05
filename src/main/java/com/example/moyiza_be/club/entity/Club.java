@@ -36,6 +36,8 @@ public class Club extends TimeStamped {
     private Integer maxGroupSize;
     @Column(nullable = false)
     private String thumbnailUrl;
+    @Column
+    private Integer nowMemberCount = 0;
 
     @Column(nullable = false)
     private Boolean isDeleted = false;
@@ -50,10 +52,18 @@ public class Club extends TimeStamped {
         this.genderPolicy = creationRequest.getGenderPolicy();
         this.maxGroupSize = creationRequest.getMaxGroupSize();
         this.thumbnailUrl = creationRequest.getThumbnailUrl();
-
     }
+
 
     public void flagDeleted(Boolean deleted) {
         this.isDeleted = deleted;
+    }
+
+    public void addAttend() {
+        nowMemberCount++;
+    }
+
+    public void cancelAttend() {
+        nowMemberCount--;
     }
 }
