@@ -84,7 +84,10 @@ public class StompHandler implements ChannelInterceptor {
 
         if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
-            if(userPrincipal.getSubscribedChatId().equals(-1L)){return message;}
+            if(userPrincipal.getSubscribedChatId().equals(-1L)){
+                log.info("User is not subscribed to any chat .. forcing DISCONNECT");
+                return message;
+            }
             else{
                 unsubscribe(userPrincipal,sessionId);
             }
@@ -111,7 +114,6 @@ public class StompHandler implements ChannelInterceptor {
         ChatMessageOutput recentMessage = redisCacheService.loadRecentChat(chatId.toString());
         if(recentMessage == null){
             log.info("recent message not present for chatId : " + chatId);
-            return;
         }
         else{
             chatJoinEntry.setLastReadMessageId(recentMessage.getChatRecordId());
