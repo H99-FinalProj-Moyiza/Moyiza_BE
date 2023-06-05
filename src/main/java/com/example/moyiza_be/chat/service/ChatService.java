@@ -41,9 +41,11 @@ public class ChatService {
         ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userPrincipal.getUserId());
         chatRecordRepository.save(chatRecord);  // id받아오려면 saveAndFlush로 변경
         String destination = "/chat/" + chatId;
+        String alarmDestination = "/chatalarm/" + chatId;
         ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal);
         cacheService.addRecentChatToList(chatId.toString(), messageOutput);
         sendingOperations.convertAndSend(destination, messageOutput);
+        sendingOperations.convertAndSend(alarmDestination, messageOutput);
     }
 
 

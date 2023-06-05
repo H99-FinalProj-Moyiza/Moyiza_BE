@@ -17,7 +17,7 @@ public class ChatMessageOutput {
     private String senderProfileUrl;
     private String content;
     private String sentAt;
-    private LocalDateTime modifiedAt;
+    private String modifiedAt;
 
 
     public ChatMessageOutput(ChatRecord chatRecord, ChatUserPrincipal userPrincipal) {
@@ -27,7 +27,7 @@ public class ChatMessageOutput {
         this.chatRecordId = chatRecord.getId();
         this.content = chatRecord.getContent();
         this.sentAt = chatRecord.getCreatedAt().toString();
-        this.modifiedAt = chatRecord.getModifiedAt();
+        this.modifiedAt = chatRecord.getModifiedAt().toString();
     }
 
     public ChatMessageOutput(ChatRecord chatRecord){
@@ -37,6 +37,6 @@ public class ChatMessageOutput {
         this.chatRecordId = chatRecord.getId();
         this.content = chatRecord.getContent();
         this.sentAt = chatRecord.getCreatedAt().toString();
-        this.modifiedAt = chatRecord.getModifiedAt();
+        this.modifiedAt = chatRecord.getModifiedAt().toString();
     }
 }
