@@ -1,5 +1,6 @@
 package com.example.moyiza_be.config;
 
+import com.example.moyiza_be.common.handler.ChatErrorHandler;
 import com.example.moyiza_be.common.handler.MoyizaHandshakeInterceptor;
 import com.example.moyiza_be.common.handler.StompHandler;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final StompHandler stompHandler; // jwt 인증
     private final MoyizaHandshakeInterceptor moyizaHandshakeInterceptor;
+    private final ChatErrorHandler chatErrorHandler;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -34,6 +36,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOriginPatterns("*")
 //                .addInterceptors(moyizaHandshakeInterceptor)
                 .withSockJS();
+        registry.setErrorHandler(chatErrorHandler);
     }
 
     @Override
