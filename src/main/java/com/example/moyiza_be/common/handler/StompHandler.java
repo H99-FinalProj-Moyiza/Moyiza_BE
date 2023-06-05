@@ -40,7 +40,7 @@ public class StompHandler implements ChannelInterceptor {
             String destination = headerAccessor.getDestination();
             Long chatId = getChatIdFromDestination(destination);
             userPrincipal.setSubscribedChatId(chatId);
-            redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
+//            redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
 //            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
             ChatJoinEntry chatJoinEntry =
                     chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
