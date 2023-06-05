@@ -47,8 +47,10 @@ public class StompHandler implements ChannelInterceptor {
         ) {
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             String destination = headerAccessor.getDestination();
-            userPrincipal.setSubscribedChatId(getChatIdFromDestination(destination));
+            Long chatId = getChatIdFromDestination(destination);
+            userPrincipal.setSubscribedChatId(chatId);
             redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
+            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
             return message;
         }
 
@@ -79,8 +81,8 @@ public class StompHandler implements ChannelInterceptor {
         if(StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             log.info("UNSUBSCRIBE COMMAND FROM USER " + userPrincipal.getUserId());
-
             unsubscribe(userPrincipal, sessionId);
+
         }
 
         if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
@@ -109,6 +111,7 @@ public class StompHandler implements ChannelInterceptor {
                         .orElseThrow( () -> new NullPointerException("채팅방의 유저정보를 찾을 수 없습니다"));
         chatJoinEntry.setLastDisconnected(LocalDateTime.now());
         chatJoinEntryRepository.save(chatJoinEntry);
+        redisCacheService.removeSubscriptionFromChatId(userPrincipal.getSubscribedChatId().toString(), sessionId);
         userPrincipal.setSubscribedChatId(-1L);
         redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
     }
