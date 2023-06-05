@@ -10,10 +10,12 @@ import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.broker.SubscriptionRegistry;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -34,6 +36,7 @@ public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisCacheService redisCacheService;
     private final ChatJoinEntryRepository chatJoinEntryRepository;
+    private final SimpMessageSendingOperations sendingOperations;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -52,6 +55,12 @@ public class StompHandler implements ChannelInterceptor {
             userPrincipal.setSubscribedChatId(chatId);
             redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
             redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
+            ChatJoinEntry chatJoinEntry =
+                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
+                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
+            headerAccessor.setHeader("lastReadMessage", chatJoinEntry.getLastReadMessageId());
+            sendingOperations.send(message);
+
             return message;
         }
 
