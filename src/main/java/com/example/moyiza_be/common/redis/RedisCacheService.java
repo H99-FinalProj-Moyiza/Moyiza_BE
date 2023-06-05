@@ -97,9 +97,9 @@ public class RedisCacheService {
         setOperations.remove(chatId + CONNECTED_SESSIONS_IDENTIFIER, sessionId);
     }
 
-    public void countSubscriptionToChatId(String chatId){
+    public Long countSubscriptionToChatId(String chatId){
         SetOperations<String, String> setOperations = redisStringListTemplate.opsForSet();
-        setOperations.size(chatId + CONNECTED_SESSIONS_IDENTIFIER);
+        return setOperations.size(chatId + CONNECTED_SESSIONS_IDENTIFIER);
     }
 
 //

@@ -40,9 +40,11 @@ public class ChatService {
 
         ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userPrincipal.getUserId());
         chatRecordRepository.save(chatRecord);  // id받아오려면 saveAndFlush로 변경
+        Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
+        Long chatMemberCount = getChatMemberCount(chatId);
+        ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal, chatMemberCount - subscriptionCount);
         String destination = "/chat/" + chatId;
         String alarmDestination = "/chatalarm/" + chatId;
-        ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal);
         cacheService.addRecentChatToList(chatId.toString(), messageOutput);
         sendingOperations.convertAndSend(destination, messageOutput);
         sendingOperations.convertAndSend(alarmDestination, messageOutput);
@@ -128,7 +130,10 @@ public class ChatService {
     private Chat loadChat(Long roomIdentifier, ChatTypeEnum chatTypeEnum){
         return chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatTypeEnum)
                 .orElseThrow(() -> new NullPointerException("채팅방을 찾을 수 없습니다"));
+    }
 
+    private Long getChatMemberCount(Long chatId){
+        return chatJoinEntryRepository.countByChatIdAndAndIsCurrentlyJoinedTrue(chatId);
     }
 
 }

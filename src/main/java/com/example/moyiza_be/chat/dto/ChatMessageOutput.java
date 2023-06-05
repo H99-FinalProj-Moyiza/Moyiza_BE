@@ -18,9 +18,10 @@ public class ChatMessageOutput {
     private String content;
     private String sentAt;
     private String modifiedAt;
+    private Long unreadCount;
 
 
-    public ChatMessageOutput(ChatRecord chatRecord, ChatUserPrincipal userPrincipal) {
+    public ChatMessageOutput(ChatRecord chatRecord, ChatUserPrincipal userPrincipal, Long unreadCount) {
         this.senderId = chatRecord.getSenderId();
         this.senderProfileUrl = userPrincipal.getProfileUrl();
         this.senderNickname = userPrincipal.getUserNickname();
@@ -28,6 +29,7 @@ public class ChatMessageOutput {
         this.content = chatRecord.getContent();
         this.sentAt = chatRecord.getCreatedAt().toString();
         this.modifiedAt = chatRecord.getModifiedAt().toString();
+        this.unreadCount = unreadCount;
     }
 
     public ChatMessageOutput(ChatRecord chatRecord){
