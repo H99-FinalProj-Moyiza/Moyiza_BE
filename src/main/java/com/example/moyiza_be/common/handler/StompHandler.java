@@ -88,6 +88,7 @@ public class StompHandler implements ChannelInterceptor {
             else{
                 unsubscribe(userPrincipal,sessionId);
             }
+            redisCacheService.deleteUserInfoFromCache(sessionId);
 
         }
 

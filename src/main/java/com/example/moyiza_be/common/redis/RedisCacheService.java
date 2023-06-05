@@ -1,13 +1,21 @@
 package com.example.moyiza_be.common.redis;
 
+import com.example.moyiza_be.chat.dto.ChatMessageOutput;
 import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
+import com.example.moyiza_be.chat.entity.Chat;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -17,6 +25,8 @@ public class RedisCacheService {
 
 //    private static final String SESSION_PREFIX = "session:";
     private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, ChatMessageOutput> redisRecentChatTemplate;
+
 
     //세션id 생성
 //    public String generateSessionId() {
@@ -45,6 +55,28 @@ public class RedisCacheService {
         String profileUrl = userInfoMap.get("profileUrl").toString();
         Long subscribedChatId = Long.valueOf(userInfoMap.get("subscribedChatId").toString());
         return new ChatUserPrincipal(userId, nickname, profileUrl, subscribedChatId);
+    }
+
+    public void deleteUserInfoFromCache(String sessionId) {
+        HashOperations<String, Object, Object> hashOperations = redisTemplate.opsForHash();
+        log.info("removing userInfo cache for sessionId : "+ sessionId);
+        hashOperations.delete(sessionId);
+    }
+
+    public void addRecentChatToList(String chatId, ChatMessageOutput messageOutput){
+        ListOperations<String, ChatMessageOutput> listOperations = redisRecentChatTemplate.opsForList();
+        listOperations.leftPush(chatId,messageOutput);
+        listOperations.trim(chatId, 0, 50);
+    }
+
+    public Page<ChatMessageOutput> loadRecentChatList(String chatId, Pageable pageable){
+        ListOperations<String, ChatMessageOutput> listOperations = redisRecentChatTemplate.opsForList();
+        List<ChatMessageOutput> recentChatList = listOperations.range(chatId, 0, 50);
+        if (recentChatList == null){
+            return new PageImpl<>(new LinkedList<>(), pageable, 0L);
+        }
+
+        return new PageImpl<>(recentChatList, pageable, -1L);
     }
 
 //
