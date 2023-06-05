@@ -70,10 +70,11 @@ public class StompHandler implements ChannelInterceptor {
             log.info("SUBSCRIBE : destinationChatId : " + chatId);
             userPrincipal.setSubscribedChatId(chatId);
             redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
-//            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
-//            ChatJoinEntry chatJoinEntry =
-//                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
-//                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
+            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
+
+            ChatJoinEntry chatJoinEntry =
+                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(chatId, userPrincipal.getUserId())
+                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
             return message;
         }
 
