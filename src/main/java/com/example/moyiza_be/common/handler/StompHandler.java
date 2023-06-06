@@ -78,10 +78,6 @@ public class StompHandler implements ChannelInterceptor {
 //            ChatJoinEntry chatJoinEntry =
 //                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(userPrincipal.getUserId(), chatId)
 //                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
-            log.info("Before sending subscribe message");
-            channel.send(message);
-            log.info("After sending subscribe message");
-
 
             return message;
         }
@@ -136,4 +132,10 @@ public class StompHandler implements ChannelInterceptor {
         redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
     }
 
+    @Override
+    public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
+        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+        headerAccessor.setDestination("/chat/" + "4");
+        channel.send(message);
+    }
 }
