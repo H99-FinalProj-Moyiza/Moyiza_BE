@@ -68,6 +68,7 @@ public class StompHandler implements ChannelInterceptor {
             ChatJoinEntry chatJoinEntry =
                     chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(userPrincipal.getUserId(), chatId)
                                     .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
+            headerAccessor.setHeader("lastRead", 123);
 
             return message;
         }
