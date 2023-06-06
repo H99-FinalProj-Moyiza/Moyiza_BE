@@ -3,6 +3,7 @@ package com.example.moyiza_be.common.handler;
 
 import com.example.moyiza_be.chat.dto.ChatMessageOutput;
 import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
+import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisCacheService redisCacheService;
+    private final ChatService chatService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -61,15 +63,15 @@ public class StompHandler implements ChannelInterceptor {
             userPrincipal.setSubscribedChatId(chatId);
             redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
 
-//            Long lastReadMessage = redisCacheService.getUserLastReadMessage(chatId.toString(), userPrincipal.getUserId().toString());
-//            if(lastReadMessage == null){
-//                throw new NullPointerException("123");
-//            }
-//
-//            if(lastReadMessage != null){
-//                log.info("Setting header for readcount :: user " + userPrincipal.getUserId() + "lastread message : " + lastReadMessage);
-//                headerAccessor.setHeader("lastRead", 123);
-//            }
+            Long lastReadMessageId = redisCacheService.getUserLastReadMessageId(chatId.toString(), userPrincipal.getUserId().toString());
+            if(lastReadMessageId == null){
+                log.info("User has no lastReadMessage");
+            }
+            else {
+                log.info("Calling sendLastReadMessageId for user " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
+                chatService.sendLastReadMessageId(chatId, lastReadMessageId);
+            }
+
             headerAccessor.setHeader("lastRead", 123);
 
 
@@ -123,7 +125,7 @@ public class StompHandler implements ChannelInterceptor {
         else{
             recentMessageId = recentMessage.getChatRecordId();
             redisCacheService.addUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString(), recentMessageId);
-            log.info("adding recent message + " + recentMessageId + " to userId : " + userPrincipal.getUserId());
+            log.info("adding recent message " + recentMessageId + " to userId : " + userPrincipal.getUserId());
         }
 
 //        chatJoinEntryRepository.save(chatJoinEntry);
