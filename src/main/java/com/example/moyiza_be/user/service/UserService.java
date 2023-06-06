@@ -59,12 +59,12 @@ public class UserService {
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 틀립니다.");
         }
-                    JwtTokenDto tokenDto = jwtUtil.createAllToken(user);
-            Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(user.getEmail());
-            if (refreshToken.isPresent()) {
-                refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
-            } else {
-                RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmail());
+        JwtTokenDto tokenDto = jwtUtil.createAllToken(user);
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(user.getEmail());
+        if (refreshToken.isPresent()) {
+            refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
+        } else {
+            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmail());
             refreshTokenRepository.save(newToken);
         }
         setHeader(response, tokenDto);
@@ -130,11 +130,12 @@ public class UserService {
 
     private void setHeader(HttpServletResponse response, JwtTokenDto tokenDto) {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
-        ResponseCookie cookie = ResponseCookie.from("RefreshToken", tokenDto.getRefreshToken())
+        String refreshToken = tokenDto.getRefreshToken();
+        ResponseCookie cookie = ResponseCookie.from("RefreshToken", refreshToken)
                 .maxAge(14 * 24 * 60 * 60) //토근 만료기간 14일
                 .path("/")
                 // true -> https 환경에서만 쿠키 전송 가능 인증서 발급 후 true 전환 예정
-                .secure(false)
+//                .secure(true)
                 .sameSite("None")
                 .httpOnly(true)
                 .build();
