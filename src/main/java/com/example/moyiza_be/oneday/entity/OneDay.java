@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class OneDay extends TimeStamped {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "oneDayId")
     private Long id;
 
@@ -52,9 +52,9 @@ public class OneDay extends TimeStamped {
     @Column
     private Integer oneDayGroupSize;
     @Column
-    private Boolean deleted;
+    private Boolean deleted = false;
     @Column
-    private Integer attendantsNum;
+    private Integer attendantsNum = 1;
     @Column(name = "image_url")
     @Lob
     private String  oneDayImage;

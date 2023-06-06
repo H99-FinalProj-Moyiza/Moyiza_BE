@@ -61,7 +61,7 @@ public class OneDayService {
         oneDayRepository.saveAndFlush(oneDay);
         // 방장 추가
         User owner = userRepository.findById(confirmDto.getOwnerId()).orElseThrow(()->new NullPointerException("Invalid User"));
-        OneDayAttendant oneDayAttendant = new OneDayAttendant(oneDay.getId(), owner);
+        OneDayAttendant oneDayAttendant = new OneDayAttendant(oneDay, owner);
         attendantRepository.save(oneDayAttendant);
         return new OneDayDetailResponse(oneDay, oneDayImageUrlList);
     }
@@ -139,7 +139,7 @@ public class OneDayService {
         } else {
             // 선착순제 인 경우 인원이 다 찾는가?
             if(oneDay.getAttendantsNum() < oneDay.getOneDayGroupSize()) {
-                OneDayAttendant attendant = new OneDayAttendant(oneDayId, user);
+                OneDayAttendant attendant = new OneDayAttendant(oneDay, user);
                 attendantRepository.save(attendant);
                 chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
                 return new ResponseEntity<>("참석되었습니다.", HttpStatus.OK);
