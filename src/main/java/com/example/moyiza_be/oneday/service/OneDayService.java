@@ -1,10 +1,8 @@
 package com.example.moyiza_be.oneday.service;
 
 import com.example.moyiza_be.chat.service.ChatService;
-import com.example.moyiza_be.club.entity.ClubImageUrl;
 import com.example.moyiza_be.common.enums.OneDayTypeEnum;
 import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
-import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreatingResponseDto;
 import com.example.moyiza_be.oneday.entity.BanOneDay;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
@@ -25,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -187,26 +185,17 @@ public class OneDayService {
     }
 
     //거리기반 위치 추천
-    public ResponseEntity<List<OneDay>> recommendByDistance(double nowLatitude, double nowLongitude) {
-//        String location = "POINT(" + nowLongitude + " " + nowLatitude + ")";
-        List<OneDay> aroundOneDayList = oneDayRepository.findAllByOneDayLatitudeAndOneDayLongitude(nowLatitude, nowLongitude);
-        return new ResponseEntity<>(aroundOneDayList, HttpStatus.OK);
+    public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(double nowLatitude, double nowLongitude) {
+        List<Object[]> nearByOneDays = oneDayRepository.findNearByOneDays(nowLatitude, nowLongitude);
+
+        List<OneDayNearByResponseDto> oneDays = new ArrayList<>();
+        for (Object[] row : nearByOneDays) {
+            OneDay oneDay = (OneDay) row[0];
+            double distance = (double) row[1];
+            OneDayNearByResponseDto dto = new OneDayNearByResponseDto(oneDay, distance);
+            oneDays.add(dto);
+        }
+        return new ResponseEntity<>(oneDays, HttpStatus.OK);
     }
 
-//    //거리기반 위치 추천 테스트
-//    public ResponseEntity<List<OneDay>> recommendByDistanceTest(double nowLatitude, double nowLongitude) {
-//        //m당 y 좌표 이동 값
-//        double mForLatitude =(1 /(6371 * 1 * (Math.PI/180)))/1000;
-//        //m당 x 좌표 이동 값
-//        double mForLongitude =(1 /(6371 * 1 * (Math.PI/180)* Math.cos(Math.toRadians(nowLatitude))))/1000;
-//
-//        //현재 위치 기준 검색 거리 좌표
-//        double maxY = nowLatitude + (1000 * mForLatitude);
-//        double minY = nowLatitude - (1000 * mForLatitude);
-//        double maxX = nowLongitude + (1000 * mForLongitude);
-//        double minX = nowLongitude - (1000 * mForLongitude);
-//
-//        List<OneDay> aroundOnedayList = oneDayRepository.findAroundOneDayList(maxY, maxX, minY, minX);
-//        return new ResponseEntity<>(aroundOnedayList, HttpStatus.OK);
-//    }
 }

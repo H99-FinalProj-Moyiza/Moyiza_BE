@@ -70,6 +70,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests().requestMatchers(PERMIT_URL_ARRAY).permitAll()
                 .requestMatchers(HttpMethod.GET, "/club/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/oneday/**").permitAll()
                 .anyRequest().authenticated().and()
                 .oauth2Login()
                 .successHandler(oAuth2LoginSuccessHandler)
