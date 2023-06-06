@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisCacheService redisCacheService;
-    private final ChatService chatService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -69,10 +68,7 @@ public class StompHandler implements ChannelInterceptor {
             }
             else {
                 log.info("Calling sendLastReadMessageId for user " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
-                chatService.sendLastReadMessageId(chatId, lastReadMessageId);
             }
-
-            headerAccessor.setHeader("lastRead", 123);
 
 
             redisCacheService.removeUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString());
