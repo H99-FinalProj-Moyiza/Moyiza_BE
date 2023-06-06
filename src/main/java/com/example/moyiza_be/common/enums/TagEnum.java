@@ -37,8 +37,8 @@ public enum TagEnum {
     BOOK("독서", CategoryEnum.CULTURE),
 
     //예술
-    ARTS("공연예술", CategoryEnum.CULTURE),
-    VISUALARTS("시각예술", CategoryEnum.CULTURE),
+    ARTS("공연예술", CategoryEnum.ART),
+    VISUALARTS("시각예술", CategoryEnum.ART),
 
     //FOOD - ?
     CAFE("카페투어", CategoryEnum.FOOD),
