@@ -15,7 +15,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: 'true'
-    show-sql: 'true'
+#    show-sql: 'true'
     hibernate:
       ddl-auto: update
   datasource:
@@ -78,7 +78,8 @@ spring:
         max-idle: 8
         max-active: 8
       port: 6379
-      host: 127.0.0.1
+      host: 43.200.169.48
+      password: ENC(V8HByRExsO7bDwqCirBLQw==)
 
   # WebSocket 관련 설정
   mvc:

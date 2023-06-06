@@ -12,4 +12,6 @@ public interface OneDayAttendantRepository extends JpaRepository<OneDayAttendant
     List<OneDayAttendant> findByOneDayId(long oneDayId);
 
     OneDayAttendant findByOneDayIdAndUserId(Long oneDayId, Long id);
+
+    boolean existsByOneDayIdAndUserId(Long oneDayId, Long id);
 }

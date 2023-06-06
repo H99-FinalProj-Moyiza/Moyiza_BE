@@ -1,6 +1,7 @@
 package com.example.moyiza_be.oneday.entity;
 
 import com.example.moyiza_be.common.utils.TimeStamped;
+import com.example.moyiza_be.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,8 +21,17 @@ public class OneDayAttendant {
     @Column
     private Long userId;
 
-    public OneDayAttendant(Long OneDayId, Long userId) {
-        this.oneDayId = OneDayId;
-        this.userId = userId;
+    private String userName;
+    private String userNickName;
+    private String userEmail;
+    private String userProfileImage;
+
+    public OneDayAttendant(OneDay OneDay, User user) {
+        this.oneDayId = OneDay.getId();
+        this.userId = user.getId();
+        this.userName = user.getName();
+        this.userNickName = user.getNickname();
+        this.userEmail = user.getEmail();
+        this.userProfileImage = user.getProfileImage();
     }
 }

@@ -24,8 +24,13 @@ public class UserController {
     private final EmailService emailService;
 
     //회원가입
-    @RequestMapping (value = "/signup", method = RequestMethod.POST,
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
+//    @RequestMapping (value = "/signup", method = RequestMethod.POST,
+//            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
+//    public ResponseEntity<?> signup(@RequestPart(value = "data") SignupRequestDto requestDto,
+//                                    @RequestPart(value = "imageFile") MultipartFile image){
+//        return userService.signup(requestDto, image);
+//    }
+    @PostMapping ("/signup")
     public ResponseEntity<?> signup(@RequestPart(value = "data") SignupRequestDto requestDto,
                                     @RequestPart(value = "imageFile") MultipartFile image){
         return userService.signup(requestDto, image);

@@ -4,6 +4,7 @@ import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.entity.ClubJoinEntry;
 import com.example.moyiza_be.club.repository.ClubJoinEntryRepository;
 import com.example.moyiza_be.club.repository.ClubRepository;
+import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.mypage.Dto.ClubResponseDto;
 import com.example.moyiza_be.mypage.Dto.PageResponseDto;
 import com.example.moyiza_be.mypage.Dto.UserResponseDto;
@@ -41,6 +42,7 @@ public class MyPageService {
                         .clubTag(club.getTagString())
                         .clubTitle(club.getTitle())
                         .thumbnailUrl(club.getThumbnailUrl())
+                        .nowMemberCount(club.getNowMemberCount())
                                 .build())
                 .collect(Collectors.toList());
 
@@ -58,6 +60,7 @@ public class MyPageService {
                         .clubTag(club.getTagString())
                         .clubTitle(club.getTitle())
                         .thumbnailUrl(club.getThumbnailUrl())
+                        .nowMemberCount(club.getNowMemberCount())
                         .build())
                 .collect(Collectors.toList());
 

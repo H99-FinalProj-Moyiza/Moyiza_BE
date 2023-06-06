@@ -1,62 +1,102 @@
 package com.example.moyiza_be.oneday.service;
 
+import com.example.moyiza_be.chat.service.ChatService;
+import com.example.moyiza_be.club.entity.ClubImageUrl;
+import com.example.moyiza_be.common.enums.OneDayTypeEnum;
+import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
+import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreatingResponseDto;
+import com.example.moyiza_be.oneday.entity.BanOneDay;
+import com.example.moyiza_be.common.enums.CategoryEnum;
+import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
-import com.example.moyiza_be.oneday.dto.OneDayDetailResponseDto;
-import com.example.moyiza_be.oneday.dto.OneDayRequestDto;
-import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
+import com.example.moyiza_be.oneday.dto.*;
 import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.oneday.entity.OneDayAttendant;
+import com.example.moyiza_be.oneday.entity.OneDayImageUrl;
 import com.example.moyiza_be.oneday.repository.OneDayAttendantRepository;
+import com.example.moyiza_be.oneday.repository.OneDayImageUrlRepository;
 import com.example.moyiza_be.oneday.repository.OneDayRepository;
 import com.example.moyiza_be.user.entity.User;
+import com.example.moyiza_be.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OneDayService {
     private final OneDayRepository oneDayRepository;
     private final OneDayAttendantRepository attendantRepository;
     private final AwsS3Uploader awsS3Uploader;
+    private final ChatService chatService;
+    private final UserRepository userRepository;
+    private final OneDayImageUrlRepository imageUrlRepository;
 
     // 원데이 생성
-    @Transactional
-    public ResponseEntity<?> createOneDay (OneDayRequestDto requestDto, User user, MultipartFile imageFile) {
-        // image 확인
-        String storedFileUrl = "";
-        if(!imageFile.isEmpty()) {
-            storedFileUrl = awsS3Uploader.uploadFile(imageFile);
-        }
-        // 생성
-        OneDay oneDay = new OneDay(requestDto, user.getId(), storedFileUrl);
+    public OneDayDetailResponse createOneDay(OneDayCreateConfirmDto confirmDto) {
+        OneDay oneDay = new OneDay(confirmDto);
+        oneDayRepository.saveAndFlush(oneDay);
+        List<String> oneDayImageUrlList = imageUrlRepository.findAllById(Collections.singleton(confirmDto.getCreateOneDayId()))
+                .stream()
+                .peek(image->image.setOneDayId(oneDay.getId()))
+                .map(OneDayImageUrl::getImageUrl)
+                .toList();
+        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         oneDay.setDeleted(false);
         oneDay.setAttendantsNum(1);
         oneDayRepository.saveAndFlush(oneDay);
         // 방장 추가
-        OneDayAttendant oneDayAttendant = new OneDayAttendant(user.getId(), oneDay.getId());
+        User owner = userRepository.findById(confirmDto.getOwnerId()).orElseThrow(()->new NullPointerException("Invalid User"));
+        OneDayAttendant oneDayAttendant = new OneDayAttendant(oneDay, owner);
         attendantRepository.save(oneDayAttendant);
-        return new ResponseEntity<>("생성성공", HttpStatus.OK);
+        return new OneDayDetailResponse(oneDay, oneDayImageUrlList);
+    }
+    // 원데이 상세 조회
+    public ResponseEntity<OneDayDetailResponseDto> getOneDayDetail(Long oneDayId) {
+        OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()-> new NullPointerException("404 OneDay NOT FOUND"));
+        // 이미지 처리 어떻게 하지?
+        List<String> oneDayImageUrlList= OneDayImageUrlRepository.findAllByOneDayId(oneDayId).stream().map(OneDayImageUrl::getImageUrl).toList();
+        List<OneDayAttendant> attendantList = attendantRepository.findByOneDayId(oneDayId);
+        OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(oneDay, oneDayImageUrlList, attendantList, attendantList.size());
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+    // 원데이 목록 조회
+    public ResponseEntity<Page<OneDayListPageResponseDto>> getOneDayList(Pageable pageable, CategoryEnum category, String q) {
+        Page<OneDayListPageResponseDto> responseList;
+        if (category != null && q != null) {
+            //카테고리와 검색어를 모두 입력한 경우
+            responseList = oneDayRepository.findByCategoryAndDeletedFalseAndOneDayTitleContaining(pageable, category, q).map(OneDayListPageResponseDto::new);
+        } else if (category != null) {
+            //카테고리만 입력한 경우
+            responseList = oneDayRepository.findByCategoryAndDeletedFalse(pageable, category).map(OneDayListPageResponseDto::new);
+        } else if (q != null) {
+            responseList = oneDayRepository.findByDeletedFalseAndOneDayTitleContaining(pageable, q).map(OneDayListPageResponseDto::new);
+        } else {
+            //카테고리와 검색어가 모두 입력되지 않은 경우 전체 클럽 조회
+            responseList = oneDayRepository.findAllByDeletedFalse(pageable).map(OneDayListPageResponseDto::new);
+        }
+        return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
     // 원데이 수정
-    @Transactional
     public ResponseEntity<?> updateOneDay(Long id, OneDayUpdateRequestDto requestDto, User user) throws IOException {
         // 원데이 가져오기
         OneDay oneDay = oneDayRepository.findById(id).orElseThrow(()->new IllegalArgumentException("404 OneDay NOT FOUND"));
         // 존재하는 글인가
-        if (oneDay.isDeleted()) {
+        if (oneDay.getDeleted()) {
             throw new IllegalArgumentException("404 Already Deleted");
         }
         // 이미지 처리
@@ -74,54 +114,75 @@ public class OneDayService {
         return new ResponseEntity<>("수정성공", HttpStatus.OK);
     }
     // 원데이 삭제
-    @Transactional
-    public ResponseEntity<?> deleteOneDay(Long oneDayId, User user) {
-        OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()-> new IllegalArgumentException("404 oneDay NOT FOUND"));
-        if (oneDay.isDeleted()) {
-            throw new IllegalArgumentException("404 Already Deleted");
+    public ResponseEntity<Message> deleteOneDay(User user, Long oneDayId) {
+        OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()->new NullPointerException("존재하는 하루속이 아니에요"));
+        if (oneDay.getDeleted()==true) {
+            throw new NullPointerException("삭제된 하루속입니다.");
+        }else{
+            if(!oneDay.getOwnerId().equals(user.getId())){
+                return new ResponseEntity<>(new Message("내 하루속이 아닙니다"), HttpStatus.UNAUTHORIZED);
+            }
+            else{
+                oneDay.setDeleted(true);
+                return ResponseEntity.ok(new Message("삭제되었습니다"));
+            }
         }
-        // 만료처리 추가해야 하는데...
-        if (user.getId().equals(oneDay.getOwnerId())) {
-            oneDayRepository.deleteById(oneDayId);
-            oneDay.setDeleted(true);
-        }
-        return new ResponseEntity<>("삭제성공", HttpStatus.OK);
-    }
-
-    // 원데이 목록 조회
-    public ResponseEntity<List<OneDay>> getOneDayList() {
-        List<OneDay> oneDayList = oneDayRepository.findAll();
-        return new ResponseEntity<>(oneDayList, HttpStatus.OK);
-    }
-    // 원데이 상세 조회
-    @Transactional
-    public ResponseEntity<?> getOneDay(long oneDayId) {
-        OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()->new IllegalArgumentException("404 OneDay NOT FOUND"));
-        List<OneDayAttendant> attendantList = attendantRepository.findByOneDayId(oneDayId);
-        OneDayDetailResponseDto detailResponseDto = new OneDayDetailResponseDto(oneDay, attendantList,attendantList.size());
-        return new ResponseEntity<>(detailResponseDto, HttpStatus.OK);
     }
     // 원데이 참석
     public ResponseEntity<?> joinOneDay(Long oneDayId, User user) {
-        OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()-> new IllegalArgumentException("404 OneDay NOT FOUND"));
-        if (attendantRepository.findByOneDayIdAndUserId(oneDayId, user.getId()) != null) {
-            return new ResponseEntity<>(new Message("이미 참여된 원데이입니다."), HttpStatus.FORBIDDEN);
+        if(attendantRepository.existsByOneDayIdAndUserId(oneDayId, user.getId())){
+            return new ResponseEntity<>(new Message("중복으로 가입할 수 없습니다"), HttpStatus.BAD_REQUEST);
         }
-        OneDayAttendant oneDayAttendant = new OneDayAttendant(oneDayId, user.getId());
-        oneDay.oneDayAttend();
-        attendantRepository.save(oneDayAttendant);
-        return new ResponseEntity<>("참석되었습니다.", HttpStatus.OK);
+        OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()-> new NullPointerException("404 하루속 NOT FOUND"));
+        if (oneDay.getType()== OneDayTypeEnum.APPROVAL) {
+            return new ResponseEntity<>("승인제 구현중",HttpStatus.FORBIDDEN);
+        } else {
+            // 선착순제 인 경우 인원이 다 찾는가?
+            if(oneDay.getAttendantsNum() < oneDay.getOneDayGroupSize()) {
+                OneDayAttendant attendant = new OneDayAttendant(oneDay, user);
+                attendantRepository.save(attendant);
+                chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+                return new ResponseEntity<>("참석되었습니다.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("하루속 인원이 가득 찾어요", HttpStatus.FORBIDDEN);
+            }
+        }
     }
     // 원데이 참석 취소
-    public ResponseEntity<?> cancelOneDay (Long oneDayId, User user) {
-        OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()-> new IllegalArgumentException("404 OneDay NOT FOUND"));
+    public ResponseEntity<?> cancelOneDay(Long oneDayId, User user) {
         OneDayAttendant oneDayAttendant = attendantRepository.findByOneDayIdAndUserId(oneDayId, user.getId());
         if (oneDayAttendant != null) {
-            oneDay.oneDayCancel();
             attendantRepository.delete(oneDayAttendant);
-            return new ResponseEntity<>("취소되었습니다.", HttpStatus.OK);
+            chatService.leaveChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+            return new ResponseEntity<>("하루속에서 탈퇴되었습니다.", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("아직 참석하지 않았어요", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("하루속이 존재하지 않거나, 참석 정보가 없습니다.", HttpStatus.OK);
+        }
+    }
+    // 원데이 강퇴
+    public ResponseEntity<?> banOneDay(Long oneDayId, Long userId, BanOneDay banRequest) {
+        if(!oneDayRepository.existsByIdAndDeletedFalseAndOwnerIdEquals(oneDayId, userId)){
+            return new ResponseEntity<>(new Message("권한이 없거나, 하루속이 없습니다"), HttpStatus.BAD_REQUEST);
+        }
+        OneDayAttendant attendant = attendantRepository.findByOneDayIdAndUserId(banRequest.getBanUserId(), oneDayId);
+        if (attendant != null) {
+            attendantRepository.delete(attendant);
+            return new ResponseEntity<>(String.format("user %d 가 하루속에서 강퇴되었습니다",banRequest.getBanUserId()), HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>("하루속가입 정보가 없습니다.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // 원데이 승인제
+    private ResponseEntity<?> approvalOneDay (Long oneDayId, Long userId, Long ownerId) {
+        User owner = userRepository.findById(ownerId).orElseThrow(()->new NullPointerException("생성된 하루속이 없어요!"));
+        User guest = userRepository.findById(userId).orElseThrow(()->new NullPointerException("참석을 신청해 주세요"));
+        OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()->new NullPointerException("No Such ONEDAY"));
+        if (ownerId.equals(userId)) {
+            return new ResponseEntity<>("Hey! You own this!",HttpStatus.UNAUTHORIZED);
+        } else {
+            // 승인 푸시 생성
+            return new ResponseEntity<>("승인 요청되었습니다.",HttpStatus.OK);
         }
     }
 
