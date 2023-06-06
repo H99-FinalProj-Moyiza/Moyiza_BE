@@ -114,11 +114,10 @@ public class RedisCacheService {
         return zSetOperations.count(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, nowMessageId, -1);
     }
 
-    public Long getUserLastReadMessage(String chatId, String userId) {
+    public Long getUserLastReadMessageId(String chatId, String userId) {
         ZSetOperations<String, String> zSetOperations = redisStringStringTemplate.opsForZSet();
         Double score = zSetOperations.score(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, userId);
         if(score == null){
-            log.info("redis에서 유저 : " + userId + "의 마지막 읽은 메시지를 가져오는데 실패했습니다");
             return null;
         }
         return score.longValue();

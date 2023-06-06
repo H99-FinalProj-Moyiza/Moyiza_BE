@@ -15,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,8 +52,16 @@ public class ChatService {
         sendingOperations.convertAndSend(alarmDestination, messageOutput);
     }
 
+    public void sendLastReadMessageId(Long chatId, Long lastReadMessageId) {
+        log.info("Sending LastReadMessage to chatRoom : " + chatId);
+        Message<?> message = MessageBuilder.withPayload(lastReadMessageId)
+                .setHeader("operation", "decrease")
+                .build();
+        sendingOperations.send("/chat/" + chatId, message);
+    }
 
     //채팅방 목록 조회
+
     public ResponseEntity<List<ChatRoomInfo>> getChatRoomList(User user) {
         //나중에 쿼리 바꿀 대상
 
@@ -75,8 +85,8 @@ public class ChatService {
         Chat new_chat = new Chat(roomIdentifier,chatType, roomName);
         chatRepository.save(new_chat);
     }
-
     //채팅 내역 조회
+
         public ResponseEntity<Page<ChatMessageOutput>> getChatRoomRecord(User user, Long chatId, Pageable pageable){
             //나중에 쿼리 다듬기  ==> senderId, user Join해서, id, nickname, profileUrl도 가져와야함
             if(pageable.getPageNumber() == 0){
@@ -93,8 +103,8 @@ public class ChatService {
                                                     .map(ChatMessageOutput::new);
         return ResponseEntity.ok(chatRecordDtoPage);
     }
-
     //클럽 채팅방 join
+
     public void joinChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
         Chat chat = loadChat(roomIdentifier,chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);
@@ -135,5 +145,4 @@ public class ChatService {
     private Long getChatMemberCount(Long chatId){
         return chatJoinEntryRepository.countByChatIdAndAndIsCurrentlyJoinedTrue(chatId);
     }
-
 }
