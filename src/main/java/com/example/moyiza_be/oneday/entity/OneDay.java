@@ -38,9 +38,9 @@ public class OneDay extends TimeStamped {
     @Column
     private String oneDayLocation;
     @Column
-    private String oneDayLatitude;
+    private double oneDayLatitude;
     @Column
-    private String oneDayLongitude;
+    private double oneDayLongitude;
     @Column
     @DateTimeFormat(pattern = "YYYY-MM-dd'T'HH:mm")
     private LocalDateTime oneDayStartTime;

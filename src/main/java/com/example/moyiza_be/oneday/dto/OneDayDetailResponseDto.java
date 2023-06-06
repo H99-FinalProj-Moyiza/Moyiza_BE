@@ -13,8 +13,8 @@ public class OneDayDetailResponseDto {
     private String oneDayTitle;
     private String oneDayContent;
     private String oneDayLocation;
-    private String oneDayLatitude;
-    private String oneDayLongitude;
+    private double oneDayLatitude;
+    private double oneDayLongitude;
     //    private Tag tag;
     private LocalDateTime oneDayStartTime;
     private int oneDayGroupSize;

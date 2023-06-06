@@ -28,8 +28,8 @@ public class OneDayCreate {
     private CategoryEnum category;
     private String tagString;
     private String oneDayLocation;
-    private String oneDayLatitude;
-    private String oneDayLongitude;
+    private double oneDayLatitude;
+    private double oneDayLongitude;
     @DateTimeFormat(pattern = "YYYY-MM-dd'T'HH:mm")
     private LocalDateTime oneDayStartTime= LocalDateTime.now();
     private GenderPolicyEnum genderPolicy;

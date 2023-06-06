@@ -32,11 +32,15 @@ public interface OneDayRepository extends JpaRepository<OneDay, User> {
     boolean existsByIdAndDeletedFalseAndOwnerIdEquals(Long oneDayId, Long userId);
 
     //경도 위도 순
-    @Query(value = "SELECT o, ST_Distance_Sphere(:location, POINT(o.oneDayLongitude, o.oneDayLatitude)) AS distance " +
-            "FROM OneDay o " +
-            "WHERE ST_Distance_Sphere(:location, POINT(o.oneDayLongitude, o.oneDayLatitude)) <= 1000 " +
-            "ORDER BY distance")
-    List<OneDay> findAroundOneDayList(@Param("location") String location);
+//    @Query(value = "SELECT o, ST_Distance_Sphere(:location, POINT(o.oneDayLongitude, o.oneDayLatitude)) AS distance " +
+//            "FROM OneDay o " +
+//            "WHERE ST_Distance_Sphere(:location, POINT(o.oneDayLongitude, o.oneDayLatitude)) <= 1000 " +
+//            "ORDER BY distance")
+//    List<OneDay> findAroundOneDayList(@Param("location") String location);
+
+    @Query("SELECT o FROM OneDay o WHERE (6371 * acos(cos(radians(:nowLatitude)) * cos(radians(o.oneDayLatitude)) * cos(radians(o.oneDayLongitude) - radians(:nowLongitude)) + sin(radians(:nowLatitude)) * sin(radians(o.oneDayLatitude)))) <= 10")
+    List<OneDay> findAllByOneDayLatitudeAndOneDayLongitude(@Param("nowLatitude") double nowLatitude, @Param("nowLongitude") double nowLongitude);
+
 
 //    @Query(value = "SELECT o FROM OneDay o " +
 //            "WHERE o.oneDayLatitude <= :maxY " +
