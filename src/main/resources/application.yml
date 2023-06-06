@@ -78,7 +78,8 @@ spring:
         max-idle: 8
         max-active: 8
       port: 6379
-      host: 0.0.0.0
+      host: 43.200.169.48
+      password: ENC(V8HByRExsO7bDwqCirBLQw==)
 
   # WebSocket 관련 설정
   mvc:
