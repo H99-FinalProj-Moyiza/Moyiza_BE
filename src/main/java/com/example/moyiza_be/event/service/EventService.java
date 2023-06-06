@@ -3,6 +3,7 @@ package com.example.moyiza_be.event.service;
 
 import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.repository.ClubRepository;
+import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventAttendantResponseDto;
 import com.example.moyiza_be.event.dto.EventDetailResponseDto;
@@ -22,13 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -37,18 +37,27 @@ public class EventService {
     private final EventRepository eventRepository;
     private final ClubRepository clubRepository;
     private final EventAttendantRepository attendantRepository;
+    private final AwsS3Uploader s3Uploader;
+    public static final String basicImageUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/87f7fcdb-254b-474a-9bf0-86cf3e89adcc_basicProfile.jpg";
 
     // 이벤트 생성
     @Transactional
-    public ResponseEntity<?> createEvent (EventRequestDto eventRequestDto, User user, Long clubId) {
+    public ResponseEntity<?> createEvent (EventRequestDto eventRequestDto, User user, Long clubId, MultipartFile image) throws IOException {
         // 클럽이 유효한가
         Club club = clubRepository.findById(clubId).orElseThrow(()-> new IllegalArgumentException("404 Not Found"));
         // 작성자가 소유자인가
         if (!user.getId().equals(club.getOwnerId())) {
             throw new IllegalArgumentException("401 UnAuthorized");
         }
+        String imageUrl = basicImageUrl;
+//        if(!Objects.isNull(eventRequestDto.getImage()) && !eventRequestDto.getImage().isEmpty() && !eventRequestDto.getImage().getContentType().isEmpty()){
+//            imageUrl = s3Uploader.eventUpload(eventRequestDto.getImage(), "image");
+//        }
+        if(!image.isEmpty()) {
+            imageUrl = s3Uploader.uploadFile(image);
+        }
         // 생성 + 삭제상태 : false + 참석자수 : 1(방장) | 참석자에 방장이 반드시 포함되어야 하는가 ? attendant 추가 : nothing change
-        Event event = new Event(eventRequestDto, user.getId(), clubId); // 이미지 넣으면 user, image로 변경
+        Event event = new Event(eventRequestDto, user.getId(), clubId, imageUrl); // 이미지 넣으면 user, image로 변경
         event.setDeleted(false);
 //        event.setAttendantsNum(1);
         eventRepository.saveAndFlush(event);
