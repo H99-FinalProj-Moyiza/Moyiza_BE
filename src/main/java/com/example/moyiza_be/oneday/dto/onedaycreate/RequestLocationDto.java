@@ -10,6 +10,6 @@ import lombok.Setter;
 @Setter
 public class RequestLocationDto {
     private String OneDayLocation;
-    private String OneDayLatitude;
-    private String OneDayLongitude;
+    private double OneDayLatitude;
+    private double OneDayLongitude;
 }

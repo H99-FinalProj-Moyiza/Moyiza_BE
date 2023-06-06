@@ -188,8 +188,8 @@ public class OneDayService {
 
     //거리기반 위치 추천
     public ResponseEntity<List<OneDay>> recommendByDistance(double nowLatitude, double nowLongitude) {
-        String location = "POINT(" + nowLongitude + " " + nowLatitude + ")";
-        List<OneDay> aroundOneDayList = oneDayRepository.findAroundOneDayList(location);
+//        String location = "POINT(" + nowLongitude + " " + nowLatitude + ")";
+        List<OneDay> aroundOneDayList = oneDayRepository.findAllByOneDayLatitudeAndOneDayLongitude(nowLatitude, nowLongitude);
         return new ResponseEntity<>(aroundOneDayList, HttpStatus.OK);
     }
 

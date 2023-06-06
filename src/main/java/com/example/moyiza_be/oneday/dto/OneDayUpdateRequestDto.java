@@ -20,8 +20,8 @@ public class OneDayUpdateRequestDto {
     private final Integer agePolicy;
     private final LocalDateTime oneDayStartTime;
     private final String oneDayLocation;
-    private final String oneDayLatitude;
-    private final String oneDayLongitude;
+    private final double oneDayLatitude;
+    private final double oneDayLongitude;
     private final int oneDayGroupSize;
     private MultipartFile image;
     public OneDayUpdateRequestDto(OneDay oneDay, MultipartFile image) {

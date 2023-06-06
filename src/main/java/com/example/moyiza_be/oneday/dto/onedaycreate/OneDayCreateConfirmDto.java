@@ -24,8 +24,8 @@ public class OneDayCreateConfirmDto {
     private final String oneDayImage;
 
     private final String oneDayLocation;
-    private final String oneDayLatitude;
-    private final String oneDayLongitude;
+    private final double oneDayLatitude;
+    private final double oneDayLongitude;
     private final LocalDateTime oneDayStartTime;
     public OneDayTypeEnum getOneDayType;
 
