@@ -61,11 +61,16 @@ public class StompHandler implements ChannelInterceptor {
             userPrincipal.setSubscribedChatId(chatId);
             redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
 
-            Long lastReadMessage = redisCacheService.getUserLastReadMessage(chatId.toString(), userPrincipal.getUserId().toString());
-            if(lastReadMessage != null){
-                log.info("Setting header for readcount :: user " + userPrincipal.getUserId() + "lastread message : " + lastReadMessage);
-                headerAccessor.setHeader("lastRead", 123);
-            }
+//            Long lastReadMessage = redisCacheService.getUserLastReadMessage(chatId.toString(), userPrincipal.getUserId().toString());
+//            if(lastReadMessage == null){
+//                throw new NullPointerException("123");
+//            }
+//
+//            if(lastReadMessage != null){
+//                log.info("Setting header for readcount :: user " + userPrincipal.getUserId() + "lastread message : " + lastReadMessage);
+//                headerAccessor.setHeader("lastRead", 123);
+//            }
+            headerAccessor.setHeader("lastRead", 123);
 
 
             redisCacheService.removeUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString());
