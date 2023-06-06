@@ -38,7 +38,8 @@ public class WebSecurityConfig {
             "/user/signup/**",
             "/user/check/**",
             "/user/test/**",
-            "/oauth2/authorization/**"
+            "/oauth2/authorization/**",
+            "/login"
     };
 
     @Bean
