@@ -7,16 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,9 +20,10 @@ public class RedisCacheService {
 //    private static final String SESSION_PREFIX = "session:";
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, ChatMessageOutput> redisRecentChatTemplate;
-    private final RedisTemplate<String, String> redisStringSetTemplate;
+    private final RedisTemplate<String, String> redisStringStringTemplate;
     private final String RECENTCHAT_IDENTIFIER = ":recentChat";
     private final String CONNECTED_SESSIONS_IDENTIFIER = ":subscriptions";
+    private final String LAST_MESSAGE_ZSET_IDENTIFIER = ":lastMessage";
 
 
     //세션id 생성
@@ -86,27 +81,55 @@ public class RedisCacheService {
         return listOperations.index(chatId + RECENTCHAT_IDENTIFIER, 0);
     }
 
+
+    //그냥 숫자로 변경해도 될듯 ?
     public void addSubscriptionToChatId(String chatId, String sessionId){
-        SetOperations<String, String> setOperations = redisStringSetTemplate.opsForSet();
+        SetOperations<String, String> setOperations = redisStringStringTemplate.opsForSet();
         setOperations.add(chatId + CONNECTED_SESSIONS_IDENTIFIER, sessionId);
     }
 
+    //그냥 숫자로 변경해도 될듯 ?
     public void removeSubscriptionFromChatId(String chatId, String sessionId){
-        SetOperations<String, String> setOperations = redisStringSetTemplate.opsForSet();
+        SetOperations<String, String> setOperations = redisStringStringTemplate.opsForSet();
         setOperations.remove(chatId + CONNECTED_SESSIONS_IDENTIFIER, sessionId);
     }
 
     public Long countSubscriptionToChatId(String chatId){
-        SetOperations<String, String> setOperations = redisStringSetTemplate.opsForSet();
+        SetOperations<String, String> setOperations = redisStringStringTemplate.opsForSet();
         return setOperations.size(chatId + CONNECTED_SESSIONS_IDENTIFIER);
     }
 
+    public void addUnsubscribedUser(String chatId, String userId, Long lastReadMesssageId){
+        ZSetOperations<String, String> zSetOperations = redisStringStringTemplate.opsForZSet();
+        zSetOperations.add(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, userId, lastReadMesssageId);
+    }
+
+    public void removeUnsubscribedUser(String chatId, String userId){
+        ZSetOperations<String, String> zSetOperations = redisStringStringTemplate.opsForZSet();
+        zSetOperations.remove(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, userId);
+    }
+
+    public Long getReadCount(String chatId, Long nowMessageId){
+        ZSetOperations<String, String> zSetOperations = redisStringStringTemplate.opsForZSet();
+        return zSetOperations.count(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, nowMessageId, -1);
+    }
+
+    public Long getUserLastReadMessage(String chatId, String userId) {
+        ZSetOperations<String, String> zSetOperations = redisStringStringTemplate.opsForZSet();
+        Double score = zSetOperations.score(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, userId);
+        if(score == null){
+            log.info("redis에서 유저 : " + userId + "의 마지막 읽은 메시지를 가져오는데 실패했습니다");
+            return null;
+        }
+        return score.longValue();
+    }
+
 //
-////    public ChatUserPrincipal getUserInfoFromCache(String sessionId) {
-////        RedisConnection connection = redisConnectionFactory.getConnection();
-////        try {
-////            RedisAsyncCommands<String, ChatUserPrincipal> commands = connection.async();
-////            RedisFuture<ChatUserPrincipal> future = commands.get(sessionId);
+//////    public ChatUserPrincipal getUserInfoFromCache(String sessionId) {
+//////        RedisConnection connection = redisConnectionFactory.getConnection();
+//////        try {
+//////            RedisAsyncCommands<String, ChatUserPrincipal> commands = connection.async();
+//////            RedisFuture<ChatUserPrincipal> future = commands.get(sessionId);
 ////            return future.get();
 ////        } catch (InterruptedException | ExecutionException e) {
 //            throw new IllegalArgumentException();

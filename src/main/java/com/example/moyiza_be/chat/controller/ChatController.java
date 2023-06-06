@@ -34,7 +34,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatController {
     private final ChatService chatService;
-    private final JwtUtil jwtUtil;
     private final RedisCacheService redisCacheService;
 
 

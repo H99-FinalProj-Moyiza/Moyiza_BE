@@ -3,8 +3,6 @@ package com.example.moyiza_be.common.handler;
 
 import com.example.moyiza_be.chat.dto.ChatMessageOutput;
 import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
-import com.example.moyiza_be.chat.entity.ChatJoinEntry;
-import com.example.moyiza_be.chat.repository.ChatJoinEntryRepository;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -23,8 +21,6 @@ import org.springframework.stereotype.Component;
 public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisCacheService redisCacheService;
-    private final ChatJoinEntryRepository chatJoinEntryRepository;
-//    private final SimpMessageSendingOperations sendingOperations;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -64,11 +60,23 @@ public class StompHandler implements ChannelInterceptor {
             Long chatId = getChatIdFromDestination(destination);
             userPrincipal.setSubscribedChatId(chatId);
             redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
+
+            Long lastReadMessage = redisCacheService.getUserLastReadMessage(chatId.toString(), userPrincipal.getUserId().toString());
+            if(lastReadMessage != null){
+                log.info("Setting header for readcount :: user " + userPrincipal.getUserId() + "lastread message : " + lastReadMessage);
+                headerAccessor.setHeader("lastRead", 123);
+            }
+
+
+            redisCacheService.removeUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString());
             redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
-            ChatJoinEntry chatJoinEntry =
-                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(userPrincipal.getUserId(), chatId)
-                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
-            headerAccessor.setHeader("lastRead", 123);
+//            ChatJoinEntry chatJoinEntry =
+//                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(userPrincipal.getUserId(), chatId)
+//                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
+            log.info("Before sending subscribe message");
+            channel.send(message);
+            log.info("After sending subscribe message");
+
 
             return message;
         }
@@ -101,20 +109,23 @@ public class StompHandler implements ChannelInterceptor {
     public void unsubscribe(ChatUserPrincipal userPrincipal, String sessionId){
         log.info(userPrincipal.getUserId() + " unsubscribing chatroom " + userPrincipal.getSubscribedChatId());
         Long chatId = userPrincipal.getSubscribedChatId();
-        ChatJoinEntry chatJoinEntry =
-                chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue
-                                (userPrincipal.getUserId(), userPrincipal.getSubscribedChatId())
-                        .orElseThrow( () -> new NullPointerException("채팅방의 유저정보를 찾을 수 없습니다"));
+//        ChatJoinEntry chatJoinEntry =
+//                chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue
+//                                (userPrincipal.getUserId(), userPrincipal.getSubscribedChatId())
+//                        .orElseThrow( () -> new NullPointerException("채팅방의 유저정보를 찾을 수 없습니다"));
 
         ChatMessageOutput recentMessage = redisCacheService.loadRecentChat(chatId.toString());
+        Long recentMessageId;
         if(recentMessage == null){
             log.info("recent message not present for chatId : " + chatId);
         }
         else{
-            chatJoinEntry.setLastReadMessageId(recentMessage.getChatRecordId());
+            recentMessageId = recentMessage.getChatRecordId();
+            redisCacheService.addUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString(), recentMessageId);
+            log.info("adding recent message + " + recentMessageId + " to userId : " + userPrincipal.getUserId());
         }
 
-        chatJoinEntryRepository.save(chatJoinEntry);
+//        chatJoinEntryRepository.save(chatJoinEntry);
         redisCacheService.removeSubscriptionFromChatId(chatId.toString(), sessionId);
         userPrincipal.setSubscribedChatId(-1L);
         redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
