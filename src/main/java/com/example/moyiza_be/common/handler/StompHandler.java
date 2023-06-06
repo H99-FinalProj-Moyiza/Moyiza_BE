@@ -131,11 +131,4 @@ public class StompHandler implements ChannelInterceptor {
         userPrincipal.setSubscribedChatId(-1L);
         redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
     }
-
-    @Override
-    public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-        headerAccessor.setDestination("/chat/" + "4");
-        channel.send(message);
-    }
 }
