@@ -1,7 +1,7 @@
 package com.example.moyiza_be.oneday.repository;
 
-import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.enums.CategoryEnum;
+import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
 import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.user.entity.User;
 import org.springframework.data.domain.Page;
@@ -31,23 +31,12 @@ public interface OneDayRepository extends JpaRepository<OneDay, User> {
 
     boolean existsByIdAndDeletedFalseAndOwnerIdEquals(Long oneDayId, Long userId);
 
-    //경도 위도 순
-//    @Query(value = "SELECT o, ST_Distance_Sphere(:location, POINT(o.oneDayLongitude, o.oneDayLatitude)) AS distance " +
-//            "FROM OneDay o " +
-//            "WHERE ST_Distance_Sphere(:location, POINT(o.oneDayLongitude, o.oneDayLatitude)) <= 1000 " +
-//            "ORDER BY distance")
-//    List<OneDay> findAroundOneDayList(@Param("location") String location);
-
-    @Query("SELECT o FROM OneDay o WHERE (6371 * acos(cos(radians(:nowLatitude)) * cos(radians(o.oneDayLatitude)) * cos(radians(o.oneDayLongitude) - radians(:nowLongitude)) + sin(radians(:nowLatitude)) * sin(radians(o.oneDayLatitude)))) <= 10")
-    List<OneDay> findAllByOneDayLatitudeAndOneDayLongitude(@Param("nowLatitude") double nowLatitude, @Param("nowLongitude") double nowLongitude);
-
-
-//    @Query(value = "SELECT o FROM OneDay o " +
-//            "WHERE o.oneDayLatitude <= :maxY " +
-//            "AND o.oneDayLatitude >= :minY " +
-//            "AND o.oneDayLongitude <= :maxX " +
-//            "AND o.oneDayLongitude >= :minX")
-//    List<OneDay> findAroundOneDayList(@Param("maxY") double maxY, @Param("maxX") double maxX,
-//                                      @Param("minY") double minY, @Param("minX") double minX);
+//    @Query("SELECT o FROM OneDay o WHERE (6371 * acos(cos(radians(:nowLatitude)) * cos(radians(o.oneDayLatitude)) * cos(radians(o.oneDayLongitude) - radians(:nowLongitude)) + sin(radians(:nowLatitude)) * sin(radians(o.oneDayLatitude)))) <= 10")
+//    List<OneDay> findAllByOneDayLatitudeAndOneDayLongitude(@Param("nowLatitude") double nowLatitude, @Param("nowLongitude") double nowLongitude);
+    @Query("SELECT o, (6371 * acos(cos(radians(:nowLatitude)) * cos(radians(o.oneDayLatitude)) * cos(radians(o.oneDayLongitude) - radians(:nowLongitude)) + sin(radians(:nowLatitude)) * sin(radians(o.oneDayLatitude)))) AS distance " +
+            "FROM OneDay o " +
+            "WHERE (6371 * acos(cos(radians(:nowLatitude)) * cos(radians(o.oneDayLatitude)) * cos(radians(o.oneDayLongitude) - radians(:nowLongitude)) + sin(radians(:nowLatitude)) * sin(radians(o.oneDayLatitude)))) <= 10 " +
+            "ORDER BY distance")
+    List<Object[]> findNearByOneDays(@Param("nowLatitude") double nowLatitude, @Param("nowLongitude") double nowLongitude);
 
 }
