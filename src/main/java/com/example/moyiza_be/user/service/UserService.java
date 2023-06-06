@@ -39,6 +39,7 @@ public class UserService {
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
         String storedFileUrl = basicProfileUrl;
+        log.info("------->여기서부터 사진 저장<--------");
         log.info(String.valueOf(imageFile));
         checkDuplicatedEmail(requestDto.getEmail());
         checkDuplicatedNick(requestDto.getNickname());
