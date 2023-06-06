@@ -11,6 +11,7 @@ import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -37,6 +39,7 @@ public class UserService {
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
         String storedFileUrl = basicProfileUrl;
+        log.info(String.valueOf(imageFile));
         checkDuplicatedEmail(requestDto.getEmail());
         checkDuplicatedNick(requestDto.getNickname());
         if(!imageFile.isEmpty()){
