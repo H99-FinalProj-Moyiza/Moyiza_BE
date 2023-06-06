@@ -78,7 +78,7 @@ spring:
         max-idle: 8
         max-active: 8
       port: 6379
-      host: 127.0.0.1
+      host: 0.0.0.0
 
   # WebSocket 관련 설정
   mvc:
