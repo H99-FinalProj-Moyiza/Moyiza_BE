@@ -3,6 +3,7 @@ package com.example.moyiza_be.common.security.jwt;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsServiceImpl;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshToken;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
+import com.example.moyiza_be.user.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -56,23 +57,48 @@ public class JwtUtil {
         }
         return null;
     }
-
-    // 토큰 생성
-    public JwtTokenDto createAllToken(String email) {
-        return new JwtTokenDto(createToken(email, "Access"), createToken(email, "Refresh"));
+    public Claims getClaimsFromToken(String token){
+        return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
     }
 
-    public String createToken(String email, String token) {
-        Date date = new Date();
-        long time = token.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
+    public String removePrefix(String bearerToken){
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
 
-        return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(email)
-                        .setExpiration(new Date(date.getTime() + time))
-                        .setIssuedAt(date)
-                        .signWith(key, signatureAlgorithm)
-                        .compact();
+    // 토큰 생성
+    public JwtTokenDto createAllToken(User user) {
+        return new JwtTokenDto(createToken(user, "Access"), createToken(user, "Refresh"));
+    }
+
+    public String createToken(User user, String token) {
+        Date date = new Date();
+        long time;
+        if(token.equals("Access")){
+            time = ACCESS_TIME;
+            return BEARER_PREFIX +
+                    Jwts.builder()
+                            .setSubject(user.getEmail())
+                            .claim("userId", user.getId())
+                            .claim("nickName", user.getNickname())
+                            .claim("profileUrl", user.getProfileImage())
+                            .setExpiration(new Date(date.getTime() + time))
+                            .setIssuedAt(date)
+                            .signWith(key, signatureAlgorithm)
+                            .compact();
+        }
+        else{
+            time = REFRESH_TIME;
+            return BEARER_PREFIX +
+                    Jwts.builder()
+                            .setSubject(user.getEmail())
+                            .setExpiration(new Date(date.getTime() + time))
+                            .setIssuedAt(date)
+                            .signWith(key, signatureAlgorithm)
+                            .compact();
+        }
     }
 
     // 토큰 검증

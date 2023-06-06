@@ -5,6 +5,7 @@ import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventAttendantResponseDto;
+import com.example.moyiza_be.event.dto.EventDetailResponseDto;
 import com.example.moyiza_be.event.dto.EventRequestDto;
 import com.example.moyiza_be.event.dto.EventUpdateRequestDto;
 import com.example.moyiza_be.event.entity.Event;
@@ -83,19 +84,12 @@ public class EventService {
 
     // 이벤트 조회
     @Transactional
-    public ResponseEntity<?> getEvent(long clubId, long eventId) {
+    public ResponseEntity<List<EventAttendant>> getEvent(long clubId, long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(()->new IllegalArgumentException("400 Bad Request"));
         // 참석한 사람들
-//        List<EventAttendant> attendantList = event.getEventAttendantList();
-//        List<User> userList = new ArrayList<>();
-//        for (EventAttendant eventAttendant : attendantList) {
-//            User user = eventAttendant.getUser();
-//            userList.add(user);
-//        }
-//        ArrayList<Object> dataSet = new ArrayList<>();
-//        dataSet.add(event);
-//        dataSet.add(userList);
-        return new ResponseEntity("조회 성공", HttpStatus.OK);
+        List<EventAttendant> attendantList = attendantRepository.findByEventId(eventId);
+        EventDetailResponseDto detailResponseDto = new EventDetailResponseDto(event, attendantList, attendantList.size());
+        return new ResponseEntity(detailResponseDto, HttpStatus.OK);
     }
 
     // 전체 이벤트 조회 : 보류긴 한데
@@ -114,8 +108,8 @@ public class EventService {
         }
         // 만료처리도 추가해야함.
         if (user.getId().equals(event.getOwnerId())) {
-            eventRepository.deleteById(eventId);
             event.setDeleted(true);
+            eventRepository.deleteById(eventId);
         } else {
             throw new IllegalArgumentException("401 Not Authorized");
         }
@@ -124,12 +118,16 @@ public class EventService {
 
     // 이벤트 참석 / 취소
 
-    public ResponseEntity<String> joinEvent(Long eventId, User user) {
-        EventAttendant eventAttendant = new EventAttendant(eventId, user.getId());
+    public ResponseEntity<?> joinEvent(Long eventId, User user) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 EventNot Found"));
+        if(attendantRepository.findByEventIdAndUserId(eventId, user.getId()) != null) {
+            return new ResponseEntity<>(new Message("중복 가입 불가"), HttpStatus.FORBIDDEN);
+        }
+        EventAttendant eventAttendant = new EventAttendant(eventId, user.getId(), user);
         attendantRepository.save(eventAttendant);
         return ResponseEntity.ok("참석되었습니다.");
     }
-    public ResponseEntity<String> cancelEvent(Long eventId, User user) {
+    public ResponseEntity<?> cancelEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 Event NotFound"));
         EventAttendant eventAttendant = attendantRepository.findByEventIdAndUserId(eventId, user.getId());
         if (eventAttendant != null) {
@@ -140,37 +138,5 @@ public class EventService {
         }
     }
 
-//    @Transactional
-//    public EventAttendantResponseDto addAttendant(long clubId, long eventId, User user) {
-//        // user 로그인 되어있니?
-//        if (user == null) throw new IllegalArgumentException("401 UnAuthorized");
-//        // club 가입은 했니?
-//        // 여기 어떻게 짤까
-//        Event event = (Event) eventRepository.findByIdAndDeletedIsFalse(eventId).orElseThrow(
-//                () -> new IllegalArgumentException("404 Not Found")
-//        );
-//        // 참석취소자가 방장일경우 참석취소 불가
-//        if(event.getOwnerId()==user.getId()){
-//            throw new IllegalArgumentException("방장은 취소가 불가능해요 ㅠ.ㅠ");
-//        }
-//        // 참석자테이블에 존재하는가??
-//        EventAttendant attendant = (EventAttendant) attendantRepository.findByEventAndUser(event, user).orElseGet(()->new EventAttendant(eventId, user.getId()));
-//
-//        if (attendant == null) {
-//            // 최대정원 도달시 참석불가
-//            if (event.getEventGroupSize() <= event.getAttendantsNum()) {
-//                throw new IllegalArgumentException("Fully Occupied");
-//            }
-//            // 참석하지 않은 유저인 경우 참석으로 하고 참석자수++
-//            EventAttendant eventAttendant = attendantRepository.save(new EventAttendant(event.getId(), user.getId()));
-//            event.addAttend();
-//            return new EventAttendantResponseDto(eventAttendant);
-//        } else {
-//            // 기존에 참석했던 유저의 경우 참석자 명단에서 삭제하고 참석자수--
-//            attendantRepository.delete(attendant);
-//            event.cancelAttend();
-//            return null;
-//        }
-//    }
 
 }

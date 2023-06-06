@@ -86,6 +86,11 @@ public class User extends TimeStamped {
         this.password = requestDto.getPassword();
     }
 
+    public User (String nickName, Long id){
+        this.nickname = nickName;
+        this.id = id;
+    }
+
     public void updateProfileImage(String storedFileName) {
         this.profileImage = storedFileName;
     }

@@ -15,7 +15,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: 'true'
-    show-sql: 'true'
+#    show-sql: 'true'
     hibernate:
       ddl-auto: update
   datasource:
@@ -35,13 +35,15 @@ spring:
         google:
           clientId: ENC(bseqy4nx4e6dIS1VFu7v6Oi/oXUfM4APJDrIPkFQj12TfNiL4ube/AifsQswaVwxMpPsOEDFVRGBbclKIdyGG+fGRi+2gfeNeCPiv9detPMult5Ysc+uZw==)
           clientSecret: ENC(VJZZH16JKtnkdK6WHQknM4xr2QnnBQMMDwpc4acrdGy/Gp+FCqI99Reqr/9TjiY2)
+#          redirect-uri: http://moyiza.s3-website.ap-northeast-2.amazonaws.com/login/oauth2/code/google
+          redirect-uri: http://ec2-43-201-150-14.ap-northeast-2.compute.amazonaws.com/login/oauth2/code/google
           scope: email, profile
         naver:
           clientId: ENC(+AuHYY52/PGsDzg07Choe/xfMYEDoENtoi/s9ecgfEI=)
           clientSecret: ENC(0ugqjzOjV4QWXbn8hV7Gpd6JHDOjMchB)
 #          clientAuthenticationMethod: post
           authorizationGrantType: authorization_code
-          redirectUri: http://moyiza.s3-website.ap-northeast-2.amazonaws.com/login/oauth2/code/naver
+          redirect-uri: http://ec2-43-201-150-14.ap-northeast-2.compute.amazonaws.com/login/oauth2/code/naver
           scope: name, nickname, email, profile_image
           clientName: Naver
         kakao:
@@ -49,7 +51,7 @@ spring:
           client-secret: ENC(f/EoiRbGMepGr4d9w2+dhrgRheoEgAkHzfRmwuOXWfFz08TPuV8j51i1W5a+AuJo)
           client-authentication-method: POST
           authorization-grant-type: authorization_code
-          redirect-uri: http://moyiza.s3-website.ap-northeast-2.amazonaws.com/login/oauth2/code/kakao
+          redirect-uri: http://43.201.150.14/login/oauth2/code/kakao
           scope:
             - account_email
             - profile_nickname
@@ -78,7 +80,17 @@ spring:
       port: 6379
       host: 127.0.0.1
 
+  # WebSocket 관련 설정
+  mvc:
+    websocket:
+      enabled: true
+  # STOMP 관련 설정
+  messaging:
+    stomp:
+      enabled: true
+
 jwt:
   secret:
     key: ENC(rjg+5OS5srRHUw2KZQcREVDpUBlSXEQ4y7Hl/qE1KjNodO/mb2zH8P9bJ0mX0o81k7pPcD6EppBR6LgkE9LBrxBB35PzT/7Tjq9ja7YJAwmj5d9yLFpeLCLgcUQ8AP5HqG1c4Urael0Rqe6gVmxBbfxWOBHgmWKg+qS/w3AY7hyiFrUfLd5Xyw==)
+
 

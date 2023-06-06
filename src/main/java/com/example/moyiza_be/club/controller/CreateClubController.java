@@ -49,6 +49,7 @@ public class CreateClubController {
             @PathVariable Long createclub_id
     ){
         User user = userDetails.getUser();
+
         return createClubService.setCategory(
                 user.getId(), createclub_id, requestCategoryDto.getCategoryEnum()
         );
@@ -129,7 +130,7 @@ public class CreateClubController {
             @PathVariable Long createclub_id
     ){
         User user = userDetails.getUser();
-        return createClubService.confirmCreation(user.getId(), createclub_id);
+        return createClubService.confirmCreation(user, createclub_id);
     }
 
 

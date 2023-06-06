@@ -8,15 +8,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ClubRepository extends JpaRepository<Club, Long> {
-    Page<Club> findByCategoryAndTitleContaining(Pageable pageable, CategoryEnum category, String q);
+    Page<Club> findByCategoryAndIsDeletedFalseAndTitleContaining(Pageable pageable, CategoryEnum category, String q);
 
-    Page<Club> findByCategory(Pageable pageable, CategoryEnum category);
+    Page<Club> findByCategoryAndIsDeletedFalse(Pageable pageable, CategoryEnum category);
 
-    Page<Club> findByTitleContaining(Pageable pageable, String q);
+    Page<Club> findByIsDeletedFalseAndTitleContaining(Pageable pageable, String q);
 
     Integer countByOwnerIdAndIsDeletedFalse(Long userId);
 
-    Boolean existsByIdAndOwnerIdEquals(Long clubId, Long userId);
+
+    Boolean existsByIdAndIsDeletedFalseAndOwnerIdEquals(Long clubId, Long userId);
+    Page<Club> findAllByIsDeletedFalse(Pageable pageable);
+    Optional<Club> findByIdAndIsDeletedFalse(Long clubId);
+
+    List<Club> findByOwnerId(Long userId);
 }

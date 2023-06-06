@@ -48,8 +48,8 @@ public class ClubController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String q,
             @PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
-                                                                ) {
-        return clubService.getClubList(pageable, category == null? null : CategoryEnum.fromString(category), q);
+    ) {
+        return clubService.getClubList(pageable, category == null ? null : CategoryEnum.fromString(category), q);
     }
 
 
@@ -58,7 +58,6 @@ public class ClubController {
     public ResponseEntity<ClubDetailResponse> getClub(@PathVariable Long club_id) {
         return clubService.getClubDetail(club_id);
     }
-
 
 
     //클럽 멤버 조회
@@ -94,4 +93,12 @@ public class ClubController {
         return clubService.getClubEventList(user, club_id);
     }
 
+    @DeleteMapping("/{club_id}/delete")
+    public ResponseEntity<Message> deleteClub(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id
+    ) {
+        User user = userDetails.getUser();
+        return clubService.deleteClub(user, club_id);
+    }
 }

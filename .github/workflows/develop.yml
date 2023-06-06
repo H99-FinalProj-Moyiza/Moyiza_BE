@@ -3,8 +3,8 @@ name: Moyiza server CI/CD
 on:
   push:
     branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
+#  pull_request:
+#    branches: [ develop ]
 
 #버킷 이름, CodeDeploy App Name, CodeDeploy 배포 그룹 이름
 env:
@@ -44,6 +44,10 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew clean build
+
+      - name: Start WebSocket Server
+        run: |
+          ./gradlew bootRun --args='--spring.config.location=classpath:application.yml'  
 
       # 디렉토리 생성
       - name: Make Directory

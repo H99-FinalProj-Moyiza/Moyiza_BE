@@ -25,7 +25,7 @@ public class EventController {
 
     // create
     @PostMapping("/{club_id}/event")
-    public ResponseEntity<?> createEvent(@PathVariable long club_id, @RequestBody EventRequestDto eventRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+    public ResponseEntity<?> createEvent(@PathVariable Long club_id, @RequestBody EventRequestDto eventRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return eventService.createEvent(eventRequestDto, userDetails.getUser(), club_id);
     }
 
@@ -51,13 +51,13 @@ public class EventController {
 
 //     Attend
     @PostMapping("/{club_id}/event/join/{event_id}")
-    public ResponseEntity<?> joinEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return eventService.joinEvent(event_id, userDetails.getUser());
+    public ResponseEntity<?> joinEvent(@PathVariable(name = "club_id") Long clubId, @PathVariable(name = "event_id") Long eventId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return eventService.joinEvent(eventId, userDetails.getUser());
     }
 
     // Cancel Attend
     @DeleteMapping("/{club_id}/event/join/{event_id}")
-    public ResponseEntity<String> attendEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> attendEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return eventService.cancelEvent(event_id, userDetails.getUser());
     }
 }

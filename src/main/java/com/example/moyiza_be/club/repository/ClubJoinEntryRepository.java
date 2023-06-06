@@ -1,5 +1,6 @@
 package com.example.moyiza_be.club.repository;
 
+import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.entity.ClubJoinEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,4 +10,8 @@ public interface ClubJoinEntryRepository extends JpaRepository<ClubJoinEntry, Lo
     List<ClubJoinEntry> findByClubId(Long clubId);
     ClubJoinEntry findByUserIdAndClubId(Long id, Long clubId);
     Boolean existsByClubIdAndUserId(Long clubId, Long userId);
+
+    void deleteByClubId(Long clubId);
+
+    List<ClubJoinEntry> findByUserId(Long id);
 }

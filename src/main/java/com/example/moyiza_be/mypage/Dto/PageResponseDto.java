@@ -1,16 +1,20 @@
 package com.example.moyiza_be.mypage.Dto;
 
-import com.example.moyiza_be.club.entity.Club;
-import com.example.moyiza_be.user.entity.User;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Getter
+@NoArgsConstructor
 public class PageResponseDto {
-    private User user;
-    private List<Club> clubList;
+    private UserResponseDto userInfo;
+    private List<ClubResponseDto> clubsInOperationInfo;
+    private List<ClubResponseDto> clubsInParticipatingInfo;
 
-    public PageResponseDto(User user, List<Club> clubList) {
-        this.user = user;
-        this.clubList = clubList;
+    public PageResponseDto(UserResponseDto userInfo, List<ClubResponseDto> clubsInOperationInfo, List<ClubResponseDto> clubsInParticipatingInfo) {
+        this.userInfo = userInfo;
+        this.clubsInOperationInfo = clubsInOperationInfo;
+        this.clubsInParticipatingInfo = clubsInParticipatingInfo;
     }
 }
