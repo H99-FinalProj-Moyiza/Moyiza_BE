@@ -1,6 +1,8 @@
 package com.example.moyiza_be.oneday.dto;
 
 import com.example.moyiza_be.club.entity.Club;
+import com.example.moyiza_be.common.enums.GenderEnum;
+import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.entity.OneDay;
 import lombok.Getter;
@@ -18,7 +20,7 @@ public class OneDayDetailResponse {
     private List<String> oneDayTag;
     private String oneDayContent;
     private Integer agePolicy;
-    private String genderPolicy;
+    private GenderPolicyEnum genderPolicy;
     private Integer oneDayGroupSize;
     private Integer attendantsNum;
     private String oneDayImage;
@@ -32,7 +34,7 @@ public class OneDayDetailResponse {
         this.oneDayTag = TagEnum.parseTag(oneDay.getTagString());
         this.oneDayContent = oneDay.getOneDayContent();
         this.agePolicy = oneDay.getAgePolicy();
-        this.genderPolicy = oneDay.getGenderPolicy().getGenderPolicy();
+        this.genderPolicy = oneDay.getGenderPolicy();
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
         this.attendantsNum = 1;
         this.oneDayImage = oneDay.getOneDayImage();

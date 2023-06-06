@@ -26,8 +26,8 @@ public class OneDayAttendant {
     private String userEmail;
     private String userProfileImage;
 
-    public OneDayAttendant(Long OneDayId, User user) {
-        this.oneDayId = OneDayId;
+    public OneDayAttendant(OneDay OneDay, User user) {
+        this.oneDayId = OneDay.getId();
         this.userId = user.getId();
         this.userName = user.getName();
         this.userNickName = user.getNickname();
