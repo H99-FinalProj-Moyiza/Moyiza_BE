@@ -2,7 +2,6 @@ package com.example.moyiza_be.common.redis;
 
 import com.example.moyiza_be.chat.dto.ChatMessageOutput;
 import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
-import com.example.moyiza_be.chat.entity.Chat;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,7 +26,7 @@ public class RedisCacheService {
 //    private static final String SESSION_PREFIX = "session:";
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, ChatMessageOutput> redisRecentChatTemplate;
-    private final RedisTemplate<String, String> redisStringListTemplate;
+    private final RedisTemplate<String, String> redisStringSetTemplate;
     private final String RECENTCHAT_IDENTIFIER = ":recentChat";
     private final String CONNECTED_SESSIONS_IDENTIFIER = ":subscriptions";
 
@@ -88,17 +87,17 @@ public class RedisCacheService {
     }
 
     public void addSubscriptionToChatId(String chatId, String sessionId){
-        SetOperations<String, String> setOperations = redisStringListTemplate.opsForSet();
+        SetOperations<String, String> setOperations = redisStringSetTemplate.opsForSet();
         setOperations.add(chatId + CONNECTED_SESSIONS_IDENTIFIER, sessionId);
     }
 
     public void removeSubscriptionFromChatId(String chatId, String sessionId){
-        SetOperations<String, String> setOperations = redisStringListTemplate.opsForSet();
+        SetOperations<String, String> setOperations = redisStringSetTemplate.opsForSet();
         setOperations.remove(chatId + CONNECTED_SESSIONS_IDENTIFIER, sessionId);
     }
 
     public Long countSubscriptionToChatId(String chatId){
-        SetOperations<String, String> setOperations = redisStringListTemplate.opsForSet();
+        SetOperations<String, String> setOperations = redisStringSetTemplate.opsForSet();
         return setOperations.size(chatId + CONNECTED_SESSIONS_IDENTIFIER);
     }
 
