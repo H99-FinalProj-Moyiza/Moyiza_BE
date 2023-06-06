@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +34,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // JWT 토큰을 해석하여 추출
         String access_token = jwtUtil.resolveToken(request, JwtUtil.ACCESS_TOKEN);
-        String refresh_token = jwtUtil.resolveToken(request, JwtUtil.REFRESH_TOKEN);
-
+        Cookie[] rc = request.getCookies();
+        String refresh_token = "";
+        for (Cookie cookie : rc){
+            refresh_token = cookie.getValue();
+        }
+//        String refresh_token = jwtUtil.resolveToken(request, JwtUtil.REFRESH_TOKEN);
         // 토큰이 존재하면 유효성 검사를 수행하고, 유효하지 않은 경우 예외 처리
         log.info("JwtAuthFilter activated");
         if(access_token == null){

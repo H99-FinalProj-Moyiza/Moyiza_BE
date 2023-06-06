@@ -11,7 +11,10 @@ import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -124,10 +127,20 @@ public class UserService {
             throw new IllegalArgumentException("중복된 닉네임 사용");
         }
     }
+
     private void setHeader(HttpServletResponse response, JwtTokenDto tokenDto) {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
-        response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+        ResponseCookie cookie = ResponseCookie.from("RefreshToken", tokenDto.getRefreshToken())
+                .maxAge(14 * 24 * 60 * 60) //토근 만료기간 14일
+                .path("/")
+                // true -> https 환경에서만 쿠키 전송 가능 인증서 발급 후 true 전환 예정
+                .secure(false)
+                .sameSite("None")
+                .httpOnly(true)
+                .build();
+        response.setHeader("Set-Cookie", cookie.toString());
     }
+
     public ResponseEntity<?> uploadTest(MultipartFile image) {
         if(image.isEmpty()){
             return new ResponseEntity<>(basicProfileUrl, HttpStatus.OK);
