@@ -117,6 +117,7 @@ public class RedisCacheService {
     public Long getUserLastReadMessageId(String chatId, String userId) {
         ZSetOperations<String, String> zSetOperations = redisStringStringTemplate.opsForZSet();
         Double score = zSetOperations.score(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, userId);
+        System.out.println("score = " + score);
         if(score == null){
             return null;
         }

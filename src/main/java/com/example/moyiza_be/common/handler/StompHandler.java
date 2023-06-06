@@ -3,7 +3,6 @@ package com.example.moyiza_be.common.handler;
 
 import com.example.moyiza_be.chat.dto.ChatMessageOutput;
 import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
-import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -14,11 +13,15 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @Component
 @Slf4j
+
 public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisCacheService redisCacheService;
@@ -56,27 +59,6 @@ public class StompHandler implements ChannelInterceptor {
 
         if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())
         ) {
-            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
-            String destination = headerAccessor.getDestination();
-            Long chatId = getChatIdFromDestination(destination);
-            userPrincipal.setSubscribedChatId(chatId);
-            redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
-
-            Long lastReadMessageId = redisCacheService.getUserLastReadMessageId(chatId.toString(), userPrincipal.getUserId().toString());
-            if(lastReadMessageId == null){
-                log.info("User has no lastReadMessage");
-            }
-            else {
-                log.info("Calling sendLastReadMessageId for user " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
-            }
-
-
-            redisCacheService.removeUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString());
-            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
-//            ChatJoinEntry chatJoinEntry =
-//                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(userPrincipal.getUserId(), chatId)
-//                                    .orElseThrow(() -> new NullPointerException("참여중인 채팅방이 아닙니다"));
-
             return message;
         }
 
@@ -128,5 +110,42 @@ public class StompHandler implements ChannelInterceptor {
         redisCacheService.removeSubscriptionFromChatId(chatId.toString(), sessionId);
         userPrincipal.setSubscribedChatId(-1L);
         redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
+
+
+    }
+
+    @Override
+    public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
+        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+        
+        if(StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())){
+            String destination = headerAccessor.getDestination();
+            String sessionId = headerAccessor.getSessionId();
+            Long chatId = getChatIdFromDestination(destination);
+
+            ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
+            String userId = userPrincipal.getUserId().toString();
+
+            userPrincipal.setSubscribedChatId(chatId);
+            redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
+
+            Long lastReadMessageId = redisCacheService.getUserLastReadMessageId(chatId.toString(), userId);
+            if(lastReadMessageId == null){
+                log.info("User has no lastReadMessage");
+            }
+            else {
+                StompHeaderAccessor newHeader = StompHeaderAccessor.create(StompCommand.MESSAGE);
+                newHeader.setDestination(destination);
+                newHeader.setNativeHeader("lastReadMessage",String.valueOf(lastReadMessageId));
+                newHeader.setNativeHeader("subscribedUserId", userId);
+                Message<byte[]> newMessage = MessageBuilder.createMessage("new subscription".getBytes(StandardCharsets.UTF_8), newHeader.getMessageHeaders());
+                channel.send(newMessage);
+                log.info("sending subscritionInfo of user : " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
+            }
+            redisCacheService.removeUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString());
+            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
+        }
+
+        ChannelInterceptor.super.afterSendCompletion(message, channel, sent, ex);
     }
 }
