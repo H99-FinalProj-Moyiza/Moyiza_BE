@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -64,6 +65,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private void setHeader(HttpServletResponse response, JwtTokenDto tokenDto) {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
-        response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+
+        ResponseCookie cookie = ResponseCookie.from("RefreshToken", tokenDto.getRefreshToken())
+                .maxAge(14 * 24 * 60 * 60)
+                .path("/")
+                // true -> https 환경에서만 쿠키 전송 가능 인증서 발급 후 true 전환 예정
+                .secure(false)
+                .sameSite("None")
+                .httpOnly(true)
+                .build();
+        response.setHeader("Set-Cookie", cookie.toString());
     }
 }

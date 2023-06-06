@@ -12,7 +12,9 @@ import com.example.moyiza_be.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,12 +62,12 @@ public class UserService {
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 틀립니다.");
         }
-                    JwtTokenDto tokenDto = jwtUtil.createAllToken(user);
-            Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(user.getEmail());
-            if (refreshToken.isPresent()) {
-                refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
-            } else {
-                RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmail());
+        JwtTokenDto tokenDto = jwtUtil.createAllToken(user);
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(user.getEmail());
+        if (refreshToken.isPresent()) {
+            refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
+        } else {
+            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmail());
             refreshTokenRepository.save(newToken);
         }
         setHeader(response, tokenDto);
@@ -128,10 +130,21 @@ public class UserService {
             throw new IllegalArgumentException("중복된 닉네임 사용");
         }
     }
+
     private void setHeader(HttpServletResponse response, JwtTokenDto tokenDto) {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
-        response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+        String refreshToken = tokenDto.getRefreshToken();
+        ResponseCookie cookie = ResponseCookie.from("RefreshToken", refreshToken)
+                .maxAge(14 * 24 * 60 * 60) //토근 만료기간 14일
+                .path("/")
+                // true -> https 환경에서만 쿠키 전송 가능 인증서 발급 후 true 전환 예정
+//                .secure(true)
+                .sameSite("None")
+                .httpOnly(true)
+                .build();
+        response.setHeader("Set-Cookie", cookie.toString());
     }
+
     public ResponseEntity<?> uploadTest(MultipartFile image) {
         if(image.isEmpty()){
             return new ResponseEntity<>(basicProfileUrl, HttpStatus.OK);

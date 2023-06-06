@@ -32,7 +32,7 @@ public class JwtUtil {
     private static final String BEARER_PREFIX = "Bearer ";
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
-    private static final long ACCESS_TIME = Duration.ofMinutes(3600).toMillis();
+    private static final long ACCESS_TIME = Duration.ofMinutes(60).toMillis();
     private static final long REFRESH_TIME = Duration.ofDays(14).toMillis();
 
     @Value("${jwt.secret.key}")
@@ -91,8 +91,8 @@ public class JwtUtil {
         }
         else{
             time = REFRESH_TIME;
-            return BEARER_PREFIX +
-                    Jwts.builder()
+            // Bearer와 함께 공백 ' '이 오면 에러가 난다.
+            return Jwts.builder()
                             .setSubject(user.getEmail())
                             .setExpiration(new Date(date.getTime() + time))
                             .setIssuedAt(date)
@@ -131,8 +131,10 @@ public class JwtUtil {
     //RefreshToken 검증
     public boolean refreshTokenValid(String token) {
         if (!validateToken(token)) return false;
+        System.out.println("여기까지 올 수 있나?");
+        System.out.println(token);
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(getUserInfoFromToken(token));
-        return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken().substring(7));
+        return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
     }
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
         response.setHeader(ACCESS_TOKEN, accessToken);
