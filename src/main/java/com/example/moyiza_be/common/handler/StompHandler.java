@@ -32,8 +32,8 @@ public class StompHandler implements ChannelInterceptor {
         //
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         String sessionId = headerAccessor.getSessionId();
-        log.info("Command : " + headerAccessor.getCommand());
         if(StompCommand.CONNECT.equals(headerAccessor.getCommand())){
+            log.info("Command : " + headerAccessor.getCommand());
             String bearerToken = headerAccessor.getFirstNativeHeader("ACCESS_TOKEN");
             String token = jwtUtil.removePrefix(bearerToken);
             if(!jwtUtil.validateToken(token)){
@@ -63,11 +63,13 @@ public class StompHandler implements ChannelInterceptor {
         }
 
         if(StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
+            log.info("Command : " + headerAccessor.getCommand());
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             unsubscribe(userPrincipal, sessionId);
         }
 
         if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
+            log.info("Command : " + headerAccessor.getCommand());
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             if(userPrincipal.getSubscribedChatId().equals(-1L)){
                 log.info("User is not subscribed to any chat .. continue DISCONNECT");
@@ -89,7 +91,8 @@ public class StompHandler implements ChannelInterceptor {
     }
     public void unsubscribe(ChatUserPrincipal userPrincipal, String sessionId){
         log.info(userPrincipal.getUserId() + " unsubscribing chatroom " + userPrincipal.getSubscribedChatId());
-        Long chatId = userPrincipal.getSubscribedChatId();
+        String chatId = userPrincipal.getSubscribedChatId().toString();
+        String userId = userPrincipal.getUserId().toString();
 //        ChatJoinEntry chatJoinEntry =
 //                chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue
 //                                (userPrincipal.getUserId(), userPrincipal.getSubscribedChatId())
@@ -102,12 +105,12 @@ public class StompHandler implements ChannelInterceptor {
         }
         else{
             recentMessageId = recentMessage.getChatRecordId();
-            redisCacheService.addUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString(), recentMessageId);
-            log.info("adding recent message " + recentMessageId + " to userId : " + userPrincipal.getUserId());
+            redisCacheService.addUnsubscribedUser(chatId, userId, recentMessageId);
+            log.info("adding recent message " + recentMessageId + " to userId : " + userId);
         }
 
 //        chatJoinEntryRepository.save(chatJoinEntry);
-        redisCacheService.removeSubscriptionFromChatId(chatId.toString(), sessionId);
+        redisCacheService.removeSubscriptionFromChatId(chatId, userId);
         userPrincipal.setSubscribedChatId(-1L);
         redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
 
@@ -122,6 +125,7 @@ public class StompHandler implements ChannelInterceptor {
             String destination = headerAccessor.getDestination();
             String sessionId = headerAccessor.getSessionId();
             Long chatId = getChatIdFromDestination(destination);
+            log.info("Command : " + headerAccessor.getCommand() + " for chatId : " + chatId);
 
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             String userId = userPrincipal.getUserId().toString();
@@ -131,9 +135,9 @@ public class StompHandler implements ChannelInterceptor {
 
             Long lastReadMessageId = redisCacheService.getUserLastReadMessageId(chatId.toString(), userId);
             if(lastReadMessageId == null){
-                log.info("User has no lastReadMessage");
+                log.info("User " + userId + " has no lastReadMessage... continue without sending decrease message");
             }
-            else {
+            else{
                 StompHeaderAccessor newHeader = StompHeaderAccessor.create(StompCommand.MESSAGE);
                 newHeader.setDestination(destination);
                 newHeader.setNativeHeader("lastReadMessage",String.valueOf(lastReadMessageId));
@@ -142,8 +146,9 @@ public class StompHandler implements ChannelInterceptor {
                 channel.send(newMessage);
                 log.info("sending subscritionInfo of user : " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
             }
+
             redisCacheService.removeUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString());
-            redisCacheService.addSubscriptionToChatId(chatId.toString(), sessionId);
+            redisCacheService.addSubscriptionToChatId(chatId.toString(), userId);
         }
 
         ChannelInterceptor.super.afterSendCompletion(message, channel, sent, ex);
