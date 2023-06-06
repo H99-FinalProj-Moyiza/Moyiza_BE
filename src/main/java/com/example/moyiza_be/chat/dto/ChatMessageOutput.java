@@ -16,7 +16,7 @@ public class ChatMessageOutput {
     private String content;
     private String sentAt;
     private String modifiedAt;
-    private Long unreadCount;
+    private Long unreadCount = 0L;
 
 
     public ChatMessageOutput(ChatRecord chatRecord, ChatUserPrincipal userPrincipal, Long unreadCount) {
@@ -30,7 +30,7 @@ public class ChatMessageOutput {
         this.unreadCount = unreadCount;
     }
 
-    public ChatMessageOutput(ChatRecord chatRecord){
+    public ChatMessageOutput(ChatRecord chatRecord, Long memberCount, Long readCount){
         this.senderId = chatRecord.getSenderId();
         this.senderProfileUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/20fa6d6a-09ba-4cf1-800b-6f225703c85c_shawn_raboutou2.jpg";
         this.senderNickname = chatRecord.getSenderId().toString();
@@ -38,6 +38,10 @@ public class ChatMessageOutput {
         this.content = chatRecord.getContent();
         this.sentAt = chatRecord.getCreatedAt().toString();
         this.modifiedAt = chatRecord.getModifiedAt().toString();
-        this.unreadCount = 11111L;
+        this.unreadCount = memberCount - readCount;
+    }
+
+    public void setUnreadCount(Long unreadCount) {
+        this.unreadCount = unreadCount;
     }
 }
