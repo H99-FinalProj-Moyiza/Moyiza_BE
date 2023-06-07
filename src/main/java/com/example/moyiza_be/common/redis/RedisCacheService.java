@@ -107,9 +107,14 @@ public class RedisCacheService {
         return setOperations.size(chatId + CONNECTED_SESSIONS_IDENTIFIER);
     }
 
-    public void addUnsubscribedUser(String chatId, String userId, Long lastReadMesssageId){
+    public void addUnsubscribedUser(String chatId, String userId){
         ZSetOperations<String, String> zSetOperations = redisStringStringTemplate.opsForZSet();
-        zSetOperations.add(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, userId, lastReadMesssageId);
+        ChatMessageOutput recentMessage = loadRecentChat(chatId);
+        if(recentMessage == null){
+            zSetOperations.add(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, userId, 0L);
+        }else{
+            zSetOperations.add(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, userId, recentMessage.getChatRecordId());
+        }
     }
 
     public void removeUnsubscribedUser(String chatId, String userId){

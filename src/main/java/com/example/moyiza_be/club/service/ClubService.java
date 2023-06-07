@@ -1,6 +1,5 @@
 package com.example.moyiza_be.club.service;
 
-import com.amazonaws.Response;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.club.dto.*;
 import com.example.moyiza_be.club.entity.Club;
@@ -138,14 +137,14 @@ public class ClubService {
     }
 
     //클럽 강퇴
-    public ResponseEntity<Message> banClub(Long clubId, Long userId, BanRequest banRequest) {
-        if(!clubRepository.existsByIdAndIsDeletedFalseAndOwnerIdEquals(clubId, userId)){
+    public ResponseEntity<Message> banClub(Long clubId, User user, BanRequest banRequest) {
+        if(!clubRepository.existsByIdAndIsDeletedFalseAndOwnerIdEquals(clubId, user.getId())){
             return new ResponseEntity<>(new Message("권한이 없거나, 클럽이 없습니다"), HttpStatus.BAD_REQUEST);
         }
         ClubJoinEntry joinEntry = clubJoinEntryRepository.findByUserIdAndClubId(banRequest.getBanUserId(), clubId);
         if (joinEntry != null) {
             clubJoinEntryRepository.delete(joinEntry);
-            log.info("user " + userId + " banned user " + banRequest.getBanUserId() + " from club " + clubId);
+            log.info("user " + user.getId() + " banned user " + banRequest.getBanUserId() + " from club " + clubId);
 
             Club club = clubRepository.findById(clubId).orElse(null);
             if (club != null) {
@@ -155,6 +154,7 @@ public class ClubService {
 
             //추방 후 가입 제한 추가시 여기에 logic
             Message message = new Message(String.format("user %d 가 클럽에서 강퇴되었습니다",banRequest.getBanUserId()));
+            chatService.leaveChat(clubId, ChatTypeEnum.CLUB, user);
             return ResponseEntity.ok(message);
         } else {
             Message message = new Message("클럽 가입 정보가 없습니다.");
