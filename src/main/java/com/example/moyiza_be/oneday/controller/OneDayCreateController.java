@@ -49,14 +49,14 @@ public class OneDayCreateController {
     }
     // category
     @PutMapping("/{oneDayTmpId}/category")
-    public ResponseEntity<?> setCategory(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CreateRequestCategoryDto category, @PathVariable Long oneDayTmpId) {
+    public ResponseEntity<?> setCategory(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody RequestCategoryDto category, @PathVariable Long oneDayTmpId) {
         User user = userDetails.getUser();
         return oneDayCreateService.setCategory(user.getId(), oneDayTmpId, category);
     }
     // tagString
     @PutMapping("/{oneDayTmpId}/tag")
     public ResponseEntity<?> setTag(
-            @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CreateRequestTagDto tag, @PathVariable Long oneDayTmpId){
+            @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody RequestTagDto tag, @PathVariable Long oneDayTmpId){
         User user = userDetails.getUser();
         return oneDayCreateService.setTag(user.getId(), oneDayTmpId, tag);
     }

@@ -81,7 +81,7 @@ public class ClubController {
             @PathVariable Long club_id, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody BanRequest banRequest
     ) {
         User user = userDetails.getUser();
-        return clubService.banClub(club_id, user.getId(), banRequest);
+        return clubService.banClub(club_id, user, banRequest);
     }
 
     @GetMapping("/{club_id}/eventlist")
