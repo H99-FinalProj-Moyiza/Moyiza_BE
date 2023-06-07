@@ -136,8 +136,8 @@ public class UserService {
     }
 
     public ResponseEntity<?> uploadTest(MultipartFile image) {
-        if(image.isEmpty()){
-            return new ResponseEntity<>(basicProfileUrl, HttpStatus.OK);
+        if(image==null){
+            return new ResponseEntity<>(BASIC_PROFILE_IMAGE, HttpStatus.OK);
         }
         String storedFileUrl  = awsS3Uploader.uploadFile(image);
         return new ResponseEntity<>(storedFileUrl, HttpStatus.OK);
