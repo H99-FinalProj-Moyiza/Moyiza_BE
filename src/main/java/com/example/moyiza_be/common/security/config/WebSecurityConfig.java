@@ -44,7 +44,7 @@ public class WebSecurityConfig {
             "/login",
             "/login/**",
             "/enums",
-            "/.well-known/acme-challenge" //Certbot의 도메인 소유권 확인
+            "/.well-known/acme-challenge/**" //Certbot의 도메인 소유권 확인
     };
 
     @Bean
