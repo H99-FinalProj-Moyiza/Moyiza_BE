@@ -30,6 +30,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
@@ -92,7 +93,7 @@ public class OneDayService {
         return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
     // 원데이 수정
-    public ResponseEntity<?> updateOneDay(Long id, OneDayUpdateRequestDto requestDto, User user) throws IOException {
+    public ResponseEntity<?> updateOneDay(Long id, OneDayUpdateRequestDto requestDto, User user, MultipartFile imageUrl) throws IOException {
         // 원데이 가져오기
         OneDay oneDay = oneDayRepository.findById(id).orElseThrow(()->new IllegalArgumentException("404 OneDay NOT FOUND"));
         // 존재하는 글인가
@@ -101,8 +102,8 @@ public class OneDayService {
         }
         // 이미지 처리
         String storedFileUrl = "";
-        if (!Objects.isNull(requestDto.getImage()) && !requestDto.getImage().isEmpty()) {
-            storedFileUrl = awsS3Uploader.uploadFile(requestDto.getImage());
+        if (!Objects.isNull(imageUrl) && !imageUrl.isEmpty()) {
+            storedFileUrl = awsS3Uploader.uploadFile(imageUrl);
         }
         // 작성자는 맞는가
         if (Objects.equals(user.getId(),oneDay.getOwnerId())) {
