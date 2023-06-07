@@ -5,6 +5,7 @@ import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.email.EmailRequestDto;
 import com.example.moyiza_be.user.email.EmailService;
 import com.example.moyiza_be.user.service.UserService;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +32,9 @@ public class UserController {
 //                                    @RequestPart(value = "imageFile") MultipartFile image){
 //        return userService.signup(requestDto, image);
 //    }
-    @PostMapping ("/signup")
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> signup(@RequestPart(value = "data") SignupRequestDto requestDto,
-                                    @RequestPart(value = "imageFile") MultipartFile image){
+                                    @RequestPart(value = "imageFile", required = false) MultipartFile image){
         return userService.signup(requestDto, image);
     }
 
@@ -70,8 +71,8 @@ public class UserController {
     //회원정보 수정
     @PutMapping(value = "/profile",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> updateProfile(@RequestPart("imageFile") MultipartFile image,
-                                           @RequestPart UpdateRequestDto requestDto,
+    public ResponseEntity<?> updateProfile(@RequestPart(value = "imageFile", required = false) MultipartFile image,
+                                           @RequestPart(value = "data") UpdateRequestDto requestDto,
                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.updateProfile(image, requestDto, userDetails.getUser().getEmail());
     }
