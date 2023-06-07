@@ -10,10 +10,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ServletConfig {
-
-    @Value("${server.http.port}")
-    private int httpPort;
-
     @Bean
     public ServletWebServerFactory serverFactory() {
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
@@ -23,7 +19,7 @@ public class ServletConfig {
 
     private Connector createStandardConnector () {
         Connector connector = new Connector("org.apache.coyote.http11NioProtocol");
-        connector.setPort(httpPort);
+        connector.setPort(8081);
         return connector;
     }
 }
