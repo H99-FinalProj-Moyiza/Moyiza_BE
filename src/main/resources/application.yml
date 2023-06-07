@@ -101,6 +101,6 @@ server:
     key-store-password: ENC(BrX+B0Pn+L3sk/TKC53WFSSo2ZBBgjh8hCAXHSuHOMI=)
   port: 8443
   http:
-    port: 8080
+    port: 8081
 
 
