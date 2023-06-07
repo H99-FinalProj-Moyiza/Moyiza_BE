@@ -32,6 +32,7 @@ public class WebSecurityConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final String MOYIZADOMAIN = "https://mo2za.com";
 
     private static final String[] PERMIT_URL_ARRAY = {
             "/*",
@@ -87,7 +88,7 @@ public class WebSecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.addAllowedOrigin("http://localhost:3000");
-
+        config.addAllowedOrigin(MOYIZADOMAIN);
         config.addAllowedOrigin("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/");
 
         config.addExposedHeader(JwtUtil.ACCESS_TOKEN);
