@@ -1,9 +1,12 @@
 package com.example.moyiza_be.mypage.Dto;
 
 import com.example.moyiza_be.club.entity.Club;
+import com.example.moyiza_be.common.enums.TagEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -11,8 +14,9 @@ import lombok.Getter;
 public class ClubResponseDto {
     private Long club_id;
     private String clubCategory;
-    private String clubTag;
+    private List<String> clubTag;
     private String clubTitle;
+    private String clubContent;
     private Integer nowMemberCount;
     private Integer maxGroupSize;
     private String thumbnailUrl;
@@ -20,7 +24,7 @@ public class ClubResponseDto {
     public ClubResponseDto(Club club) {
         this.club_id = club.getId();
         this.clubCategory = club.getCategory().getCategory();
-        this.clubTag = club.getTagString();
+        this.clubTag = TagEnum.parseTag(club.getTagString());
         this.clubTitle = club.getTitle();
         this.nowMemberCount = club.getNowMemberCount();
         this.maxGroupSize = club.getMaxGroupSize();

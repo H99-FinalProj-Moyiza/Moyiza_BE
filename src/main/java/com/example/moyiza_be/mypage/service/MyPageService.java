@@ -5,6 +5,7 @@ import com.example.moyiza_be.club.entity.ClubJoinEntry;
 import com.example.moyiza_be.club.repository.ClubJoinEntryRepository;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.club.service.ClubService;
+import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.mypage.Dto.ClubResponseDto;
 import com.example.moyiza_be.mypage.Dto.PageResponseDto;
 import com.example.moyiza_be.mypage.Dto.UserResponseDto;
@@ -40,8 +41,9 @@ public class MyPageService {
                 .map(club -> ClubResponseDto.builder()
                         .club_id(club.getId())
                         .clubCategory(club.getCategory().getCategory())
-                        .clubTag(club.getTagString())
+                        .clubTag(TagEnum.parseTag(club.getTagString()))
                         .clubTitle(club.getTitle())
+                        .clubContent(club.getContent())
                         .thumbnailUrl(club.getThumbnailUrl())
                         .nowMemberCount(club.getNowMemberCount())
                         .maxGroupSize(club.getMaxGroupSize())
@@ -59,8 +61,9 @@ public class MyPageService {
                 .map(club -> ClubResponseDto.builder()
                         .club_id(club.getId())
                         .clubCategory(club.getCategory().getCategory())
-                        .clubTag(club.getTagString())
+                        .clubTag(TagEnum.parseTag(club.getTagString()))
                         .clubTitle(club.getTitle())
+                        .clubContent(club.getContent())
                         .thumbnailUrl(club.getThumbnailUrl())
                         .nowMemberCount(club.getNowMemberCount())
                         .maxGroupSize(club.getMaxGroupSize())
