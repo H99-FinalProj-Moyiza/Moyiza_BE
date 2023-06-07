@@ -64,7 +64,7 @@ public class OneDayCreateController {
     @PutMapping("/{oneDayTmpId}/policy")
     public ResponseEntity<?> setPolicy(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody RequestPolicyDto requestPolicy, @PathVariable Long oneDayTmpId){
         User user = userDetails.getUser();
-        return oneDayCreateService.setPolicy(user.getId(), oneDayTmpId, requestPolicy.getAgePolicy(),requestPolicy.getGenderPolicy());
+        return oneDayCreateService.setPolicy(user.getId(), oneDayTmpId, requestPolicy);
     }
     // groupSize
     @PutMapping("/{oneDayTmpId}/maxgroupsize")

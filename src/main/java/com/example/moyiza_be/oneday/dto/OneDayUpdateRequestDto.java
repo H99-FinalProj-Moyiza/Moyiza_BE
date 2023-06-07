@@ -23,8 +23,7 @@ public class OneDayUpdateRequestDto {
     private final double oneDayLatitude;
     private final double oneDayLongitude;
     private final int oneDayGroupSize;
-    private MultipartFile image;
-    public OneDayUpdateRequestDto(OneDay oneDay, MultipartFile image) {
+    public OneDayUpdateRequestDto(OneDay oneDay) {
         this.oneDayTitle = oneDay.getOneDayTitle();
         this.oneDayContent = oneDay.getOneDayContent();
         this.category = oneDay.getCategory();
@@ -36,7 +35,6 @@ public class OneDayUpdateRequestDto {
         this.oneDayLatitude = oneDay.getOneDayLatitude();
         this.oneDayLongitude = oneDay.getOneDayLongitude();
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
-        this.image = image;
     }
 
 }

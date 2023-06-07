@@ -104,14 +104,14 @@ public class OneDayCreateService {
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
     public ResponseEntity<Message> setPolicy
-            (Long userId, Long createOneDayId, Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
+            (Long userId, Long createOneDayId, RequestPolicyDto policy) {
         OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("No Such OneDay Found"));
         // loadAndCheckOwnerShip
         if(!oneDayCreate.getOwnerId().equals(userId)) {
             throw new IllegalCallerException("It is not your oneday");
         }
-        oneDayCreate.setGenderPolicy(genderPolicyEnum);
-        oneDayCreate.setAgePolicy(agePolicy);
+        oneDayCreate.setGenderPolicy(policy.getGenderPolicy());
+        oneDayCreate.setAgePolicy(policy.getAgePolicy());
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
     public ResponseEntity<Message> setMaxGroupSize(Long userId, Long createOneDayId, RequestSizeDto maxSize) {
