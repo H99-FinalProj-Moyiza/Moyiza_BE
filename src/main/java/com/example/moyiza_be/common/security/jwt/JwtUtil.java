@@ -1,5 +1,6 @@
 package com.example.moyiza_be.common.security.jwt;
 
+import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsServiceImpl;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshToken;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
@@ -146,6 +147,23 @@ public class JwtUtil {
         }
         cookieUtil.addCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
         response.setHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
+    }
+
+    public ChatUserPrincipal tokenToChatUserPrincipal(String token){
+        Claims claims = getClaimsFromToken(token);
+        ChatUserPrincipal userInfo;
+        try{
+            userInfo = new ChatUserPrincipal(
+                    Long.valueOf(claims.get("userId").toString()),
+                    claims.get("nickName").toString(),
+                    claims.get("profileUrl").toString(),
+                    -1L
+            );
+        } catch(RuntimeException e){
+            log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
+            throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
+        }
+        return userInfo;
     }
 
 }

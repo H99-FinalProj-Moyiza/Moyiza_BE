@@ -32,6 +32,7 @@ public enum CategoryEnum {
     public String getCategory(){return this.category;}
 
     public static CategoryEnum fromString(String category) {
+        if (category == null) return null;
         for (CategoryEnum categoryEnum : CategoryEnum.values()) {
             if (categoryEnum.getCategory().equalsIgnoreCase(category)) {
                 return categoryEnum;
