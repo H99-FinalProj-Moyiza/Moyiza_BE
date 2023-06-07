@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class MyPageService {
-    private final MyPageRepository myPageRepository;
     private final ClubRepository clubRepository;
     private final ClubJoinEntryRepository clubJoinEntryRepository;
     @Transactional
@@ -31,6 +30,8 @@ public class MyPageService {
                 .user_id(user.getId())
                 .nickname(user.getNickname())
                 .profileImage(user.getProfileImage())
+                .clubsInOperationCount(clubRepository.findByOwnerId(user.getId()).size())
+                .clubsInParticipatingCount(clubJoinEntryRepository.findByUserId(user.getId()).size())
                 .build();
 
         //운영중인 클럽 정보 리스트
