@@ -14,6 +14,7 @@ public class ClubResponseDto {
     private String clubTag;
     private String clubTitle;
     private Integer nowMemberCount;
+    private Integer maxGroupSize;
     private String thumbnailUrl;
 
     public ClubResponseDto(Club club) {
@@ -22,6 +23,7 @@ public class ClubResponseDto {
         this.clubTag = club.getTagString();
         this.clubTitle = club.getTitle();
         this.nowMemberCount = club.getNowMemberCount();
+        this.maxGroupSize = club.getMaxGroupSize();
         this.thumbnailUrl = club.getThumbnailUrl();
     }
 }
