@@ -1,10 +1,14 @@
 package com.example.moyiza_be.oneday.controller;
 
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
-import com.example.moyiza_be.oneday.dto.OneDayRequestDto;
+import com.example.moyiza_be.oneday.dto.OneDayDetailResponse;
+import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
+import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
+import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.oneday.service.OneDayService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,30 +27,31 @@ public class OneDayController {
     // Create
     @RequestMapping(value = "/", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
 //    @PostMapping
-    public ResponseEntity<?> createOneDay(@RequestPart(value = "data") OneDayRequestDto requestDto,
-                                          @RequestPart(value = "imageFile") MultipartFile storedFileUrl,
-                                          @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        return oneDayService.createOneDay(requestDto, userDetails.getUser(), storedFileUrl);
+    public OneDayDetailResponse createOneDay(@RequestPart(value = "data") OneDayCreateConfirmDto requestDto,
+                                             @RequestPart(value = "imageFile") MultipartFile storedFileUrl,
+                                             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        return oneDayService.createOneDay(requestDto);
     }
     // ReadAll
     @GetMapping
     public ResponseEntity<?> getOneDayList() {
-        return oneDayService.getOneDayList();
+        return oneDayService.getOneDayList(Pageable.unpaged(), null, null);
     }
     // ReadOne
     @GetMapping("/{oneDayId}")
     public ResponseEntity<?> getOneDay(@PathVariable Long oneDayId) {
-        return oneDayService.getOneDay(oneDayId);
+        return oneDayService.getOneDayDetail(oneDayId);
     }
     // Update
-    @PutMapping("/{oneDayId}")
-    public ResponseEntity<?> updateOneDay(@PathVariable Long oneDayId, @RequestBody OneDayUpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        return oneDayService.updateOneDay(oneDayId, requestDto ,userDetails.getUser());
+    @RequestMapping(value = "/{oneDayId}", method = RequestMethod.PUT,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<?> updateOneDay(@RequestPart(value = "data")  OneDayUpdateRequestDto requestDto,
+                                          @RequestPart(value = "imageFile") MultipartFile storedFileUrl,@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        return oneDayService.updateOneDay(oneDayId, requestDto ,userDetails.getUser(), storedFileUrl);
     }
     // Delete
     @DeleteMapping("/{oneDayId}")
     public ResponseEntity<?> deleteOneDay(@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return oneDayService.deleteOneDay(oneDayId, userDetails.getUser());
+        return oneDayService.deleteOneDay(userDetails.getUser(), oneDayId);
     }
     // Attend
     @PostMapping("/{oneDayId}/join")
@@ -57,4 +63,11 @@ public class OneDayController {
     public ResponseEntity<?> cancelOneDay(@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return oneDayService.cancelOneDay(oneDayId, userDetails.getUser());
     }
+
+    //거리기반 원데이 추천
+    @GetMapping("/recommend")
+    public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(@RequestParam("lat") double nowLatitude, @RequestParam("lon") double nowLongitude) {
+        return oneDayService.recommendByDistance(nowLatitude, nowLongitude);
+    }
+
 }

@@ -1,15 +1,19 @@
 package com.example.moyiza_be.oneday.entity;
 
+import com.example.moyiza_be.common.enums.CategoryEnum;
+import com.example.moyiza_be.common.enums.GenderPolicyEnum;
+import com.example.moyiza_be.common.enums.OneDayTypeEnum;
 import com.example.moyiza_be.common.utils.TimeStamped;
-import com.example.moyiza_be.oneday.dto.OneDayRequestDto;
+import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -17,7 +21,8 @@ import java.util.Calendar;
 @NoArgsConstructor
 public class OneDay extends TimeStamped {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "oneDayId")
     private Long id;
 
     @Column(nullable = false)
@@ -27,33 +32,51 @@ public class OneDay extends TimeStamped {
     @Column(nullable = false)
     private String oneDayContent;
     @Column
+    private CategoryEnum category;
+    @Column
+    private String tagString;
+    @Column
     private String oneDayLocation;
     @Column
-    private String oneDayLatitude;
+    private double oneDayLatitude;
     @Column
-    private String oneDayLongitude;
+    private double oneDayLongitude;
     @Column
-    private Calendar oneDayStartTime;
+    @DateTimeFormat(pattern = "YYYY-MM-dd'T'HH:mm")
+    private LocalDateTime oneDayStartTime;
     @Column
-    private int oneDayGroupSize;
+    @Enumerated(EnumType.STRING)
+    private GenderPolicyEnum genderPolicy;
     @Column
-    private boolean deleted;
+    private Integer agePolicy;
     @Column
-    private int attendantsNum;
+    private Integer oneDayGroupSize;
+    @Column
+    private Boolean deleted = false;
+    @Column
+    private Integer attendantsNum = 1;
     @Column(name = "image_url")
     @Lob
     private String  oneDayImage;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private OneDayTypeEnum type;
 
-    public OneDay(OneDayRequestDto requestDto, Long userId, String storedFileUrl) {
-        this.ownerId = userId;
+    public OneDay(OneDayCreateConfirmDto requestDto) {
+        this.ownerId = requestDto.getOwnerId();
         this.oneDayTitle = requestDto.getOneDayTitle();
         this.oneDayContent = requestDto.getOneDayContent();
+        this.category = requestDto.getCategory();
+        this.tagString = requestDto.getTagString();
+        this.agePolicy = requestDto.getAgePolicy();
+        this.genderPolicy = requestDto.getGenderPolicy();
         this.oneDayLocation = requestDto.getOneDayLocation();
         this.oneDayLatitude = requestDto.getOneDayLatitude();
         this.oneDayLongitude = requestDto.getOneDayLongitude();
         this.oneDayGroupSize = requestDto.getOneDayGroupSize();
         this.oneDayStartTime = requestDto.getOneDayStartTime();
-        this.oneDayImage = storedFileUrl;
+        this.oneDayImage = requestDto.getOneDayImage();
+        this.type = requestDto.getGetOneDayType();
     }
 
     public void oneDayAttend(){
@@ -67,6 +90,10 @@ public class OneDay extends TimeStamped {
     public void updateOneDay(OneDayUpdateRequestDto requestDto) {
         this.oneDayTitle = requestDto.getOneDayTitle();
         this.oneDayContent = requestDto.getOneDayContent();
+        this.category = requestDto.getCategory();
+        this.tagString = requestDto.getTagString();
+        this.agePolicy = requestDto.getAgePolicy();
+        this.genderPolicy = requestDto.getGenderPolicy();
         this.oneDayLocation = requestDto.getOneDayLocation();
         this.oneDayLatitude = requestDto.getOneDayLatitude();
         this.oneDayLongitude = requestDto.getOneDayLongitude();

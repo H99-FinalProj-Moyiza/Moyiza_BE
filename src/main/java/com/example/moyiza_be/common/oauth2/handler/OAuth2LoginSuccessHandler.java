@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -37,11 +38,14 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
             User findUser = userRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(
                     () -> new NoSuchElementException("회원이 존재하지 않습니다."));
-            // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
             loginSuccess(response, findUser);
             if(oAuth2User.getRole() == Role.GUEST) {
-                response.sendRedirect("/user/signup");
+                // User의 Role이 GUEST일 경우 회원정보가 부족한 회원이므로 회원가입 페이지로 리다이렉트
+                response.sendRedirect("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/signup");
+            } else {
+                response.sendRedirect("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/");
             }
+
         } catch (Exception e) {
             throw e;
         }
@@ -61,6 +65,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private void setHeader(HttpServletResponse response, JwtTokenDto tokenDto) {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
-        response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+
+        ResponseCookie cookie = ResponseCookie.from("RefreshToken", tokenDto.getRefreshToken())
+                .maxAge(14 * 24 * 60 * 60)
+                .path("/")
+                // true -> https 환경에서만 쿠키 전송 가능 인증서 발급 후 true 전환 예정
+                .secure(false)
+                .sameSite("None")
+                .httpOnly(true)
+                .build();
+        response.setHeader("Set-Cookie", cookie.toString());
     }
 }

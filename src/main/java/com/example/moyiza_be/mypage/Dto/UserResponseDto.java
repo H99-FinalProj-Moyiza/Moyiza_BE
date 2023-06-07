@@ -10,6 +10,8 @@ public class UserResponseDto {
     private Long user_id;
     private String nickname;
     private String profileImage;
+    private Integer clubsInOperationCount;
+    private Integer clubsInParticipatingCount;
 
     public UserResponseDto(User user) {
         this.user_id = user.getId();

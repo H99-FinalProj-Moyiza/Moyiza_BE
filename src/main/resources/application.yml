@@ -35,14 +35,15 @@ spring:
         google:
           clientId: ENC(bseqy4nx4e6dIS1VFu7v6Oi/oXUfM4APJDrIPkFQj12TfNiL4ube/AifsQswaVwxMpPsOEDFVRGBbclKIdyGG+fGRi+2gfeNeCPiv9detPMult5Ysc+uZw==)
           clientSecret: ENC(VJZZH16JKtnkdK6WHQknM4xr2QnnBQMMDwpc4acrdGy/Gp+FCqI99Reqr/9TjiY2)
-          redirect-uri: http://moyiza.s3-website.ap-northeast-2.amazonaws.com/login/oauth2/code/google
+#          redirect-uri: http://moyiza.s3-website.ap-northeast-2.amazonaws.com/login/oauth2/code/google
+          redirect-uri: http://ec2-13-125-51-14.ap-northeast-2.compute.amazonaws.com/login/oauth2/code/google
           scope: email, profile
         naver:
           clientId: ENC(+AuHYY52/PGsDzg07Choe/xfMYEDoENtoi/s9ecgfEI=)
           clientSecret: ENC(0ugqjzOjV4QWXbn8hV7Gpd6JHDOjMchB)
 #          clientAuthenticationMethod: post
           authorizationGrantType: authorization_code
-          redirectUri: http://moyiza.s3-website.ap-northeast-2.amazonaws.com/login/oauth2/code/naver
+          redirect-uri: http://ec2-13-125-51-14.ap-northeast-2.compute.amazonaws.com/login/oauth2/code/naver
           scope: name, nickname, email, profile_image
           clientName: Naver
         kakao:
@@ -50,7 +51,7 @@ spring:
           client-secret: ENC(f/EoiRbGMepGr4d9w2+dhrgRheoEgAkHzfRmwuOXWfFz08TPuV8j51i1W5a+AuJo)
           client-authentication-method: POST
           authorization-grant-type: authorization_code
-          redirect-uri: http://moyiza.s3-website.ap-northeast-2.amazonaws.com/login/oauth2/code/kakao
+          redirect-uri: http://13.125.51.14/login/oauth2/code/kakao
           scope:
             - account_email
             - profile_nickname
@@ -77,7 +78,8 @@ spring:
         max-idle: 8
         max-active: 8
       port: 6379
-      host: 127.0.0.1
+      host: 43.200.169.48
+      password: ENC(V8HByRExsO7bDwqCirBLQw==)
 
   # WebSocket 관련 설정
   mvc:

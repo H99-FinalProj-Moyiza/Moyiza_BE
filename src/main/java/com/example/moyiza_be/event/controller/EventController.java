@@ -10,9 +10,11 @@ import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.event.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -24,9 +26,9 @@ public class EventController {
     private final EventService eventService;
 
     // create
-    @PostMapping("/{club_id}/event")
-    public ResponseEntity<?> createEvent(@PathVariable Long club_id, @RequestBody EventRequestDto eventRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        return eventService.createEvent(eventRequestDto, userDetails.getUser(), club_id);
+    @PostMapping(value = "/{club_id}/event", consumes = {MediaType.APPLICATION_JSON_VALUE,MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> createEvent(@RequestPart(value = "data")  EventRequestDto eventRequestDto, @RequestPart(value = "image")MultipartFile image, @PathVariable Long club_id, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        return eventService.createEvent(eventRequestDto, userDetails.getUser(), club_id, image);
     }
 
     // ReadAll
