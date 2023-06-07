@@ -2,6 +2,7 @@ package com.example.moyiza_be.club.dto;
 
 import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.enums.TagEnum;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 import java.util.List;
@@ -23,5 +24,16 @@ public class ClubListResponse {
         this.maxGroupSize = club.getMaxGroupSize();
         this.nowMemberCount = club.getNowMemberCount();   // queryDSL 이후 수정
         this.thumbnailUrl = club.getThumbnailUrl();
+    }
+
+    @QueryProjection
+    public ClubListResponse(Long club_id, String ownerNickname, String clubTitle, String tagString, Integer maxGroupSize, Integer nowMemberCount, String thumbnailUrl) {
+        this.club_id = club_id;
+        this.ownerNickname = ownerNickname;
+        this.clubTitle = clubTitle;
+        this.clubTag = TagEnum.parseTag(tagString);
+        this.maxGroupSize = maxGroupSize;
+        this.nowMemberCount = nowMemberCount;
+        this.thumbnailUrl = thumbnailUrl;
     }
 }

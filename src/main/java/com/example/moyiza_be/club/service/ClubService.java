@@ -9,6 +9,7 @@ import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
 import com.example.moyiza_be.club.repository.ClubJoinEntryRepository;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.club.repository.QueryDSL.ClubJoinEntryRepositoryCustom;
+import com.example.moyiza_be.club.repository.QueryDSL.ClubRepositoryCustom;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.utils.Message;
@@ -38,6 +39,7 @@ public class ClubService {
     private final ClubImageUrlRepository clubImageUrlRepository;
     private final ChatService chatService;
     private final ClubJoinEntryRepositoryCustom clubJoinEntryRepositoryCustom;
+    private final ClubRepositoryCustom clubRepositoryCustom;
 
 
     //클럽 가입
@@ -61,20 +63,12 @@ public class ClubService {
     }
 
     //클럽 리스트 조회(전체조회, 검색조회 포함)
-    public ResponseEntity<Page<ClubListResponse>> getClubList(Pageable pageable, CategoryEnum category, String q) {
-        Page<ClubListResponse> responseList;
-        if (category != null && q != null) {
-            //카테고리와 검색어를 모두 입력한 경우
-            responseList = clubRepository.findByCategoryAndIsDeletedFalseAndTitleContaining(pageable, category, q).map(ClubListResponse::new);
-        } else if (category != null) {
-            //카테고리만 입력한 경우
-            responseList = clubRepository.findByCategoryAndIsDeletedFalse(pageable, category).map(ClubListResponse::new);
-        } else if (q != null) {
-            responseList = clubRepository.findByIsDeletedFalseAndTitleContaining(pageable, q).map(ClubListResponse::new);
-        } else {
-            //카테고리와 검색어가 모두 입력되지 않은 경우 전체 클럽 조회
-            responseList = clubRepository.findAllByIsDeletedFalse(pageable).map(ClubListResponse::new);
-        }
+    public ResponseEntity<Page<ClubListResponse>> getClubList(
+            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3
+    ) {
+
+        Page<ClubListResponse> responseList = clubRepositoryCustom.filteredClubResponseList(
+                pageable, category, q, tag1, tag2, tag3);
         return ResponseEntity.ok(responseList);
     }
 
