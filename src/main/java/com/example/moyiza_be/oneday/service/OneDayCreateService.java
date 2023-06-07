@@ -81,7 +81,7 @@ public class OneDayCreateService {
         oneDayCreate.setOneDayContent(contentDto.getOneDayContent());
         return new ResponseEntity<>(new Message("성공"), HttpStatus.OK);
     }
-    public ResponseEntity<Message> setCategory(Long userId, Long createOneDayId, CreateRequestCategoryDto categoryEnum) {
+    public ResponseEntity<Message> setCategory(Long userId, Long createOneDayId, RequestCategoryDto categoryEnum) {
         OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("생성중인 원데이가 없어요"));
         if(!oneDayCreate.getOwnerId().equals(userId)) {
             throw new IllegalCallerException("It is not your oneday");
@@ -90,7 +90,7 @@ public class OneDayCreateService {
         return new ResponseEntity<>(new Message("설정 완료"), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> setTag(Long userId, Long createOneDayId, CreateRequestTagDto tagEnumList) {
+    public ResponseEntity<?> setTag(Long userId, Long createOneDayId, RequestTagDto tagEnumList) {
         OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("생성중인 원데이가 없어요"));
         if(!oneDayCreate.getOwnerId().equals(userId)) {
             throw new IllegalCallerException("It is not your oneday");
@@ -141,10 +141,10 @@ public class OneDayCreateService {
         if(!oneDayCreate.getOwnerId().equals(userId)) {
             throw new IllegalCallerException("It is not your oneday");
         }
-        if(dateTime.getDateTime()==null){
-            dateTime.setDateTime(LocalDateTime.now());
+        if(dateTime.getOneDayStartTime()==null){
+            dateTime.setOneDayStartTime(LocalDateTime.now());
         }
-        oneDayCreate.setOneDayStartTime(dateTime.getDateTime());
+        oneDayCreate.setOneDayStartTime(dateTime.getOneDayStartTime());
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
 
@@ -183,7 +183,7 @@ public class OneDayCreateService {
         if(!oneDayCreate.getOwnerId().equals(userId)) {
             throw new IllegalCallerException("It is not your oneday");
         }
-        oneDayCreate.setOneDayType(type.getTypeEnum());
+        oneDayCreate.setOneDayType(type.getOneDayType());
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
 }

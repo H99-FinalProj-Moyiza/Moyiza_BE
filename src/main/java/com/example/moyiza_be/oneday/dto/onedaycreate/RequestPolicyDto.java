@@ -12,6 +12,6 @@ public class RequestPolicyDto {
     private GenderPolicyEnum genderPolicy;
     private Integer agePolicy;
     public void setGenderPolicy(String genderPolicy) {
-        this.agePolicy = GenderPolicyEnum.fromString(genderPolicy).ordinal();
+        this.genderPolicy = GenderPolicyEnum.fromString(genderPolicy);
     }
 }

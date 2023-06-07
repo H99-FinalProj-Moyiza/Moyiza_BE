@@ -13,5 +13,5 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class RequestDateDto {
     @DateTimeFormat(pattern = "YYYY-MM-dd'T'HH:mm")
-    private LocalDateTime dateTime;
+    private LocalDateTime oneDayStartTime;
 }
