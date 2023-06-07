@@ -44,7 +44,8 @@ public class MyPageService {
                         .clubTitle(club.getTitle())
                         .thumbnailUrl(club.getThumbnailUrl())
                         .nowMemberCount(club.getNowMemberCount())
-                                .build())
+                        .maxGroupSize(club.getMaxGroupSize())
+                        .build())
                 .collect(Collectors.toList());
 
         // 참여중인 클럽 정보 리스트
@@ -62,6 +63,7 @@ public class MyPageService {
                         .clubTitle(club.getTitle())
                         .thumbnailUrl(club.getThumbnailUrl())
                         .nowMemberCount(club.getNowMemberCount())
+                        .maxGroupSize(club.getMaxGroupSize())
                         .build())
                 .collect(Collectors.toList());
 
