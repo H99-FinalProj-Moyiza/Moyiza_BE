@@ -26,15 +26,10 @@ public class UserController {
     private final EmailService emailService;
 
     //회원가입
-//    @RequestMapping (value = "/signup", method = RequestMethod.POST,
-//            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
-//    public ResponseEntity<?> signup(@RequestPart(value = "data") SignupRequestDto requestDto,
-//                                    @RequestPart(value = "imageFile") MultipartFile image){
-//        return userService.signup(requestDto, image);
-//    }
-    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequestMapping (value = "/signup", method = RequestMethod.POST,
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> signup(@RequestPart(value = "data") SignupRequestDto requestDto,
-                                    @RequestPart(value = "imageFile", required = false) MultipartFile image){
+                                    @RequestPart(value = "imageFile") MultipartFile image){
         return userService.signup(requestDto, image);
     }
 
@@ -71,7 +66,7 @@ public class UserController {
     //회원정보 수정
     @PutMapping(value = "/profile",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> updateProfile(@RequestPart(value = "imageFile", required = false) MultipartFile image,
+    public ResponseEntity<?> updateProfile(@RequestPart(value = "imageFile") MultipartFile image,
                                            @RequestPart(value = "data") UpdateRequestDto requestDto,
                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.updateProfile(image, requestDto, userDetails.getUser().getEmail());
