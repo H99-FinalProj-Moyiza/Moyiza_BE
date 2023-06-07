@@ -26,6 +26,7 @@ public class ClubResponseDto {
         this.clubCategory = club.getCategory().getCategory();
         this.clubTag = TagEnum.parseTag(club.getTagString());
         this.clubTitle = club.getTitle();
+        this.clubContent = club.getContent();
         this.nowMemberCount = club.getNowMemberCount();
         this.maxGroupSize = club.getMaxGroupSize();
         this.thumbnailUrl = club.getThumbnailUrl();
