@@ -105,7 +105,7 @@ public class StompHandler implements ChannelInterceptor {
         }
         else{
             recentMessageId = recentMessage.getChatRecordId();
-            redisCacheService.addUnsubscribedUser(chatId, userId, recentMessageId);
+            redisCacheService.addUnsubscribedUser(chatId, userId);
             log.info("adding recent message " + recentMessageId + " to userId : " + userId);
         }
 
