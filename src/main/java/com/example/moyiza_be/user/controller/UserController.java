@@ -32,15 +32,6 @@ public class UserController {
         return userService.signup(requestDto, image);
     }
 
-    //회원가입 테스트
-    @PostMapping("/test/upload")
-    public ResponseEntity<?> uploadTest(@RequestPart(value = "imageFile") MultipartFile image){
-        return userService.uploadTest(image);
-    }
-    @PostMapping("/test/signup")
-    public ResponseEntity<?> signupTest(@RequestBody TestSignupRequestDto testRequestDto){
-        return userService.signupTest(testRequestDto);
-    }
     //이메일 인증 - 이메일 전송
     @PostMapping("/signup/confirmEmail")
     public ResponseEntity<?> confirmEmail(@RequestBody EmailRequestDto requestDto) throws Exception {
