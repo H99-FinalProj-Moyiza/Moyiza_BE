@@ -5,6 +5,7 @@ import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.email.EmailRequestDto;
 import com.example.moyiza_be.user.email.EmailService;
 import com.example.moyiza_be.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
@@ -63,8 +64,8 @@ public class UserController {
     }
     //로그아웃
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return userService.logout(response, userDetails.getUser().getEmail());
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.logout(request, response, userDetails.getUser().getEmail());
     }
     //회원정보 수정
     @PutMapping(value = "/profile",
@@ -77,8 +78,8 @@ public class UserController {
 
     //Refresh 토큰으로 Access 토큰 재발급
     @GetMapping("/reissue")
-    public ResponseEntity<?> reissueToken(){
-        return new ResponseEntity<>("AccessToken 재발행 성공", HttpStatus.OK);
+    public ResponseEntity<?> reissueToken(@CookieValue(value = "REFRESH_TOKEN", required = false) String refreshToken, HttpServletResponse response){
+        return userService.reissueToken(refreshToken, response);
     }
 
     //이메일 중복 확인
