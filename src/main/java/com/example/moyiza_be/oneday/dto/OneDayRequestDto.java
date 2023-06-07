@@ -15,8 +15,8 @@ public class OneDayRequestDto {
     private CategoryEnum category;
     private String tagString;
     private String oneDayLocation;
-    private String oneDayLatitude;
-    private String oneDayLongitude;
+    private double oneDayLatitude;
+    private double oneDayLongitude;
     private int oneDayGroupSize;
     private LocalDateTime oneDayStartTime;
     private GenderPolicyEnum genderPolicy;

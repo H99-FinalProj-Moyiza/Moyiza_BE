@@ -67,11 +67,19 @@ public class RedisCacheService {
         listOperations.trim(chatId, 0, 50);
     }
 
-    public Page<ChatMessageOutput> loadRecentChatList(String chatId, Pageable pageable){
+    public Page<ChatMessageOutput> loadRecentChatList(String chatId,Long chatMemberCount, Pageable pageable){
+        //로직 개선 필요 (readcount 구하는 로직)
         ListOperations<String, ChatMessageOutput> listOperations = redisRecentChatTemplate.opsForList();
-        List<ChatMessageOutput> recentChatList = listOperations.range(chatId + RECENTCHAT_IDENTIFIER, 0, 50);
+        List<ChatMessageOutput> recentChatList =
+                listOperations.range(chatId + RECENTCHAT_IDENTIFIER, 0, 50);
+
         if (recentChatList == null){
             return new PageImpl<>(new LinkedList<>(), pageable, 0L);
+        }
+        else{
+            for(ChatMessageOutput chatMessage:recentChatList){
+                chatMessage.setUnreadCount(chatMemberCount - getTotalReadCount(chatId, chatMessage.getChatRecordId()));
+            }
         }
         return new PageImpl<>(recentChatList, pageable, -1L);
     }
@@ -83,15 +91,15 @@ public class RedisCacheService {
 
 
     //그냥 숫자로 변경해도 될듯 ?
-    public void addSubscriptionToChatId(String chatId, String sessionId){
+    public void addSubscriptionToChatId(String chatId, String userId){
         SetOperations<String, String> setOperations = redisStringStringTemplate.opsForSet();
-        setOperations.add(chatId + CONNECTED_SESSIONS_IDENTIFIER, sessionId);
+        setOperations.add(chatId + CONNECTED_SESSIONS_IDENTIFIER, userId);
     }
 
     //그냥 숫자로 변경해도 될듯 ?
-    public void removeSubscriptionFromChatId(String chatId, String sessionId){
+    public void removeSubscriptionFromChatId(String chatId, String userId){
         SetOperations<String, String> setOperations = redisStringStringTemplate.opsForSet();
-        setOperations.remove(chatId + CONNECTED_SESSIONS_IDENTIFIER, sessionId);
+        setOperations.remove(chatId + CONNECTED_SESSIONS_IDENTIFIER, userId);
     }
 
     public Long countSubscriptionToChatId(String chatId){
@@ -109,9 +117,13 @@ public class RedisCacheService {
         zSetOperations.remove(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, userId);
     }
 
-    public Long getReadCount(String chatId, Long nowMessageId){
+    public Long getInactiveReadCount(String chatId, Long nowMessageId){
         ZSetOperations<String, String> zSetOperations = redisStringStringTemplate.opsForZSet();
         return zSetOperations.count(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, nowMessageId, -1);
+    }
+
+    public Long getTotalReadCount(String chatId, Long nowMessageId){
+        return getInactiveReadCount(chatId, nowMessageId) + countSubscriptionToChatId(chatId);
     }
 
     public Long getUserLastReadMessageId(String chatId, String userId) {

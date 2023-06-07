@@ -2,6 +2,7 @@ package com.example.moyiza_be.oneday.controller;
 
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.oneday.dto.OneDayDetailResponse;
+import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
 import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
 import com.example.moyiza_be.oneday.entity.OneDay;
@@ -64,12 +65,8 @@ public class OneDayController {
 
     //거리기반 원데이 추천
     @GetMapping("/recommend")
-    public ResponseEntity<List<OneDay>> recommendByDistance(@RequestParam("lat") double nowLatitude, @RequestParam("lon") double nowLongitude) {
+    public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(@RequestParam("lat") double nowLatitude, @RequestParam("lon") double nowLongitude) {
         return oneDayService.recommendByDistance(nowLatitude, nowLongitude);
     }
-//    //거리기반 원데이 추천 테스트
-//    @GetMapping("/{lat}/{lon}")
-//    public ResponseEntity<List<OneDay>> recommendByDistanceTest(@PathVariable(name = "lat") double nowLatitude, @PathVariable(name = "lon") double nowLongitude){
-//        return oneDayService.recommendByDistanceTest(nowLatitude, nowLongitude);
-//    }
+
 }

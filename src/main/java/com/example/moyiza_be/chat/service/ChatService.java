@@ -15,9 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,14 +50,6 @@ public class ChatService {
         sendingOperations.convertAndSend(alarmDestination, messageOutput);
     }
 
-    public void sendLastReadMessageId(Long chatId, Long lastReadMessageId) {
-        log.info("Sending LastReadMessage to chatRoom : " + chatId);
-        Message<?> message = MessageBuilder.withPayload(lastReadMessageId)
-                .setHeader("operation", "decrease")
-                .build();
-        sendingOperations.send("/chat/" + chatId, message);
-    }
-
     //채팅방 목록 조회
 
     public ResponseEntity<List<ChatRoomInfo>> getChatRoomList(User user) {
@@ -70,43 +60,49 @@ public class ChatService {
                 .map(ChatJoinEntry::getChatId)
                 .toList();  //Jpa에서는 다른 엔티티끼리 join 안됨
         List<ChatRoomInfo> chatRoomInfoList = chatRepository.findAllByIdIn(joinedChatIdList)
-                                    .stream()
-                                    .map(ChatRoomInfo::new)
-                                    .toList();
+                .stream()
+                .map(ChatRoomInfo::new)
+                .toList();
         return ResponseEntity.ok(chatRoomInfoList);
     }
 
-    public void makeChat(Long roomIdentifier, ChatTypeEnum chatType, String roomName){
+    public void makeChat(Long roomIdentifier, ChatTypeEnum chatType, String roomName) {
         Chat chat = chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatType).orElse(null);
-        if(chat != null){
+        if (chat != null) {
             log.info("chat room already exists by id = " + chat.getId());
             throw new NullPointerException("chat room already exists by id = " + chat.getId());
         }
-        Chat new_chat = new Chat(roomIdentifier,chatType, roomName);
+        Chat new_chat = new Chat(roomIdentifier, chatType, roomName);
         chatRepository.save(new_chat);
     }
     //채팅 내역 조회
 
-        public ResponseEntity<Page<ChatMessageOutput>> getChatRoomRecord(User user, Long chatId, Pageable pageable){
-            //나중에 쿼리 다듬기  ==> senderId, user Join해서, id, nickname, profileUrl도 가져와야함
-            if(pageable.getPageNumber() == 0){
-                return ResponseEntity.ok(cacheService.loadRecentChatList(chatId.toString(), pageable));
-            }
+    public ResponseEntity<Page<ChatMessageOutput>> getChatRoomRecord(User user, Long chatId, Pageable pageable) {
+        //나중에 쿼리 다듬기  ==> senderId, user Join해서, id, nickname, profileUrl도 가져와야함
+        Long memberCount = getChatMemberCount(chatId);
+        if (pageable.getPageNumber() == 0) {
+            return ResponseEntity.ok(cacheService.loadRecentChatList(chatId.toString(), memberCount, pageable));
+        }
 
-            ChatJoinEntry chatJoinEntry =
-                    chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
-                .orElse(null);
-        if(chatJoinEntry == null){ throw new NullPointerException("채팅방을 찾을 수 없습니다"); }
-
-        Page<ChatMessageOutput> chatRecordDtoPage = chatRecordRepository.findAllByChatIdAndCreatedAtAfter
-                                                (pageable, chatId, chatJoinEntry.getCreatedAt())
-                                                    .map(ChatMessageOutput::new);
+        ChatJoinEntry chatJoinEntry =
+                chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
+                        .orElse(null);
+        if (chatJoinEntry == null) {
+            throw new NullPointerException("채팅방을 찾을 수 없습니다");
+        }
+        Page<ChatMessageOutput> chatRecordDtoPage = chatRecordRepository
+                .findAllByChatIdAndCreatedAtAfter(pageable, chatId, chatJoinEntry.getCreatedAt())
+                .map(chatRecord -> new ChatMessageOutput(
+                        chatRecord,
+                        memberCount,
+                        cacheService.getTotalReadCount(chatId.toString(), chatRecord.getId())
+                ));
         return ResponseEntity.ok(chatRecordDtoPage);
     }
     //클럽 채팅방 join
 
     public void joinChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
-        Chat chat = loadChat(roomIdentifier,chatType);
+        Chat chat = loadChat(roomIdentifier, chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);
 
         if (chatJoinEntry == null) {
@@ -121,14 +117,13 @@ public class ChatService {
 
     }
 
-    public void leaveChat(Long roomIdentifier, ChatTypeEnum chatType, User user){
-        Chat chat = loadChat(roomIdentifier,chatType);
+    public void leaveChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
+        Chat chat = loadChat(roomIdentifier, chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);
 
-        if (chatJoinEntry == null){
+        if (chatJoinEntry == null) {
             throw new NullPointerException("채팅 참여정보를 찾을 수 없습니다");
-        }
-        else{
+        } else {
             chatJoinEntry.setCurrentlyJoined(false);
         }
 
@@ -137,12 +132,12 @@ public class ChatService {
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다"));
     }
 
-    private Chat loadChat(Long roomIdentifier, ChatTypeEnum chatTypeEnum){
+    private Chat loadChat(Long roomIdentifier, ChatTypeEnum chatTypeEnum) {
         return chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatTypeEnum)
                 .orElseThrow(() -> new NullPointerException("채팅방을 찾을 수 없습니다"));
     }
 
-    private Long getChatMemberCount(Long chatId){
+    public Long getChatMemberCount(Long chatId) {
         return chatJoinEntryRepository.countByChatIdAndAndIsCurrentlyJoinedTrue(chatId);
     }
 }
