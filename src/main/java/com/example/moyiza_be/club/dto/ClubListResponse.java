@@ -11,7 +11,7 @@ public class ClubListResponse {
     private final Long club_id;
     private final String ownerNickname;
     private final String clubTitle;
-    private final List<String> clubTag; // tag 정해지면 수정
+    private final List<String> clubTag;
     private final Integer maxGroupSize;
     private final Integer nowMemberCount;
     private final String thumbnailUrl;

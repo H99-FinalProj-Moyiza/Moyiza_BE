@@ -8,6 +8,7 @@ import com.example.moyiza_be.club.entity.ClubJoinEntry;
 import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
 import com.example.moyiza_be.club.repository.ClubJoinEntryRepository;
 import com.example.moyiza_be.club.repository.ClubRepository;
+import com.example.moyiza_be.club.repository.QueryDSL.ClubJoinEntryRepositoryCustom;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.utils.Message;
@@ -39,10 +40,10 @@ public class ClubService {
     private final ClubRepository clubRepository;
     private final ClubJoinEntryRepository clubJoinEntryRepository;
     private final EventService eventService;
-    private final UserService userService;
     private final ClubImageUrlRepository clubImageUrlRepository;
-    private final EventRepository eventRepository;
     private final ChatService chatService;
+    private final UserService userService;
+    private final ClubJoinEntryRepositoryCustom clubJoinEntryRepositoryCustom;
 
 
     //클럽 가입
@@ -96,20 +97,8 @@ public class ClubService {
     //클럽 멤버 조회
     //프로필사진, 닉네임, 클럽 가입 날짜
     public ResponseEntity<List<ClubMemberResponse>> getClubMember(Long clubId) {
-        //queryDSL 적용 할 때 갈아엎어야함 (쿼리나가는거, 성능 계산해보고 결정)
 
-        List<ClubJoinEntry> joinEntryList = clubJoinEntryRepository.findByClubId(clubId);
-        Map<Long, LocalDateTime> joinEntryMap = new HashMap<>(); // inspection ??
-        List<Long> userIdList = joinEntryList.stream()
-                .peek(entry -> joinEntryMap.put(entry.getUserId(), entry.getCreatedAt()))
-                .map(ClubJoinEntry::getUserId)
-                .toList();
-
-        List<User> memberList = userService.loadUserListByIdList(userIdList);
-
-        List<ClubMemberResponse> clubMemberResponseList = memberList.stream()
-                .map(member -> new ClubMemberResponse(member, joinEntryMap.get(member.getId())))
-                .toList();
+        List<ClubMemberResponse> clubMemberResponseList= clubJoinEntryRepositoryCustom.getClubMemberList(clubId);
 
         return ResponseEntity.ok(clubMemberResponseList);
     }
