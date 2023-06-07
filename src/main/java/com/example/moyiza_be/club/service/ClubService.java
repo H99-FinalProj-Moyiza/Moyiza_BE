@@ -50,6 +50,13 @@ public class ClubService {
         if(clubJoinEntryRepository.existsByClubIdAndUserId(clubId, user.getId())){
             return new ResponseEntity<>(new Message("중복으로 가입할 수 없습니다"), HttpStatus.BAD_REQUEST);
         }
+
+        Club club = clubRepository.findById(clubId).orElse(null);
+        if (club != null) {
+            club.addAttend();
+            clubRepository.save(club);
+        }
+
         ClubJoinEntry joinEntry = new ClubJoinEntry(user.getId(), clubId);
         clubJoinEntryRepository.save(joinEntry);
         //미래에 조건검증 추가
@@ -114,6 +121,13 @@ public class ClubService {
         if (joinEntry != null) {
             clubJoinEntryRepository.delete(joinEntry);
             Message message = new Message("클럽에서 탈퇴되었습니다.");
+
+            Club club = clubRepository.findById(clubId).orElse(null);
+            if (club != null) {
+                club.cancelAttend();
+                clubRepository.save(club);
+            }
+
             chatService.leaveChat(clubId, ChatTypeEnum.CLUB, user);
             return ResponseEntity.ok(message);
         } else {
@@ -131,6 +145,13 @@ public class ClubService {
         if (joinEntry != null) {
             clubJoinEntryRepository.delete(joinEntry);
             log.info("user " + user.getId() + " banned user " + banRequest.getBanUserId() + " from club " + clubId);
+
+            Club club = clubRepository.findById(clubId).orElse(null);
+            if (club != null) {
+                club.cancelAttend();
+                clubRepository.save(club);
+            }
+
             //추방 후 가입 제한 추가시 여기에 logic
             Message message = new Message(String.format("user %d 가 클럽에서 강퇴되었습니다",banRequest.getBanUserId()));
             chatService.leaveChat(clubId, ChatTypeEnum.CLUB, user);

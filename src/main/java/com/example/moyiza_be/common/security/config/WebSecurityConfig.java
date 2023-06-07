@@ -41,8 +41,10 @@ public class WebSecurityConfig {
             "/user/check/**",
             "/user/test/**",
             "/oauth2/authorization/**",
+            "/login",
             "/login/**",
-            "/enums"
+            "/enums",
+            "/.well-known/acme-challenge/**" //Certbot의 도메인 소유권 확인
     };
 
     @Bean
@@ -69,6 +71,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests().requestMatchers(PERMIT_URL_ARRAY).permitAll()
                 .requestMatchers(HttpMethod.GET, "/club/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/oneday/**").permitAll()
                 .anyRequest().authenticated().and()
                 .oauth2Login()
                 .successHandler(oAuth2LoginSuccessHandler)
@@ -89,7 +92,7 @@ public class WebSecurityConfig {
 
         config.addExposedHeader(JwtUtil.ACCESS_TOKEN);
 
-        config.addExposedHeader(JwtUtil.REFRESH_TOKEN);
+        config.addExposedHeader("Set-Cookie");
 
         config.addAllowedMethod("*");
 

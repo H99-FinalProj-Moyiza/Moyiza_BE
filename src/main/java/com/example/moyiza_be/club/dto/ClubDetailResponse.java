@@ -33,7 +33,7 @@ public class ClubDetailResponse {
         this.agePolicy = club.getAgePolicy();
         this.genderPolicy = club.getGenderPolicy().getGenderPolicy();
         this.maxGroupSize = club.getMaxGroupSize();
-        this.nowMemberCount = 11111;
+        this.nowMemberCount = club.getNowMemberCount();
         this.thumbnailUrl = club.getThumbnailUrl();
         this.clubImageUrlList = clubImageUrlList;  //  쿼리한방에 가능한가 ?
     }

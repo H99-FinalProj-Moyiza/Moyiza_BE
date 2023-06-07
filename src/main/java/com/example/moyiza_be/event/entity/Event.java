@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -55,6 +56,9 @@ public class Event extends TimeStamped {
 
     @Column
     private int attendantsNum;
+
+    @Column
+    private String image;
     public void addAttend(){
         attendantsNum++;
     }
@@ -66,7 +70,7 @@ public class Event extends TimeStamped {
 //    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private ArrayList<EventAttendant> eventAttendantList = new ArrayList<>();
 
-    public Event(EventRequestDto eventRequestDto, long userId, long clubId) {
+    public Event(EventRequestDto eventRequestDto, long userId, long clubId, String imgUrl) {
         this.ownerId = userId;
         this.clubId = clubId;
         this.eventTitle = eventRequestDto.getEventTitle();
@@ -76,7 +80,11 @@ public class Event extends TimeStamped {
         this.eventLongitude = eventRequestDto.getEventLongitude();
         this.eventGroupSize = eventRequestDto.getEventGroupSize();
         this.eventStartTime = eventRequestDto.getEventStartTime();
+        this.image = imgUrl;
 //        super(); 를 쓸 수 있지 않을까?
+    }
+    public void updateImage(String image) {
+        this.image = image;
     }
 
 }
