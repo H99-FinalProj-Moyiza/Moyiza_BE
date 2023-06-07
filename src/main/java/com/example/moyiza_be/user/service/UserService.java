@@ -39,7 +39,7 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AwsS3Uploader awsS3Uploader;
 
-    public static final String basicProfileUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/87f7fcdb-254b-474a-9bf0-86cf3e89adcc_basicProfile.jpg";
+    public static final String basicProfileUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/216af129-78fd-4bc6-9740-4aea4e38cf30_Basic_Profile.png";
 
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
