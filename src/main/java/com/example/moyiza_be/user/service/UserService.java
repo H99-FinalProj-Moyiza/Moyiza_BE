@@ -1,5 +1,6 @@
 package com.example.moyiza_be.user.service;
 
+import com.example.moyiza_be.common.enums.BasicProfileEnum;
 import com.example.moyiza_be.common.security.jwt.CookieUtil;
 import com.example.moyiza_be.common.security.jwt.JwtTokenDto;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
@@ -39,12 +40,10 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AwsS3Uploader awsS3Uploader;
 
-    public static final String BASIC_PROFILE_IMAGE = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/216af129-78fd-4bc6-9740-4aea4e38cf30_Basic_Profile.png";
-
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
-        String storedFileUrl = BASIC_PROFILE_IMAGE;
+        String storedFileUrl = BasicProfileEnum.getRandomImage().getImageUrl();
         checkDuplicatedEmail(requestDto.getEmail());
         checkDuplicatedNick(requestDto.getNickname());
         if(imageFile != null){
@@ -133,24 +132,6 @@ public class UserService {
         if (findUserByNickname.isPresent()) {
             throw new IllegalArgumentException("중복된 닉네임 사용");
         }
-    }
-
-    public ResponseEntity<?> uploadTest(MultipartFile image) {
-        if(image==null){
-            return new ResponseEntity<>(BASIC_PROFILE_IMAGE, HttpStatus.OK);
-        }
-        String storedFileUrl  = awsS3Uploader.uploadFile(image);
-        return new ResponseEntity<>(storedFileUrl, HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> signupTest(TestSignupRequestDto testRequestDto) {
-        String password = passwordEncoder.encode(testRequestDto.getPassword());
-        String storedFileUrl = "";
-        checkDuplicatedEmail(testRequestDto.getEmail());
-        checkDuplicatedNick(testRequestDto.getNickname());
-        User user = new User(password, testRequestDto);
-        userRepository.save(user);
-        return new ResponseEntity<>("🎊테스트 성공!!🎊 고생하셨어요ㅠㅠ", HttpStatus.OK);
     }
 
     public List<User> loadUserListByIdList(List<Long> userIdList){    // club멤버조회 시 사용
