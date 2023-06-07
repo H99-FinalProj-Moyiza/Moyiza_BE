@@ -39,15 +39,15 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AwsS3Uploader awsS3Uploader;
 
-    public static final String basicProfileUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/216af129-78fd-4bc6-9740-4aea4e38cf30_Basic_Profile.png";
+    public static final String BASIC_PROFILE_IMAGE = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/216af129-78fd-4bc6-9740-4aea4e38cf30_Basic_Profile.png";
 
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
-        String storedFileUrl = basicProfileUrl;
+        String storedFileUrl = BASIC_PROFILE_IMAGE;
         checkDuplicatedEmail(requestDto.getEmail());
         checkDuplicatedNick(requestDto.getNickname());
-        if(!imageFile.isEmpty()){
+        if(imageFile != null){
             storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
         }
         User user = new User(password, requestDto, storedFileUrl);
