@@ -10,5 +10,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RequestTypeDto {
-    private OneDayTypeEnum typeEnum;
+    private OneDayTypeEnum oneDayType;
 }

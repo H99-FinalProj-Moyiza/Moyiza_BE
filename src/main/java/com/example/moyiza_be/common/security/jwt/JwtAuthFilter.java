@@ -40,25 +40,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if(access_token == null){
             filterChain.doFilter(request, response);
         } else {
-//            Cookie[] rc = request.getCookies();
-//            String refresh_token = "";
-//            for (Cookie cookie : rc){
-//                refresh_token = cookie.getValue();
-//            }
             System.out.println(refresh_token);
             if (jwtUtil.validateToken(access_token)) {
 //                jwtUtil.checkTokenClaims(access_token);
                 setAuthentication(jwtUtil.getUserInfoFromToken(access_token));
             } else if (refresh_token != null && jwtUtil.refreshTokenValid(refresh_token)) {
                 //Refresh토큰으로 유저명 가져오기
-                System.out.println("그럼 여기는? 여기는 재발급 필터 안");
                 String userEmail = jwtUtil.getUserInfoFromToken(refresh_token);
                 //유저명으로 유저 정보 가져오기
                 User user = userRepository.findByEmail(userEmail).get();
                 //새로운 ACCESS TOKEN 발급
                 String newAccessToken = jwtUtil.createToken(user, "Access");
                 //Header에 ACCESS TOKEN 추가
-                jwtUtil.setHeaderAccessToken(response, newAccessToken);
+                response.setHeader("ACCESS_TOKEN", newAccessToken);
                 setAuthentication(userEmail);
             } else if (refresh_token == null) {
                 jwtExceptionHandler(response, "AccessToken이 만료되었습니다.", HttpStatus.BAD_REQUEST.value());

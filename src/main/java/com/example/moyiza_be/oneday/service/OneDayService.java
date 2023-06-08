@@ -45,6 +45,8 @@ public class OneDayService {
     private final UserRepository userRepository;
     private final OneDayImageUrlRepository imageUrlRepository;
 
+    private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
+
     // 원데이 생성
     public OneDayDetailResponse createOneDay(OneDayCreateConfirmDto confirmDto) {
         OneDay oneDay = new OneDay(confirmDto);
@@ -68,10 +70,7 @@ public class OneDayService {
     public ResponseEntity<OneDayDetailResponseDto> getOneDayDetail(Long oneDayId) {
         OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()-> new NullPointerException("404 OneDay NOT FOUND"));
         // 이미지 처리 어떻게 하지?
-        System.out.println("oneDay.getId() = " + oneDay.getId());
-        System.out.println("oneDay.getGenderPolicy() = " + oneDay.getGenderPolicy());
-        System.out.println("oneDay.getCategory() = " + oneDay.getCategory());
-        List<String> oneDayImageUrlList= OneDayImageUrlRepository.findAllByOneDayId(oneDayId).stream().map(OneDayImageUrl::getImageUrl).toList();
+        List<String> oneDayImageUrlList= imageUrlRepository.findAllByOneDayId(oneDayId).stream().map(OneDayImageUrl::getImageUrl).toList();
         List<OneDayAttendant> attendantList = attendantRepository.findByOneDayId(oneDayId);
         OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(oneDay, oneDayImageUrlList, attendantList, attendantList.size());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
@@ -95,6 +94,7 @@ public class OneDayService {
     }
     // 원데이 수정
     public ResponseEntity<?> updateOneDay(Long id, OneDayUpdateRequestDto requestDto, User user, MultipartFile imageUrl) throws IOException {
+        System.out.println("------> ㅇㅕ기는 서비스 안");
         // 원데이 가져오기
         OneDay oneDay = oneDayRepository.findById(id).orElseThrow(()->new IllegalArgumentException("404 OneDay NOT FOUND"));
         // 존재하는 글인가
@@ -102,13 +102,14 @@ public class OneDayService {
             throw new IllegalArgumentException("404 Already Deleted");
         }
         // 이미지 처리
-        String storedFileUrl = "";
+        String storedFileUrl = oneDay.getOneDayImage();
         if (!Objects.isNull(imageUrl) && !imageUrl.isEmpty()) {
             storedFileUrl = awsS3Uploader.uploadFile(imageUrl);
         }
         // 작성자는 맞는가
         if (Objects.equals(user.getId(),oneDay.getOwnerId())) {
-            oneDay.updateOneDay(requestDto);
+            oneDay.updateAll(requestDto);
+            oneDay.updateOneDayImage(storedFileUrl);
 //            removeCache(oneDay);
         } else {
             throw new IllegalArgumentException("401 UnAuthorized");
@@ -201,5 +202,11 @@ public class OneDayService {
         }
         return new ResponseEntity<>(oneDays, HttpStatus.OK);
     }
+    // 참여할 하루속 이벤트
+//    public ResponseEntity<?> toAttendList(Long userId) {
+//        List<OneDay> oneDayList = attendantRepository.findAllById(userId);
+//        return new ResponseEntity<>(oneDayList,HttpStatus.OK);
+//    }
 
+    // 참여한 하루속 이벤트
 }

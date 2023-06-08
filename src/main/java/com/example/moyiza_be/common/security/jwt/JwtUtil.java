@@ -34,7 +34,7 @@ public class JwtUtil {
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
     private static final long ACCESS_TIME = Duration.ofMinutes(60).toMillis();
-    private static final long REFRESH_TIME = Duration.ofDays(14).toMillis();
+    private static final long REFRESH_TIME = Duration.ofDays(7).toMillis();
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -42,6 +42,7 @@ public class JwtUtil {
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final CookieUtil cookieUtil;
 
     @PostConstruct
     public void init() {
@@ -92,7 +93,6 @@ public class JwtUtil {
         }
         else{
             time = REFRESH_TIME;
-            // Bearer와 함께 공백 ' '이 오면 에러가 난다.
             return Jwts.builder()
                             .setSubject(user.getEmail())
                             .setExpiration(new Date(date.getTime() + time))
@@ -132,13 +132,21 @@ public class JwtUtil {
     //RefreshToken 검증
     public boolean refreshTokenValid(String token) {
         if (!validateToken(token)) return false;
-        System.out.println("여기까지 올 수 있나?");
-        System.out.println(token);
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(getUserInfoFromToken(token));
         return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
     }
-    public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
-        response.setHeader(ACCESS_TOKEN, accessToken);
+
+    public void createAndSetToken(HttpServletResponse response, User user) {
+        JwtTokenDto tokenDto = createAllToken(user);
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(user.getEmail());
+        if (refreshToken.isPresent()) {
+            refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
+        } else {
+            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmail());
+            refreshTokenRepository.save(newToken);
+        }
+        cookieUtil.addCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+        response.setHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
     }
 
     public ChatUserPrincipal tokenToChatUserPrincipal(String token){

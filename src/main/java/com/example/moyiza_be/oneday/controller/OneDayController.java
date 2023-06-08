@@ -43,9 +43,9 @@ public class OneDayController {
         return oneDayService.getOneDayDetail(oneDayId);
     }
     // Update
-    @RequestMapping(value = "/{oneDayId}", method = RequestMethod.PUT,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> updateOneDay(@RequestPart(value = "data")  OneDayUpdateRequestDto requestDto,
-                                          @RequestPart(value = "imageFile") MultipartFile storedFileUrl,@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+    @PutMapping(value = "/{oneDayId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateOneDay(@RequestPart(value = "data") OneDayUpdateRequestDto requestDto,
+                                          @RequestPart(value = "imageFile") MultipartFile storedFileUrl, @PathVariable(value = "oneDayId") Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return oneDayService.updateOneDay(oneDayId, requestDto ,userDetails.getUser(), storedFileUrl);
     }
     // Delete

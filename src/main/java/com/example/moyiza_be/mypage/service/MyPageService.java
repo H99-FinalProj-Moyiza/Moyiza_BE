@@ -5,6 +5,7 @@ import com.example.moyiza_be.club.entity.ClubJoinEntry;
 import com.example.moyiza_be.club.repository.ClubJoinEntryRepository;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.club.service.ClubService;
+import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.mypage.Dto.ClubResponseDto;
 import com.example.moyiza_be.mypage.Dto.PageResponseDto;
 import com.example.moyiza_be.mypage.Dto.UserResponseDto;
@@ -29,6 +30,7 @@ public class MyPageService {
         UserResponseDto userInfo = UserResponseDto.builder()
                 .user_id(user.getId())
                 .nickname(user.getNickname())
+                .email(user.getEmail())
                 .profileImage(user.getProfileImage())
                 .clubsInOperationCount(clubRepository.findByOwnerId(user.getId()).size())
                 .clubsInParticipatingCount(clubJoinEntryRepository.findByUserId(user.getId()).size())
@@ -40,11 +42,13 @@ public class MyPageService {
                 .map(club -> ClubResponseDto.builder()
                         .club_id(club.getId())
                         .clubCategory(club.getCategory().getCategory())
-                        .clubTag(club.getTagString())
+                        .clubTag(TagEnum.parseTag(club.getTagString()))
                         .clubTitle(club.getTitle())
+                        .clubContent(club.getContent())
                         .thumbnailUrl(club.getThumbnailUrl())
                         .nowMemberCount(club.getNowMemberCount())
-                                .build())
+                        .maxGroupSize(club.getMaxGroupSize())
+                        .build())
                 .collect(Collectors.toList());
 
         // 참여중인 클럽 정보 리스트
@@ -58,10 +62,12 @@ public class MyPageService {
                 .map(club -> ClubResponseDto.builder()
                         .club_id(club.getId())
                         .clubCategory(club.getCategory().getCategory())
-                        .clubTag(club.getTagString())
+                        .clubTag(TagEnum.parseTag(club.getTagString()))
                         .clubTitle(club.getTitle())
+                        .clubContent(club.getContent())
                         .thumbnailUrl(club.getThumbnailUrl())
                         .nowMemberCount(club.getNowMemberCount())
+                        .maxGroupSize(club.getMaxGroupSize())
                         .build())
                 .collect(Collectors.toList());
 
