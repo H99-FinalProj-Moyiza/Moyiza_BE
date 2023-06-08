@@ -99,6 +99,6 @@ server:
     key-store: keystore.p12
     key-store-type: PKCS12
     key-store-password: ENC(BrX+B0Pn+L3sk/TKC53WFSSo2ZBBgjh8hCAXHSuHOMI=)
-  port: 443
+  port: 8443
 
 
