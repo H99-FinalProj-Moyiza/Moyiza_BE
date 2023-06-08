@@ -94,6 +94,7 @@ public class OneDayService {
     }
     // 원데이 수정
     public ResponseEntity<?> updateOneDay(Long id, OneDayUpdateRequestDto requestDto, User user, MultipartFile imageUrl) throws IOException {
+        System.out.println("------> ㅇㅕ기는 서비스 안");
         // 원데이 가져오기
         OneDay oneDay = oneDayRepository.findById(id).orElseThrow(()->new IllegalArgumentException("404 OneDay NOT FOUND"));
         // 존재하는 글인가
@@ -101,11 +102,9 @@ public class OneDayService {
             throw new IllegalArgumentException("404 Already Deleted");
         }
         // 이미지 처리
-        String storedFileUrl = "";
+        String storedFileUrl = oneDay.getOneDayImage();
         if (!Objects.isNull(imageUrl) && !imageUrl.isEmpty()) {
             storedFileUrl = awsS3Uploader.uploadFile(imageUrl);
-        } else {
-            storedFileUrl = DEFAULT_IMAGE_URL;
         }
         // 작성자는 맞는가
         if (Objects.equals(user.getId(),oneDay.getOwnerId())) {
