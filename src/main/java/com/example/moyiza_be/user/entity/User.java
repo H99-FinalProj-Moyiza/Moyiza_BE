@@ -8,6 +8,7 @@ import com.example.moyiza_be.common.utils.TimeStamped;
 
 import com.example.moyiza_be.user.dto.SignupRequestDto;
 import com.example.moyiza_be.user.dto.UpdateRequestDto;
+import com.example.moyiza_be.user.dto.UpdateSocialInfoRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -85,5 +86,13 @@ public class User extends TimeStamped {
     public void updateSocialLogin(OAuthAttributes attributes, SocialType socialType){
         this.socialLoginId = attributes.getOauth2Userinfo().getId();
         this.socialType = socialType;
+    }
+
+    public void updateSocialInfo(UpdateSocialInfoRequestDto requestDto) {
+        this.name = requestDto.getName();
+        this.nickname = requestDto.getNickname();
+        this.gender = requestDto.getGender();
+        this.birth = requestDto.getBirth();
+        this.phone = requestDto.getPhone();
     }
 }
