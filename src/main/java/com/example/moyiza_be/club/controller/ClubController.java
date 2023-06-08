@@ -39,7 +39,7 @@ public class ClubController {
     @GetMapping
     public ResponseEntity<Page<ClubListResponse>> getClubList(@PageableDefault(page = 0, size = 8,
             sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return clubService.getClubList(pageable, null, null);
+        return clubService.getClubList(pageable, null, null, null, null, null);
     }
 
     //클럽 검색 조회
@@ -47,9 +47,12 @@ public class ClubController {
     public ResponseEntity<Page<ClubListResponse>> searchClubList(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String q,
+            @RequestParam(required = false) String tag1,
+            @RequestParam(required = false) String tag2,
+            @RequestParam(required = false) String tag3,
             @PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return clubService.getClubList(pageable, category == null ? null : CategoryEnum.fromString(category), q);
+        return clubService.getClubList(pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3);
     }
 
 

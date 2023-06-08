@@ -40,7 +40,7 @@ public class RedisCacheService {
         userInfoMap.put("profileUrl", userInfo.getProfileUrl());
         userInfoMap.put("subscribedChatId", userInfo.getSubscribedChatId());
         hashOperations.putAll(sessionId, userInfoMap);
-        log.info("saving user : " + userInfo.getUserId() + " for sessionId : " + sessionId);
+        log.info("updating/saving userInfo : " + userInfo.getUserId() + " for sessionId : " + sessionId);
     }
 
     //userInfo 조회
