@@ -39,7 +39,7 @@ public class StompHandler implements ChannelInterceptor {
                 throw new IllegalArgumentException("토큰이 유효하지 않습니다");
             }
 
-            ChatUserPrincipal userInfo = jwtUtil.tokenToChatUserPrincipal(bearerToken);
+            ChatUserPrincipal userInfo = jwtUtil.tokenToChatUserPrincipal(token);
             redisCacheService.saveUserInfoToCache(sessionId, userInfo);
             return message;
         }

@@ -159,7 +159,7 @@ public class JwtUtil {
                     claims.get("profileUrl").toString(),
                     -1L
             );
-        } catch(RuntimeException e){
+        } catch(Exception e){
             log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
             throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
         }

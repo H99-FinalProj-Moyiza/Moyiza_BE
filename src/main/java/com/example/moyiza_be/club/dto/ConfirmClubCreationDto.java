@@ -19,7 +19,6 @@ public class ConfirmClubCreationDto {
     private final Integer maxGroupSize;
     private final GenderPolicyEnum genderPolicy;
     private final Integer agePolicy;
-
     private final Long createClubId;
     private final String thumbnailUrl;
 
