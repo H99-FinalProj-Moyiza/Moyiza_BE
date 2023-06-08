@@ -1,7 +1,10 @@
 package com.example.moyiza_be.club.dto;
 
 import com.example.moyiza_be.club.entity.Club;
+import com.example.moyiza_be.common.enums.CategoryEnum;
+import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -38,4 +41,25 @@ public class ClubDetailResponse {
         this.clubImageUrlList = clubImageUrlList;  //  쿼리한방에 가능한가 ?
     }
 
+    @QueryProjection
+    public ClubDetailResponse(
+            Long club_id, String ownerNickname, String clubTitle, CategoryEnum categoryEnum, String tagString,
+            String clubContent, Integer agePolicy, GenderPolicyEnum genderPolicyEnum, Integer maxGroupSize,
+            Integer nowMemberCount, String thumbnailUrl) {
+        this.club_id = club_id;
+        this.ownerNickname = ownerNickname;
+        this.clubTitle = clubTitle;
+        this.clubCategory = categoryEnum.getCategory();
+        this.clubTag = TagEnum.parseTag(tagString);
+        this.clubContent = clubContent;
+        this.agePolicy = agePolicy;
+        this.genderPolicy = genderPolicyEnum.getGenderPolicy();
+        this.maxGroupSize = maxGroupSize;
+        this.nowMemberCount = nowMemberCount;
+        this.thumbnailUrl = thumbnailUrl;
+//        this.clubImageUrlList = clubImageUrlList; //쿼리에 달아주기 힘든데 ?
+    }
+    public void setClubImageUrlList(List<String> clubImageUrlList) {
+        this.clubImageUrlList = clubImageUrlList;
+    }
 }
