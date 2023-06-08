@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class RequestCategoryDto {
-    private String category;
+    private String oneDayCategory;
 
     public RequestCategoryDto(String category) {
-        this.category = category;
+        this.oneDayCategory = category;
     }
 
     public CategoryEnum getCategoryEnum(){
-        return CategoryEnum.fromString(this.category);
+        return CategoryEnum.fromString(this.oneDayCategory);
     }
 }

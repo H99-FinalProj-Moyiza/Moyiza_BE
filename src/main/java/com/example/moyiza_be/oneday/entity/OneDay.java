@@ -61,6 +61,8 @@ public class OneDay extends TimeStamped {
     @Column
     @Enumerated(EnumType.STRING)
     private OneDayTypeEnum type;
+//    @Column
+//    private boolean expired = false;
 
     public OneDay(OneDayCreateConfirmDto requestDto) {
         this.ownerId = requestDto.getOwnerId();
@@ -87,7 +89,7 @@ public class OneDay extends TimeStamped {
         attendantsNum--;
     }
 
-    public void updateOneDay(OneDayUpdateRequestDto requestDto) {
+    public void updateAll(OneDayUpdateRequestDto requestDto) {
         this.oneDayTitle = requestDto.getOneDayTitle();
         this.oneDayContent = requestDto.getOneDayContent();
         this.category = requestDto.getCategory();
