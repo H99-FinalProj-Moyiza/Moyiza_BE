@@ -7,15 +7,14 @@ import com.example.moyiza_be.oneday.entity.OneDayCreate;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.Calendar;
 
 @Getter
 public class OneDayCreateConfirmDto {
     private final Long ownerId;
-    private final CategoryEnum category;
-    private final String tagString;
     private final String oneDayTitle;
     private final String oneDayContent;
+    private final CategoryEnum category;
+    private final String tagString;
     private final Integer oneDayGroupSize;
     private final GenderPolicyEnum genderPolicy;
     private final Integer agePolicy;
@@ -28,6 +27,8 @@ public class OneDayCreateConfirmDto {
     private final double oneDayLongitude;
     private final LocalDateTime oneDayStartTime;
     public OneDayTypeEnum getOneDayType;
+    public Integer attendantsNum;
+    private final OneDayTypeEnum oneDayTypeEnum;
 
     public OneDayCreateConfirmDto(OneDayCreate oneDayCreate) {
         this.ownerId = oneDayCreate.getOwnerId();
@@ -45,6 +46,8 @@ public class OneDayCreateConfirmDto {
         this.oneDayLongitude = oneDayCreate.getOneDayLongitude();
         this.oneDayStartTime = oneDayCreate.getOneDayStartTime();
         this.getOneDayType = oneDayCreate.getOneDayType();
+        this.attendantsNum = oneDayCreate.getAttendantsNum();
+        this.oneDayTypeEnum = oneDayCreate.getOneDayType();
     }
 
 }

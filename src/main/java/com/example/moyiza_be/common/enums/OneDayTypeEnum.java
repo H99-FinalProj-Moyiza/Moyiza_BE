@@ -4,18 +4,18 @@ public enum OneDayTypeEnum {
     APPROVAL("승인형"),
     FCFSB("선착순형");
 
-    private final String oneDayTypeEnum;
+    private final String oneDayType;
 
     OneDayTypeEnum(String oneDayTypeEnum) {
-        this.oneDayTypeEnum = oneDayTypeEnum;
+        this.oneDayType = oneDayTypeEnum;
     }
 
 
-    public String getOneDayTypeEnum(){return this.oneDayTypeEnum;}
+    public String getOneDayType(){return this.oneDayType;}
 
     public static OneDayTypeEnum fromString(String policy) {
         for (OneDayTypeEnum oneDayTypeEnum : OneDayTypeEnum.values()) {
-            if (oneDayTypeEnum.getOneDayTypeEnum().equalsIgnoreCase(policy)) {
+            if (oneDayTypeEnum.getOneDayType().equalsIgnoreCase(policy)) {
                 return oneDayTypeEnum;
             }
         }

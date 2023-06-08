@@ -10,5 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RequestTypeDto {
-    private OneDayTypeEnum oneDayType;
+    private String oneDayType;
+
+    public OneDayTypeEnum getOneDayTypeEnum() { return OneDayTypeEnum.fromString(this.oneDayType);}
 }

@@ -5,40 +5,39 @@ import com.example.moyiza_be.oneday.entity.OneDayCreate;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @Getter
 public class OneDayCreatingResponseDto {
 //    private long id;
-    private String oneDayTitle;
-    private String oneDayContent;
-    private String oneDayLocation;
-    private double oneDayLatitude;
-    private double oneDayLongitude;
-    private CategoryEnum category;
-    private List<String> tag;
-    private LocalDateTime oneDayStartTime;
-    private int oneDayGroupSize;
-    private GenderPolicyEnum gender;
-    private Integer age;
-    private OneDayTypeEnum type;
+    private final String oneDayTitle;
+    private final String oneDayContent;
+    private final String oneDayLocation;
+    private final double oneDayLatitude;
+    private final double oneDayLongitude;
+    private final String category;
+    private final List<String> tag;
+    private final LocalDateTime oneDayStartTime;
+    private final int oneDayGroupSize;
+    private final String gender;
+    private final Integer age;
+    private final String type;
 //    private boolean deleted;
-    private String image;
+    private final String image;
 //    private MultipartFile images;
     public OneDayCreatingResponseDto(OneDayCreate oneDay) {
         this.oneDayTitle = oneDay.getOneDayTitle();
         this.oneDayContent = oneDay.getOneDayContent();
-        this.category = oneDay.getCategory();
-        this.tag = Collections.singletonList(oneDay.getTagString());
+        this.category = oneDay.getCategory().getCategory();
+        this.tag = TagEnum.parseTag(oneDay.getTagString());
         this.oneDayLocation = oneDay.getOneDayLocation();
         this.oneDayLatitude = oneDay.getOneDayLatitude();
         this.oneDayLongitude = oneDay.getOneDayLongitude();
         this.oneDayStartTime = oneDay.getOneDayStartTime();
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
-        this.gender = oneDay.getGenderPolicy();
+        this.gender = oneDay.getGenderPolicy().getGenderPolicy();
         this.age = oneDay.getAgePolicy();
-        this.type = oneDay.getOneDayType();
+        this.type = oneDay.getOneDayType().getOneDayType();
         this.image = oneDay.getOneDayImage();
     }
 }

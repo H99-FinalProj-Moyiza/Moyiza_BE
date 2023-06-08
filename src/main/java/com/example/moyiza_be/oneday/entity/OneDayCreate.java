@@ -31,10 +31,10 @@ public class OneDayCreate {
     private double oneDayLatitude;
     private double oneDayLongitude;
     @DateTimeFormat(pattern = "YYYY-MM-dd'T'HH:mm")
-    private LocalDateTime oneDayStartTime= LocalDateTime.now();
+    private LocalDateTime oneDayStartTime;
     private GenderPolicyEnum genderPolicy;
     private Integer agePolicy;
-    private Integer oneDayGroupSize = 3;
+    private Integer oneDayGroupSize;
     private Boolean deleted;
     private Integer attendantsNum;
     private String oneDayImage;
