@@ -76,6 +76,9 @@ public class ClubService {
     //클럽 상세 조회
     public ResponseEntity<ClubDetailResponse> getClubDetail(Long clubId) {
         ClubDetailResponse clubDetailResponse = clubRepositoryCustom.getClubDetail(clubId);
+        if(clubDetailResponse == null){
+            throw new NullPointerException("클럽을 찾을 수 없습니다");
+        }
         List<String> clubImageUrlList = clubImageUrlRepository.findAllByClubId(clubId).stream().map(ClubImageUrl::getImageUrl).toList();
         clubDetailResponse.setClubImageUrlList(clubImageUrlList);
         return ResponseEntity.ok(clubDetailResponse);
