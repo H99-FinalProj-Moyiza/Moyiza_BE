@@ -75,10 +75,10 @@ public class ClubService {
 
     //클럽 상세 조회
     public ResponseEntity<ClubDetailResponse> getClubDetail(Long clubId) {
-        Club club = loadClubByClubId(clubId);
+        ClubDetailResponse clubDetailResponse = clubRepositoryCustom.getClubDetail(clubId);
         List<String> clubImageUrlList = clubImageUrlRepository.findAllByClubId(clubId).stream().map(ClubImageUrl::getImageUrl).toList();
-        ClubDetailResponse responseDto = new ClubDetailResponse(club, clubImageUrlList);
-        return ResponseEntity.ok(responseDto);
+        clubDetailResponse.setClubImageUrlList(clubImageUrlList);
+        return ResponseEntity.ok(clubDetailResponse);
     }
 
 

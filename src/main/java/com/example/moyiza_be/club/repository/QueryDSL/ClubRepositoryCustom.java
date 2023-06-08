@@ -1,10 +1,9 @@
 package com.example.moyiza_be.club.repository.QueryDSL;
 
-import com.example.moyiza_be.club.dto.ClubListResponse;
-import com.example.moyiza_be.club.dto.QClubListResponse;
-import com.example.moyiza_be.club.dto.QClubMemberResponse;
+import com.example.moyiza_be.club.dto.*;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
+import com.example.moyiza_be.mypage.Dto.ClubResponseDto;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -64,6 +63,30 @@ public class ClubRepositoryCustom {
 //                .fetchOne();
 
         return new PageImpl<>(clubListResponseList, pageable, 5000L);
+    }
+
+    public ClubDetailResponse getClubDetail(Long clubId){
+        return jpaQueryFactory
+                .select(
+                        new QClubDetailResponse(
+                                club.id,
+                                user.nickname,
+                                club.title,
+                                club.category,
+                                club.tagString,
+                                club.content,
+                                club.agePolicy,
+                                club.genderPolicy,
+                                club.maxGroupSize,
+                                club.nowMemberCount,
+                                club.thumbnailUrl
+                        )
+
+                )
+                .from(club)
+                .join(user).on(club.ownerId.eq(user.id))
+                .where(club.id.eq(clubId))
+                .fetchOne();
     }
 
     private BooleanExpression titleContainOrContentContain(String q) {
