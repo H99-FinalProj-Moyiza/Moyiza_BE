@@ -14,7 +14,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.moyiza_be.club.entity.QClub.club;
 import static com.example.moyiza_be.user.entity.QUser.user;
@@ -44,7 +46,6 @@ public class ClubRepositoryCustom {
                                         club.thumbnailUrl
                                 )
                         )
-
                         .from(club)
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -57,6 +58,7 @@ public class ClubRepositoryCustom {
                                 eqTag2(tag2),
                                 eqTag3(tag3)
                         )
+                        .orderBy(club.id.desc())     // 추후 동적으로 변경
                         .fetch();
 //        Long count = jpaQueryFactory
 //                .select(club.count())
@@ -88,6 +90,20 @@ public class ClubRepositoryCustom {
                 .where(club.id.eq(clubId))
                 .fetchOne();
     }
+
+//    private OrderSpecifier createOrderSpecifier(OrderCondition orderCondition) {
+//
+//        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
+//
+//        if(Objects.isNull(orderCondition)){
+//            orderSpecifiers.add(new OrderSpecifier(Order.DESC, person.name));
+//        }else if(orderCondition.equals(OrderCondition.AGE)){
+//            orderSpecifiers.add(new OrderSpecifier(Order.DESC, person.age));
+//        }else{
+//            orderSpecifiers.add(new OrderSpecifier(Order.DESC, person.region));
+//        }
+//        return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
+//    }
 
     private BooleanExpression titleContainOrContentContain(String q) {
         return q == null ? null : titleContain(q).or(contentContain(q));
