@@ -30,6 +30,7 @@ public class MyPageService {
         UserResponseDto userInfo = UserResponseDto.builder()
                 .user_id(user.getId())
                 .nickname(user.getNickname())
+                .email(user.getEmail())
                 .profileImage(user.getProfileImage())
                 .clubsInOperationCount(clubRepository.findByOwnerId(user.getId()).size())
                 .clubsInParticipatingCount(clubJoinEntryRepository.findByUserId(user.getId()).size())
