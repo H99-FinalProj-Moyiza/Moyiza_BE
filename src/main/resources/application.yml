@@ -94,11 +94,11 @@ jwt:
   secret:
     key: ENC(rjg+5OS5srRHUw2KZQcREVDpUBlSXEQ4y7Hl/qE1KjNodO/mb2zH8P9bJ0mX0o81k7pPcD6EppBR6LgkE9LBrxBB35PzT/7Tjq9ja7YJAwmj5d9yLFpeLCLgcUQ8AP5HqG1c4Urael0Rqe6gVmxBbfxWOBHgmWKg+qS/w3AY7hyiFrUfLd5Xyw==)
 
-#server:
-#  ssl:
-#    key-store: keystore.p12
-#    key-store-type: PKCS12
-#    key-store-password: ENC(BrX+B0Pn+L3sk/TKC53WFSSo2ZBBgjh8hCAXHSuHOMI=)
-#  port: 443
+server:
+  ssl:
+    key-store: keystore.p12
+    key-store-type: PKCS12
+    key-store-password: ENC(BrX+B0Pn+L3sk/TKC53WFSSo2ZBBgjh8hCAXHSuHOMI=)
+  port: 443
 
 
