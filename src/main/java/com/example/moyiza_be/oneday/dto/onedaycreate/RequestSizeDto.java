@@ -9,5 +9,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RequestSizeDto {
-    private Integer size;
+    private int size;
 }

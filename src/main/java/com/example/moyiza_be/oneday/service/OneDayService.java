@@ -94,7 +94,6 @@ public class OneDayService {
     }
     // 원데이 수정
     public ResponseEntity<?> updateOneDay(Long id, OneDayUpdateRequestDto requestDto, User user, MultipartFile imageUrl) throws IOException {
-        System.out.println("------> ㅇㅕ기는 서비스 안");
         // 원데이 가져오기
         OneDay oneDay = oneDayRepository.findById(id).orElseThrow(()->new IllegalArgumentException("404 OneDay NOT FOUND"));
         // 존재하는 글인가

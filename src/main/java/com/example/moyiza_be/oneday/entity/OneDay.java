@@ -3,6 +3,7 @@ package com.example.moyiza_be.oneday.entity;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.OneDayTypeEnum;
+import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.TimeStamped;
 import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
@@ -13,7 +14,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.swing.text.html.HTML;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -66,6 +69,7 @@ public class OneDay extends TimeStamped {
 
     public OneDay(OneDayCreateConfirmDto requestDto) {
         this.ownerId = requestDto.getOwnerId();
+        this.oneDayImage = requestDto.getOneDayImage();
         this.oneDayTitle = requestDto.getOneDayTitle();
         this.oneDayContent = requestDto.getOneDayContent();
         this.category = requestDto.getCategory();
@@ -77,8 +81,7 @@ public class OneDay extends TimeStamped {
         this.oneDayLongitude = requestDto.getOneDayLongitude();
         this.oneDayGroupSize = requestDto.getOneDayGroupSize();
         this.oneDayStartTime = requestDto.getOneDayStartTime();
-        this.oneDayImage = requestDto.getOneDayImage();
-        this.type = requestDto.getGetOneDayType();
+        this.type = requestDto.getOneDayType;
     }
 
     public void oneDayAttend(){
@@ -92,15 +95,23 @@ public class OneDay extends TimeStamped {
     public void updateAll(OneDayUpdateRequestDto requestDto) {
         this.oneDayTitle = requestDto.getOneDayTitle();
         this.oneDayContent = requestDto.getOneDayContent();
-        this.category = requestDto.getCategory();
-        this.tagString = requestDto.getTagString();
+        this.category = CategoryEnum.fromString(requestDto.getCategory());
+        List<TagEnum> tagEnumList = requestDto.getTagString().stream().map(TagEnum::fromString).toList();
+        String newString = "0".repeat(TagEnum.values().length);
+
+        StringBuilder sb = new StringBuilder(newString);
+        for (TagEnum tagEnum : tagEnumList) {
+            sb.setCharAt(tagEnum.ordinal(), '1');
+        }
+        this.tagString = sb.toString();
         this.agePolicy = requestDto.getAgePolicy();
-        this.genderPolicy = requestDto.getGenderPolicy();
+        this.genderPolicy = GenderPolicyEnum.fromString(requestDto.getGenderPolicy());
         this.oneDayLocation = requestDto.getOneDayLocation();
         this.oneDayLatitude = requestDto.getOneDayLatitude();
         this.oneDayLongitude = requestDto.getOneDayLongitude();
         this.oneDayGroupSize = requestDto.getOneDayGroupSize();
         this.oneDayStartTime = requestDto.getOneDayStartTime();
+        this.type = OneDayTypeEnum.fromString(requestDto.getType());
     }
 
     public void updateOneDayImage(String storedFileUrl) {

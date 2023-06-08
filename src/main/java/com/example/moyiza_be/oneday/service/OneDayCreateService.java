@@ -58,9 +58,6 @@ public class OneDayCreateService {
         if(!oneDayCreate.getOwnerId().equals(userId)) {
             throw new IllegalCallerException("It is not your oneday");
         }
-        if(oneDayCreate.getOneDayGroupSize()==null){
-            oneDayCreate.setOneDayGroupSize(3);
-        }
         return new ResponseEntity<>(new CreatingDto(oneDayCreate), HttpStatus.OK);
     }
 
@@ -119,7 +116,9 @@ public class OneDayCreateService {
         if(!oneDayCreate.getOwnerId().equals(userId)) {
             throw new IllegalCallerException("It is not your oneday");
         }
+        System.out.println(maxSize.getSize());
         oneDayCreate.setOneDayGroupSize(maxSize.getSize());
+        System.out.println("여기야");
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
 
@@ -183,7 +182,7 @@ public class OneDayCreateService {
         if(!oneDayCreate.getOwnerId().equals(userId)) {
             throw new IllegalCallerException("It is not your oneday");
         }
-        oneDayCreate.setOneDayType(type.getOneDayType());
+        oneDayCreate.setOneDayType(type.getOneDayTypeEnum());
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
 }
