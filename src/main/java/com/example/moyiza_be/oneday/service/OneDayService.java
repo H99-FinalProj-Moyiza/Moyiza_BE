@@ -68,6 +68,9 @@ public class OneDayService {
     public ResponseEntity<OneDayDetailResponseDto> getOneDayDetail(Long oneDayId) {
         OneDay oneDay = oneDayRepository.findById(oneDayId).orElseThrow(()-> new NullPointerException("404 OneDay NOT FOUND"));
         // 이미지 처리 어떻게 하지?
+        System.out.println("oneDay.getId() = " + oneDay.getId());
+        System.out.println("oneDay.getGenderPolicy() = " + oneDay.getGenderPolicy());
+        System.out.println("oneDay.getCategory() = " + oneDay.getCategory());
         List<String> oneDayImageUrlList= OneDayImageUrlRepository.findAllByOneDayId(oneDayId).stream().map(OneDayImageUrl::getImageUrl).toList();
         List<OneDayAttendant> attendantList = attendantRepository.findByOneDayId(oneDayId);
         OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(oneDay, oneDayImageUrlList, attendantList, attendantList.size());

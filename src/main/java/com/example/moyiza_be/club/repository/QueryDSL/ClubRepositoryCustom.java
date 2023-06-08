@@ -1,12 +1,12 @@
 package com.example.moyiza_be.club.repository.QueryDSL;
 
-import com.example.moyiza_be.club.dto.*;
+import com.example.moyiza_be.club.dto.ClubDetailResponse;
+import com.example.moyiza_be.club.dto.ClubListResponse;
+import com.example.moyiza_be.club.dto.QClubDetailResponse;
+import com.example.moyiza_be.club.dto.QClubListResponse;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
-import com.example.moyiza_be.mypage.Dto.ClubResponseDto;
-import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,16 +14,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static com.example.moyiza_be.club.entity.QClub.club;
 import static com.example.moyiza_be.user.entity.QUser.user;
-import static com.example.moyiza_be.club.entity.QClubJoinEntry.clubJoinEntry;
-import static com.example.moyiza_be.club.entity.QClubImageUrl.clubImageUrl;
-import static com.querydsl.core.types.ExpressionUtils.count;
-import static com.querydsl.jpa.JPAExpressions.select;
 
 @Repository
 @RequiredArgsConstructor
@@ -66,6 +60,52 @@ public class ClubRepositoryCustom {
 
         return new PageImpl<>(clubListResponseList, pageable, 5000L);
     }
+
+//public Page<ClubListResponse> filteredClubResponseList(
+//        Pageable pageable, CategoryEnum categoryEnum, String q, String tag1, String tag2, String tag3
+//) {
+//    List<ClubListResponse> clubListResponseList =
+//            jpaQueryFactory
+//                    .from(club)
+//                    .offset(pageable.getOffset())
+//                    .limit(pageable.getPageSize())
+//                    .join(user).on(club.ownerId.eq(user.id))
+//                    .leftJoin(clubImageUrl).on(club.id.eq(clubImageUrl.clubId))
+//                    .where(
+//                            club.isDeleted.eq(Boolean.FALSE),
+//                            eqCategory(categoryEnum),
+//                            titleContainOrContentContain(q),
+//                            eqTag1(tag1),
+//                            eqTag2(tag2),
+//                            eqTag3(tag3)
+//                    ).transform(
+//                            groupBy(club.id).list(
+//                                    Projections.constructor(
+//                                            ClubListResponse.class,
+//                                            club.id,
+//                                            user.nickname,
+//                                            club.title,
+//                                            club.tagString,
+//                                            club.maxGroupSize,
+//                                            club.nowMemberCount,
+////                                            list(
+////                                                    clubImageUrl.imageUrl
+////                                            )
+//                                            clubImageUrl.imageUrl
+//                                    )
+//
+//                            )
+//                    );
+////                    .orderBy(club.id.desc())     // 추후 동적으로 변경
+////        Long count = jpaQueryFactory
+////                .select(club.count())
+////                .fetchOne();
+//
+//    return new PageImpl<>(clubListResponseList, pageable, 5000L);
+//}
+
+
+
 
     public ClubDetailResponse getClubDetail(Long clubId){
         return jpaQueryFactory

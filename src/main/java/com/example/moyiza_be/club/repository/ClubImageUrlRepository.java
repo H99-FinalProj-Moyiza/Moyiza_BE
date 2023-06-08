@@ -8,7 +8,9 @@ import java.util.List;
 
 @Repository
 public interface ClubImageUrlRepository extends JpaRepository<ClubImageUrl, Long> {
-    List<ClubImageUrl> findAllByClubId(Long createclub_id);
+    List<ClubImageUrl> findAllByClubId(Long club_id);
+
+    List<ClubImageUrl> findAllByCreateClubId(Long createclub_id);
     void deleteByClubId(Long clubId);
 
 }

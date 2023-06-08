@@ -8,6 +8,7 @@ import com.example.moyiza_be.club.entity.ClubJoinEntry;
 import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
 import com.example.moyiza_be.club.repository.ClubJoinEntryRepository;
 import com.example.moyiza_be.club.repository.ClubRepository;
+import com.example.moyiza_be.club.repository.QueryDSL.ClubImageUrlRepositoryCustom;
 import com.example.moyiza_be.club.repository.QueryDSL.ClubJoinEntryRepositoryCustom;
 import com.example.moyiza_be.club.repository.QueryDSL.ClubRepositoryCustom;
 import com.example.moyiza_be.common.enums.CategoryEnum;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -40,6 +42,7 @@ public class ClubService {
     private final ChatService chatService;
     private final ClubJoinEntryRepositoryCustom clubJoinEntryRepositoryCustom;
     private final ClubRepositoryCustom clubRepositoryCustom;
+    private final ClubImageUrlRepositoryCustom clubImageUrlRepositoryCustom;
 
 
     //클럽 가입
@@ -79,7 +82,7 @@ public class ClubService {
         if(clubDetailResponse == null){
             throw new NullPointerException("클럽을 찾을 수 없습니다");
         }
-        List<String> clubImageUrlList = clubImageUrlRepository.findAllByClubId(clubId).stream().map(ClubImageUrl::getImageUrl).toList();
+        List<String> clubImageUrlList = clubImageUrlRepositoryCustom.getAllImageUrlByClubId(clubId);
         clubDetailResponse.setClubImageUrlList(clubImageUrlList);
         return ResponseEntity.ok(clubDetailResponse);
     }
@@ -134,9 +137,17 @@ public class ClubService {
         clubRepository.saveAndFlush(club);
         chatService.makeChat(club.getId(), ChatTypeEnum.CLUB, club.getTitle());
         joinClub(club.getId(), user);
-        List<String> clubImageUrlList = clubImageUrlRepository.findAllByClubId(creationRequest.getCreateClubId())
+//        List<ClubImageUrl> clubImages = clubImageUrlRepository.findAllByClubId(creationRequest.getCreateClubId());
+//        List<String> clubImageUrlList = new ArrayList<>();
+//        for(ClubImageUrl clubImageUrl:clubImages){
+//            log.info("setting clubImageUrl " + clubImageUrl.getId() +" clubId to : " + club.getId());
+//            clubImageUrl.setClubId(club.getId());
+//            clubImageUrlList.add(clubImageUrl.getImageUrl());
+//        }
+//        clubImageUrlRepository.saveAll(clubImages);
+        List<String> clubImageUrlList = clubImageUrlRepository.findAllByCreateClubId(creationRequest.getCreateClubId())
                 .stream()
-                .peek(image -> image.setClubId(club.getId()))
+                .peek(clubImageUrl -> clubImageUrl.setClubId(club.getId()))
                 .map(ClubImageUrl::getImageUrl)
                 .toList();
         return new ClubDetailResponse(club, clubImageUrlList); // querydsl에서 List로 projection이 가능한가 확인해봐야함

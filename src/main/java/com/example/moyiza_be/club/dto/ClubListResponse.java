@@ -27,13 +27,16 @@ public class ClubListResponse {
     }
 
     @QueryProjection
-    public ClubListResponse(Long club_id, String ownerNickname, String clubTitle, String tagString, Integer maxGroupSize, Integer nowMemberCount, String thumbnailUrl) {
+    public ClubListResponse(Long club_id, String ownerNickname, String clubTitle, String tagString, Integer maxGroupSize,
+                            Integer nowMemberCount, String thumbnailUrl) {
         this.club_id = club_id;
         this.ownerNickname = ownerNickname;
         this.clubTitle = clubTitle;
         this.clubTag = TagEnum.parseTag(tagString);
         this.maxGroupSize = maxGroupSize;
         this.nowMemberCount = nowMemberCount;
+//        this.thumbnailUrl = thumbnailUrl.get(0);
         this.thumbnailUrl = thumbnailUrl;
     }
+
 }
