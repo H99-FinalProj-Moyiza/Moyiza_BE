@@ -7,6 +7,7 @@ import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
+import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -30,13 +32,14 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/chat")
 public class ChatController {
     private final ChatService chatService;
     private final RedisCacheService redisCacheService;
 
 
     //채팅 메시지 전송, 수신
-    @MessageMapping("/chat/{chatId}")
+    @MessageMapping("/{chatId}")
     public void receiveAndSendChat(
             @DestinationVariable Long chatId, ChatMessageInput chatMessageInput,
             Message<?> message
@@ -53,16 +56,27 @@ public class ChatController {
     }
 
     //채팅방 목록 조회
-    @GetMapping("/chat")
-    public ResponseEntity<List<ChatRoomInfo>> getChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @GetMapping("/clubchat")
+    public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails == null){
             throw new NullPointerException("사용자 정보가 없습니다");
         }
-        return chatService.getChatRoomList(userDetails.getUser());
+        User user = userDetails.getUser();
+        return chatService.getClubChatRoomList(user.getId());
+    }
+    @GetMapping("/onedaychat")
+    public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails == null){
+            throw new NullPointerException("사용자 정보가 없습니다");
+        }
+        User user = userDetails.getUser();
+        return chatService.getOnedayChatRoomList(user.getId());
     }
 
+
+
     //채팅 내역 조회
-    @GetMapping("/chat/{chatId}")
+    @GetMapping("/{chatId}")
     public ResponseEntity<Page<ChatMessageOutput>> getChatRecordList(
             @PageableDefault(page = 0, size = 50, sort = "CreatedAt", direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable Long chatId,

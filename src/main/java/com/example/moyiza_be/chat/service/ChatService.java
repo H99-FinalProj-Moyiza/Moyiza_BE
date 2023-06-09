@@ -7,6 +7,7 @@ import com.example.moyiza_be.chat.entity.ChatRecord;
 import com.example.moyiza_be.chat.repository.ChatJoinEntryRepository;
 import com.example.moyiza_be.chat.repository.ChatRecordRepository;
 import com.example.moyiza_be.chat.repository.ChatRepository;
+import com.example.moyiza_be.chat.repository.QueryDSL.ChatRepositoryCustom;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.user.entity.User;
@@ -31,6 +32,7 @@ public class ChatService {
     private final ChatJoinEntryRepository chatJoinEntryRepository;
     private final ChatRepository chatRepository;
     private final RedisCacheService cacheService;
+    private final ChatRepositoryCustom chatRepositoryCustom;
 
     public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
                                    Long chatId,
@@ -52,18 +54,14 @@ public class ChatService {
 
     //채팅방 목록 조회
 
-    public ResponseEntity<List<ChatRoomInfo>> getChatRoomList(User user) {
+    public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(Long userId) {
         //나중에 쿼리 바꿀 대상
-
-        List<Long> joinedChatIdList = chatJoinEntryRepository.findAllByUserIdAndIsCurrentlyJoinedTrue(user.getId())
-                .stream()
-                .map(ChatJoinEntry::getChatId)
-                .toList();  //Jpa에서는 다른 엔티티끼리 join 안됨
-        List<ChatRoomInfo> chatRoomInfoList = chatRepository.findAllByIdIn(joinedChatIdList)
-                .stream()
-                .map(ChatRoomInfo::new)
-                .toList();
-        return ResponseEntity.ok(chatRoomInfoList);
+        List<ChatRoomInfo> clubChatRoomInfoList = chatRepositoryCustom.getClubChatRoomList(userId);
+        return ResponseEntity.ok(clubChatRoomInfoList);
+    }
+    public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(Long userId){
+        List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId);
+        return ResponseEntity.ok(onedayChatRoomInfoList);
     }
 
     public void makeChat(Long roomIdentifier, ChatTypeEnum chatType, String roomName) {
