@@ -87,14 +87,6 @@ public class UserService {
         return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
     }
 
-    //마이페이지
-    public ResponseEntity<?> getMypage(User user) {
-        ClubListOnMyPage clubListOnMyPage = clubService.getClubListOnMyPage(user.getId());
-        MyPageResponseDto myPageResponseDto = new MyPageResponseDto(user, clubListOnMyPage);
-        //원데이 추가 필요
-        return ResponseEntity.ok(myPageResponseDto);
-    }
-
     //회원정보 수정
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
         User user = findUser(email);
