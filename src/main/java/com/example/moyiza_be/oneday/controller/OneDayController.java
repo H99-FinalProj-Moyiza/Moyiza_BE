@@ -6,6 +6,7 @@ import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
 import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
 import com.example.moyiza_be.oneday.service.OneDayService;
+import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -23,14 +24,13 @@ import java.util.List;
 public class OneDayController {
     private final OneDayService oneDayService;
 
-    // Create
-    @RequestMapping(value = "/", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
-//    @PostMapping
-    public OneDayDetailResponse createOneDay(@RequestPart(value = "data") OneDayCreateConfirmDto requestDto,
-                                             @RequestPart(value = "imageFile") MultipartFile storedFileUrl,
-                                             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        return oneDayService.createOneDay(requestDto);
-    }
+//    @RequestMapping(value = "/", method = RequestMethod.POST,consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
+//    public OneDayDetailResponse createOneDay(@RequestPart(value = "data") OneDayCreateConfirmDto requestDto,
+//                                             @RequestPart(value = "imageFile") MultipartFile storedFileUrl,
+//                                             @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+//        User user = userDetails.getUser();
+//        return oneDayService.createOneDay(user, requestDto);
+//    }
     // ReadAll
     @GetMapping
     public ResponseEntity<?> getOneDayList() {
@@ -50,7 +50,8 @@ public class OneDayController {
     // Delete
     @DeleteMapping("/{oneDayId}")
     public ResponseEntity<?> deleteOneDay(@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return oneDayService.deleteOneDay(userDetails.getUser(), oneDayId);
+        User user = userDetails.getUser();
+        return oneDayService.deleteOneDay(user.getId(), oneDayId);
     }
     // Attend
     @PostMapping("/{oneDayId}/join")

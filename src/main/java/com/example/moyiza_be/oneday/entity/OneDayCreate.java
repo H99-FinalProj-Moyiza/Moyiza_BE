@@ -40,4 +40,10 @@ public class OneDayCreate {
     private String oneDayImage;
     private Boolean confirmed = false;
     private OneDayTypeEnum oneDayType;
+
+    public OneDayCreate(Long ownerId) {
+        this.ownerId = ownerId;
+    }
 }
+
+

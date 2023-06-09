@@ -19,17 +19,8 @@ public class OneDayAttendant {
     @Column
     private Long userId;
 
-    private String userName;
-    private String userNickName;
-    private String userEmail;
-    private String userProfileImage;
-
-    public OneDayAttendant(OneDay OneDay, User user) {
+    public OneDayAttendant(OneDay OneDay, Long userId) {
         this.oneDayId = OneDay.getId();
-        this.userId = user.getId();
-        this.userName = user.getName();
-        this.userNickName = user.getNickname();
-        this.userEmail = user.getEmail();
-        this.userProfileImage = user.getProfileImage();
+        this.userId = userId;
     }
 }

@@ -55,7 +55,7 @@ public class OneDay extends TimeStamped {
     @Column
     private Boolean deleted = false;
     @Column
-    private Integer attendantsNum = 1;
+    private Integer attendantsNum = 0;
     @Column(name = "image_url")
     @Lob
     private String  oneDayImage;
@@ -82,11 +82,11 @@ public class OneDay extends TimeStamped {
         this.type = requestDto.getOneDayType;
     }
 
-    public void oneDayAttend(){
+    public void addAttendantNum(){
         attendantsNum++;
     }
 
-    public void oneDayCancel(){
+    public void minusAttendantNum(){
         attendantsNum--;
     }
 

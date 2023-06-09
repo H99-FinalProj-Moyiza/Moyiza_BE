@@ -78,6 +78,9 @@ public class OneDayCreateController {
     @PutMapping("/{oneDayTmpId}/time")
     public ResponseEntity<Message> setTime(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long oneDayTmpId, @RequestBody RequestDateDto time){
         User user = userDetails.getUser();
+        if(time.getOneDayStartTime() == null){
+            throw new IllegalArgumentException("oneday 시작시간이 없습니다");
+        }
         return oneDayCreateService.setDate(user.getId(),oneDayTmpId,time);
     }
     // startTime
@@ -96,6 +99,6 @@ public class OneDayCreateController {
     @PostMapping("/{oneDayTmpId}/confirm")
     public ResponseEntity<?> confirmCreation(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long oneDayTmpId){
         User user = userDetails.getUser();
-        return oneDayCreateService.confirmCreation(user.getId(), oneDayTmpId);
+        return oneDayCreateService.confirmCreation(user, oneDayTmpId);
     }
 }

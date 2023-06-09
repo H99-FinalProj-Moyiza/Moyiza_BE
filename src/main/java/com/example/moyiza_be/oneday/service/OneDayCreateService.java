@@ -1,5 +1,6 @@
 package com.example.moyiza_be.oneday.service;
 
+import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
@@ -42,52 +43,36 @@ public class OneDayCreateService {
         if (bluePrint != null) {
             return new ResponseEntity<>(new OneDayIdResponseDto(bluePrint.getId()), HttpStatus.ACCEPTED);
         }
-        OneDayCreate oneDayCreate = new OneDayCreate();
-        oneDayCreate.setOwnerId(userId);
+        OneDayCreate oneDayCreate = new OneDayCreate(userId);
         createRepository.save(oneDayCreate);
         CreateOneDayIdResponseDto createOneDayIdResponse = new CreateOneDayIdResponseDto(oneDayCreate.getId());
         return new ResponseEntity<>(createOneDayIdResponse, HttpStatus.CREATED);
     }
 
     public ResponseEntity<CreatingDto> getExistCreatingOneDay(Long userId, Long createOneDayId) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(() -> new NullPointerException("생성중인 원데이가 없어요"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         return new ResponseEntity<>(new CreatingDto(oneDayCreate), HttpStatus.OK);
     }
 
     public ResponseEntity<Message> setTitle(Long userId, Long createOneDayId, RequestTitleDto titleDto) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("No Such OneDay Found"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setOneDayTitle(titleDto.getOneDayTitle());
         return new ResponseEntity<>(new Message("성공"), HttpStatus.OK);
     }
 
     public ResponseEntity<Message> setContent(Long userId, Long createOneDayId, RequestContentDto contentDto) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("No Such OneDay Found"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setOneDayContent(contentDto.getOneDayContent());
         return new ResponseEntity<>(new Message("성공"), HttpStatus.OK);
     }
     public ResponseEntity<Message> setCategory(Long userId, Long createOneDayId, RequestCategoryDto categoryEnum) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("생성중인 원데이가 없어요"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setCategory(categoryEnum.getCategoryEnum());
         return new ResponseEntity<>(new Message("설정 완료"), HttpStatus.OK);
     }
 
     public ResponseEntity<?> setTag(Long userId, Long createOneDayId, RequestTagDto tagEnumList) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("생성중인 원데이가 없어요"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         String newStr = "0".repeat(TagEnum.values().length);
         StringBuilder sb = new StringBuilder(newStr);
         for(TagEnum tagEnum : tagEnumList.getTagEnumList()) {
@@ -96,22 +81,17 @@ public class OneDayCreateService {
         oneDayCreate.setTagString(sb.toString());
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
+
+    ///////
     public ResponseEntity<Message> setPolicy
-            (Long userId, Long createOneDayId, RequestPolicyDto policy) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("No Such OneDay Found"));
-        // loadAndCheckOwnerShip
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
-        oneDayCreate.setGenderPolicy(policy.getGenderPolicy());
-        oneDayCreate.setAgePolicy(policy.getAgePolicy());
+            (Long userId, Long createOneDayId, RequestPolicyDto policyRequest) {
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
+        oneDayCreate.setGenderPolicy(GenderPolicyEnum.fromString(policyRequest.getGenderPolicy()));
+        oneDayCreate.setAgePolicy(policyRequest.getAgePolicy());
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
     public ResponseEntity<Message> setMaxGroupSize(Long userId, Long createOneDayId, RequestSizeDto maxSize) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("No Such OneDay Found"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         System.out.println(maxSize.getSize());
         oneDayCreate.setOneDayGroupSize(maxSize.getSize());
         System.out.println("여기야");
@@ -120,10 +100,7 @@ public class OneDayCreateService {
 
     // 위치
     public ResponseEntity<Message> setLocation(Long userId, Long createOneDayId, RequestLocationDto requestLocationDto) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("No Such OneDay Found"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setOneDayLocation(requestLocationDto.getOneDayLocation());
         oneDayCreate.setOneDayLatitude(requestLocationDto.getOneDayLatitude());
         oneDayCreate.setOneDayLongitude(requestLocationDto.getOneDayLongitude());
@@ -132,22 +109,15 @@ public class OneDayCreateService {
 
     // 날짜
     public ResponseEntity<Message> setDate(Long userId, Long createOneDayId, RequestDateDto dateTime) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("No Such OneDay Found"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
-        if(dateTime.getOneDayStartTime()==null){
-            dateTime.setOneDayStartTime(LocalDateTime.now());
-        }
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setOneDayStartTime(dateTime.getOneDayStartTime());
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
 
+
+    //revisit
     public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, List<MultipartFile> imageFileList) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("No Such OneDay Found"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         List<String> imageUrlList;
         if(imageFileList == null) {
             imageUrlList = List.of(DEFAULT_IMAGE_URL);
@@ -161,24 +131,24 @@ public class OneDayCreateService {
         return new ResponseEntity<>(new Message("이미지 업로드 완료 !"), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> confirmCreation(Long userId, Long createOneDayId) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("No Such OneDay Found"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
-        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("login First"));
-        OneDayCreateConfirmDto confirmDto = new OneDayCreateConfirmDto(oneDayCreate);
-        OneDayDetailResponse newOneDay = oneDayService.createOneDay(confirmDto);
-        oneDayCreate.setConfirmed(true);
-        return new ResponseEntity<>(newOneDay, HttpStatus.OK);
-    }
-
     public ResponseEntity<Message> setType(Long userId, Long createOneDayId, RequestTypeDto type) {
-        OneDayCreate oneDayCreate = createRepository.findByIdAndConfirmedIsFalse(createOneDayId).orElseThrow(()->new NullPointerException("No Such OneDay Found"));
-        if(!oneDayCreate.getOwnerId().equals(userId)) {
-            throw new IllegalCallerException("It is not your oneday");
-        }
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setOneDayType(type.getOneDayTypeEnum());
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
+
+    public ResponseEntity<?> confirmCreation(User user, Long createOneDayId) {
+        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, user.getId());
+        OneDayCreateConfirmDto confirmDto = new OneDayCreateConfirmDto(oneDayCreate);
+        OneDayDetailResponse newOneDay = oneDayService.createOneDay(user, confirmDto);
+        oneDayCreate.setConfirmed(true);
+        return new ResponseEntity<>(newOneDay, HttpStatus.OK);
+    }
+    ///////////////////////////////////
+
+    private OneDayCreate loadOnedayCreate(Long createOnedayId, Long userId){
+        return createRepository.findByIdAndOwnerIdAndConfirmedIsFalse(createOnedayId, userId)
+                .orElseThrow(()->new NullPointerException("OnedayCreate not found"));
+    }
+
 }

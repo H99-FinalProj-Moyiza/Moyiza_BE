@@ -10,6 +10,7 @@ import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -130,5 +131,9 @@ public class UserService {
 
     public List<User> loadUserListByIdList(List<Long> userIdList){    // club멤버조회 시 사용
         return userRepository.findAllById(userIdList);
+    }
+    public User loadUserById(Long userId){
+        return userRepository.findById(userId).orElseThrow(
+                () -> new NullPointerException("유저를 찾을 수 없습니다"));
     }
 }
