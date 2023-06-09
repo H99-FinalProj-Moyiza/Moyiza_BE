@@ -15,11 +15,10 @@ import com.example.moyiza_be.oneday.entity.OneDayImageUrl;
 import com.example.moyiza_be.oneday.repository.OneDayAttendantRepository;
 import com.example.moyiza_be.oneday.repository.OneDayImageUrlRepository;
 import com.example.moyiza_be.oneday.repository.OneDayRepository;
+import com.example.moyiza_be.oneday.repository.QueryDSL.OneDayRepositoryCustom;
 import com.example.moyiza_be.user.entity.User;
-import com.example.moyiza_be.user.repository.UserRepository;
 import com.example.moyiza_be.user.service.UserService;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -47,6 +46,7 @@ public class OneDayService {
     private final ChatService chatService;
     private final UserService userService;
     private final OneDayImageUrlRepository imageUrlRepository;
+    private final OneDayRepositoryCustom oneDayRepositoryCustom;
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
@@ -80,21 +80,15 @@ public class OneDayService {
     }
 
     // 원데이 목록 조회
-    public ResponseEntity<Page<OneDayListPageResponseDto>> getOneDayList(Pageable pageable, CategoryEnum category, String q) {
-        Page<OneDayListPageResponseDto> responseList;
-        if (category != null && q != null) {
-            //카테고리와 검색어를 모두 입력한 경우
-            responseList = oneDayRepository.findByCategoryAndDeletedFalseAndOneDayTitleContaining(pageable, category, q).map(OneDayListPageResponseDto::new);
-        } else if (category != null) {
-            //카테고리만 입력한 경우
-            responseList = oneDayRepository.findByCategoryAndDeletedFalse(pageable, category).map(OneDayListPageResponseDto::new);
-        } else if (q != null) {
-            responseList = oneDayRepository.findByDeletedFalseAndOneDayTitleContaining(pageable, q).map(OneDayListPageResponseDto::new);
-        } else {
-            //카테고리와 검색어가 모두 입력되지 않은 경우 전체 클럽 조회
-            responseList = oneDayRepository.findAllByDeletedFalse(pageable).map(OneDayListPageResponseDto::new);
-        }
-        return new ResponseEntity<>(responseList, HttpStatus.OK);
+    public ResponseEntity<Page<OneDayListResponseDto>> getFilteredOneDayList(
+            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
+            Double longitude, Double latitude, Double radius
+    ) {
+        Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
+                pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius
+        );
+
+        return ResponseEntity.ok(filteredOnedayList);
     }
 
     // 원데이 수정
@@ -194,6 +188,7 @@ public class OneDayService {
                 () -> new NullPointerException("oneDay를 찾을 수 없습니다")
         );
     }
+
     private Boolean checkOnedayOwnership(Long userId, OneDay oneday) {
         return oneday.getOwnerId().equals(userId);
     }

@@ -61,52 +61,6 @@ public class ClubRepositoryCustom {
         return new PageImpl<>(clubListResponseList, pageable, 5000L);
     }
 
-//public Page<ClubListResponse> filteredClubResponseList(
-//        Pageable pageable, CategoryEnum categoryEnum, String q, String tag1, String tag2, String tag3
-//) {
-//    List<ClubListResponse> clubListResponseList =
-//            jpaQueryFactory
-//                    .from(club)
-//                    .offset(pageable.getOffset())
-//                    .limit(pageable.getPageSize())
-//                    .join(user).on(club.ownerId.eq(user.id))
-//                    .leftJoin(clubImageUrl).on(club.id.eq(clubImageUrl.clubId))
-//                    .where(
-//                            club.isDeleted.eq(Boolean.FALSE),
-//                            eqCategory(categoryEnum),
-//                            titleContainOrContentContain(q),
-//                            eqTag1(tag1),
-//                            eqTag2(tag2),
-//                            eqTag3(tag3)
-//                    ).transform(
-//                            groupBy(club.id).list(
-//                                    Projections.constructor(
-//                                            ClubListResponse.class,
-//                                            club.id,
-//                                            user.nickname,
-//                                            club.title,
-//                                            club.tagString,
-//                                            club.maxGroupSize,
-//                                            club.nowMemberCount,
-////                                            list(
-////                                                    clubImageUrl.imageUrl
-////                                            )
-//                                            clubImageUrl.imageUrl
-//                                    )
-//
-//                            )
-//                    );
-////                    .orderBy(club.id.desc())     // 추후 동적으로 변경
-////        Long count = jpaQueryFactory
-////                .select(club.count())
-////                .fetchOne();
-//
-//    return new PageImpl<>(clubListResponseList, pageable, 5000L);
-//}
-
-
-
-
     public ClubDetailResponse getClubDetail(Long clubId){
         return jpaQueryFactory
                 .select(
