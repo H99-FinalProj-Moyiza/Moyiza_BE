@@ -75,7 +75,6 @@ public class ClubService {
         return ResponseEntity.ok(responseList);
     }
 
-
     //클럽 상세 조회
     public ResponseEntity<ClubDetailResponse> getClubDetail(Long clubId) {
         ClubDetailResponse clubDetailResponse = clubRepositoryCustom.getClubDetail(clubId);
@@ -137,14 +136,6 @@ public class ClubService {
         clubRepository.saveAndFlush(club);
         chatService.makeChat(club.getId(), ChatTypeEnum.CLUB, club.getTitle());
         joinClub(club.getId(), user);
-//        List<ClubImageUrl> clubImages = clubImageUrlRepository.findAllByClubId(creationRequest.getCreateClubId());
-//        List<String> clubImageUrlList = new ArrayList<>();
-//        for(ClubImageUrl clubImageUrl:clubImages){
-//            log.info("setting clubImageUrl " + clubImageUrl.getId() +" clubId to : " + club.getId());
-//            clubImageUrl.setClubId(club.getId());
-//            clubImageUrlList.add(clubImageUrl.getImageUrl());
-//        }
-//        clubImageUrlRepository.saveAll(clubImages);
         List<String> clubImageUrlList = clubImageUrlRepository.findAllByCreateClubId(creationRequest.getCreateClubId())
                 .stream()
                 .peek(clubImageUrl -> clubImageUrl.setClubId(club.getId()))

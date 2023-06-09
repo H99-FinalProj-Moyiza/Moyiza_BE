@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RequestPolicyDto {
-    private GenderPolicyEnum genderPolicy;
+    private String genderPolicy;
     private Integer agePolicy;
-    public void setGenderPolicy(String genderPolicy) {
-        this.genderPolicy = GenderPolicyEnum.fromString(genderPolicy);
-    }
+
 }

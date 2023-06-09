@@ -10,24 +10,23 @@ import java.util.List;
 
 @Getter
 public class OneDayDetailResponseDto {
-    private long id;
-    private String oneDayTitle;
-    private String oneDayContent;
-    private String oneDayLocation;
-    private double oneDayLatitude;
-    private double oneDayLongitude;
-    private String genderPolicy;
-    private Integer agePolicy;
-    private String category;
-    private List<String> tagString;
+    private final long id;
+    private final String oneDayTitle;
+    private final String oneDayContent;
+    private final String oneDayLocation;
+    private final double oneDayLatitude;
+    private final double oneDayLongitude;
+    private final String genderPolicy;
+    private final Integer agePolicy;
+    private final String category;
+    private final List<String> tagString;
     //    private Tag tag;
-    private LocalDateTime oneDayStartTime;
-    private int oneDayGroupSize;
-    private boolean deleted;
-    private List<String> imageList;
-    private List<OneDayAttendant> oneDayAttendantList;
-    private int oneDayAttendantListSize;
-    private String type;
+    private final LocalDateTime oneDayStartTime;
+    private final int oneDayGroupSize;
+    private final List<String> imageList;
+    private final List<OneDayAttendant> oneDayAttendantList;
+    private final int oneDayAttendantListSize;
+    private final String type;
 
     public OneDayDetailResponseDto(OneDay oneDay,List<String> oneDayImageUrlList, List<OneDayAttendant> attendantList, Integer people) {
         this.id = oneDay.getId();
@@ -42,7 +41,6 @@ public class OneDayDetailResponseDto {
         this.agePolicy = oneDay.getAgePolicy();
         this.oneDayStartTime = oneDay.getOneDayStartTime();
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
-        this.deleted = oneDay.getDeleted();
         this.type = oneDay.getType().getOneDayType();
         this.imageList = oneDayImageUrlList;
         this.oneDayAttendantList = attendantList;

@@ -18,6 +18,7 @@ import java.util.Optional;
 public interface OneDayRepository extends JpaRepository<OneDay, User> {
 
     Optional<OneDay> findById(Long oneDayId);
+    Optional<OneDay> findByIdAndDeletedFalse(Long onedayId);
 
     void deleteById(Long oneDayId);
 

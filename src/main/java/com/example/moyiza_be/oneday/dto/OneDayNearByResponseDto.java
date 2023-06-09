@@ -25,11 +25,11 @@ public class OneDayNearByResponseDto {
     private String oneDayCategory;
     private List<String> oneDayTag;
     private Integer agePolicy;
-    private GenderPolicyEnum genderPolicy;
+    private String genderPolicy;
     private Integer oneDayGroupSize;
     private Integer attendantsNum;
     private String oneDayImage;
-    private OneDayTypeEnum type;
+    private String type;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
     private double distance;
@@ -46,11 +46,11 @@ public class OneDayNearByResponseDto {
         this.oneDayCategory = oneDay.getCategory().getCategory();
         this.oneDayTag = TagEnum.parseTag(oneDay.getTagString());
         this.agePolicy = oneDay.getAgePolicy();
-        this.genderPolicy = oneDay.getGenderPolicy();
+        this.genderPolicy = oneDay.getGenderPolicy().getGenderPolicy();
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
         this.attendantsNum = oneDay.getAttendantsNum();
         this.oneDayImage = oneDay.getOneDayImage();
-        this.type = oneDay.getType();
+        this.type = oneDay.getType().getOneDayType();
         this.createdAt = oneDay.getCreatedAt();
         this.modifiedAt = oneDay.getModifiedAt();
         this.distance = distance;

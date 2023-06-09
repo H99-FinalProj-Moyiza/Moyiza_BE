@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface OneDayCreateRepository extends JpaRepository<OneDayCreate, Long> {
     Optional<OneDayCreate> findByOwnerIdAndConfirmedIsFalse(Long ownerId);
 
-    Optional<OneDayCreate> findByIdAndConfirmedIsFalse(Long createOneDayId);
+    Optional<OneDayCreate> findByIdAndOwnerIdAndConfirmedIsFalse(Long createOneDayId, Long ownerId);
 }
