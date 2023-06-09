@@ -121,7 +121,7 @@ public class OneDayService {
                 .map(OneDayAttendant::getOneDayId)
                 .collect(Collectors.toList());
 
-        List<OneDay> oneDaysInParticipating = oneDayRepository.findAllById(oneDayIds);
+        List<OneDay> oneDaysInParticipating = oneDayRepository.findAllByIdIn(oneDayIds);
         List<OneDayDetailResponseDto> oneDaysInParticipatingInfo = oneDaysInParticipating.stream()
                 .map(oneDay -> OneDayDetailResponseDto.builder()
                         .id(oneDay.getId())

@@ -35,8 +35,6 @@ public interface OneDayRepository extends JpaRepository<OneDay, User> {
 
     List<OneDay> findAllByOwnerId(Long userId);
 
-    List<OneDay> findAllById(List<Long> oneDayIds);
-
 
     boolean existsByIdAndDeletedFalseAndOwnerIdEquals(Long oneDayId, Long userId);
 
@@ -49,5 +47,5 @@ public interface OneDayRepository extends JpaRepository<OneDay, User> {
     List<Object[]> findNearByOneDays(@Param("nowLatitude") double nowLatitude, @Param("nowLongitude") double nowLongitude);
 
 
-
+    List<OneDay> findAllByIdIn(List<Long> oneDayIds);
 }
