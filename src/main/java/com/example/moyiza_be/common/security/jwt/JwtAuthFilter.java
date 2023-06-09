@@ -34,13 +34,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // JWT 토큰을 해석하여 추출
         String access_token = jwtUtil.resolveToken(request, JwtUtil.ACCESS_TOKEN);
-        String refresh_token = jwtUtil.resolveToken(request, JwtUtil.REFRESH_TOKEN);
+        String refresh_token = CookieUtil.getCookie(request, JwtUtil.REFRESH_TOKEN)
+                .map(Cookie::getValue)
+                .orElse((null));
         // 토큰이 존재하면 유효성 검사를 수행하고, 유효하지 않은 경우 예외 처리
         log.info("JwtAuthFilter activated");
         if(access_token == null){
             filterChain.doFilter(request, response);
         } else {
-            System.out.println(refresh_token);
             if (jwtUtil.validateToken(access_token)) {
 //                jwtUtil.checkTokenClaims(access_token);
                 setAuthentication(jwtUtil.getUserInfoFromToken(access_token));
