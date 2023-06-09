@@ -4,6 +4,7 @@ import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.enums.OneDayTypeEnum;
+import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.oneday.dto.*;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -89,6 +91,56 @@ public class OneDayService {
         );
 
         return ResponseEntity.ok(filteredOnedayList);
+    }
+
+    // 마이페이지 원데이 목록 조회
+    public OneDayListOnMyPage getOneDayListOnMyPage(Long userId) {
+        // 운영중인 원데이 정보 리스트
+        List<OneDay> oneDaysInOperation = oneDayRepository.findAllByOwnerId(userId);
+        List<OneDayDetailResponseDto> oneDaysInOperationInfo = oneDaysInOperation.stream()
+                .map(oneDay -> OneDayDetailResponseDto.builder()
+                        .id(oneDay.getId())
+                        .oneDayTitle(oneDay.getOneDayTitle())
+                        .oneDayContent(oneDay.getOneDayContent())
+                        .oneDayLocation(oneDay.getOneDayLocation())
+                        .oneDayLatitude(oneDay.getOneDayLatitude())
+                        .oneDayLongitude(oneDay.getOneDayLongitude())
+                        .genderPolicy(oneDay.getGenderPolicy().getGenderPolicy())
+                        .agePolicy(oneDay.getAgePolicy())
+                        .category(oneDay.getCategory().getCategory())
+                        .tagString(TagEnum.parseTag(oneDay.getTagString()))
+                        .oneDayStartTime(oneDay.getOneDayStartTime())
+                        .oneDayGroupSize(oneDay.getOneDayGroupSize())
+                        .oneDayAttendantListSize(oneDay.getAttendantsNum())
+                        .build())
+                .collect(Collectors.toList());
+
+        // 참여중인 원데이 정보 리스트
+        List<OneDayAttendant> oneDaysInParticipatingEntry = attendantRepository.findByUserId(userId);
+        List<Long> oneDayIds = oneDaysInParticipatingEntry.stream()
+                .map(OneDayAttendant::getOneDayId)
+                .collect(Collectors.toList());
+
+        List<OneDay> oneDaysInParticipating = oneDayRepository.findAllByIdIn(oneDayIds);
+        List<OneDayDetailResponseDto> oneDaysInParticipatingInfo = oneDaysInParticipating.stream()
+                .map(oneDay -> OneDayDetailResponseDto.builder()
+                        .id(oneDay.getId())
+                        .oneDayTitle(oneDay.getOneDayTitle())
+                        .oneDayContent(oneDay.getOneDayContent())
+                        .oneDayLocation(oneDay.getOneDayLocation())
+                        .oneDayLatitude(oneDay.getOneDayLatitude())
+                        .oneDayLongitude(oneDay.getOneDayLongitude())
+                        .genderPolicy(oneDay.getGenderPolicy().getGenderPolicy())
+                        .agePolicy(oneDay.getAgePolicy())
+                        .category(oneDay.getCategory().getCategory())
+                        .tagString(TagEnum.parseTag(oneDay.getTagString()))
+                        .oneDayStartTime(oneDay.getOneDayStartTime())
+                        .oneDayGroupSize(oneDay.getOneDayGroupSize())
+                        .oneDayAttendantListSize(oneDay.getAttendantsNum())
+                        .build())
+                .collect(Collectors.toList());
+
+        return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }
 
     // 원데이 수정
