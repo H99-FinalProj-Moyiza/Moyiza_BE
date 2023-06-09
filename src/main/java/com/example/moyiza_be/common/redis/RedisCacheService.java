@@ -17,7 +17,6 @@ import java.util.*;
 @Slf4j
 public class RedisCacheService {
 
-//    private static final String SESSION_PREFIX = "session:";
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, ChatMessageOutput> redisRecentChatTemplate;
     private final RedisTemplate<String, String> redisStringStringTemplate;
@@ -25,11 +24,6 @@ public class RedisCacheService {
     private final String CONNECTED_SESSIONS_IDENTIFIER = ":subscriptions";
     private final String LAST_MESSAGE_ZSET_IDENTIFIER = ":lastMessage";
 
-
-    //세션id 생성
-//    public String generateSessionId() {
-//        return SESSION_PREFIX + UUID.randomUUID().toString();
-//    }
 
     //세션id로 userInfo 저장
     public void saveUserInfoToCache(String sessionId, ChatUserPrincipal userInfo) {
@@ -139,20 +133,5 @@ public class RedisCacheService {
         }
         return score.longValue();
     }
-
-//
-//////    public ChatUserPrincipal getUserInfoFromCache(String sessionId) {
-//////        RedisConnection connection = redisConnectionFactory.getConnection();
-//////        try {
-//////            RedisAsyncCommands<String, ChatUserPrincipal> commands = connection.async();
-//////            RedisFuture<ChatUserPrincipal> future = commands.get(sessionId);
-////            return future.get();
-////        } catch (InterruptedException | ExecutionException e) {
-//            throw new IllegalArgumentException();
-//        } finally {
-//            connection.close();;
-//        }
-//        return null;
-//    }
 
 }

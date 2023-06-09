@@ -5,8 +5,6 @@ import com.example.moyiza_be.event.entity.EventAttendant;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Calendar;
 import java.util.List;
 
 @Getter

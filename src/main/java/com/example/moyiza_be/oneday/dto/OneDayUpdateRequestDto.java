@@ -1,9 +1,7 @@
 package com.example.moyiza_be.oneday.dto;
 
-import com.example.moyiza_be.common.enums.CategoryEnum;
-import com.example.moyiza_be.common.enums.GenderPolicyEnum;
-import com.example.moyiza_be.common.enums.TagEnum;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;

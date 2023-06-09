@@ -2,23 +2,17 @@ package com.example.moyiza_be.user.service;
 
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
 import com.example.moyiza_be.common.security.jwt.CookieUtil;
-import com.example.moyiza_be.common.security.jwt.JwtTokenDto;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
-import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshToken;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
-
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

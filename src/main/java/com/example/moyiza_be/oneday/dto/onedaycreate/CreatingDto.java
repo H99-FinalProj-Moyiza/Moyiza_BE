@@ -1,7 +1,6 @@
 package com.example.moyiza_be.oneday.dto.onedaycreate;
 
 import com.example.moyiza_be.club.dto.EnumOptions;
-import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateResponseDto;
 import com.example.moyiza_be.oneday.entity.OneDayCreate;
 import lombok.Getter;
 

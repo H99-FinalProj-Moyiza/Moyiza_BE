@@ -2,7 +2,6 @@ package com.example.moyiza_be.event.dto;
 
 import com.example.moyiza_be.event.errorcode.Code;
 import com.fasterxml.jackson.annotation.JsonInclude;
-//import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 
 @Getter

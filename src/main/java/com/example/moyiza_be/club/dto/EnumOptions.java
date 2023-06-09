@@ -3,7 +3,6 @@ package com.example.moyiza_be.club.dto;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
-import jdk.jfr.Category;
 import lombok.Getter;
 
 import java.util.Arrays;

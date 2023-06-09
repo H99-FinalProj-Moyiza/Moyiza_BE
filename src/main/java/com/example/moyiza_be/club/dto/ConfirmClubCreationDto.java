@@ -5,8 +5,6 @@ import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import lombok.Getter;
 
-import java.util.Calendar;
-
 
 @Getter
 public class ConfirmClubCreationDto {

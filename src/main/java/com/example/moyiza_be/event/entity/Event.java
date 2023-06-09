@@ -1,21 +1,14 @@
 package com.example.moyiza_be.event.entity;
 
-import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.utils.TimeStamped;
 import com.example.moyiza_be.event.dto.EventRequestDto;
-import com.example.moyiza_be.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 @Entity
 @Getter

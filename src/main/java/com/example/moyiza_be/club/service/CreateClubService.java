@@ -7,7 +7,6 @@ import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
 import com.example.moyiza_be.club.repository.CreateClubRepository;
 import com.example.moyiza_be.common.enums.CategoryEnum;
-import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;

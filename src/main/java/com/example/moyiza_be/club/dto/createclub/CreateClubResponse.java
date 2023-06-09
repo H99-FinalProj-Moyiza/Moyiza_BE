@@ -1,7 +1,6 @@
 package com.example.moyiza_be.club.dto.createclub;
 
 
-import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.entity.CreateClub;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;

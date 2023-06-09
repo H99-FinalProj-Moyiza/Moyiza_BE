@@ -2,7 +2,6 @@ package com.example.moyiza_be.chat.dto;
 
 
 import lombok.Getter;
-import org.springframework.security.core.userdetails.User;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
