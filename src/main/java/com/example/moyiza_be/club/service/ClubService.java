@@ -86,6 +86,12 @@ public class ClubService {
         return ResponseEntity.ok(clubDetailResponse);
     }
 
+    //마이페이지 클럽 리스트 조회
+    public ClubListOnMyPage getClubListOnMyPage(Long userId) {
+        List<ClubDetailResponse> clubsInOperationInfo = clubRepositoryCustom.getManagedClubDetail(userId);
+        List<ClubDetailResponse> clubsInParticipatingInfo = clubRepositoryCustom.getJoinedClubDetail(userId);
+        return new ClubListOnMyPage(clubsInOperationInfo, clubsInParticipatingInfo);
+    }
 
     //클럽 멤버 조회
     //프로필사진, 닉네임, 클럽 가입 날짜
@@ -159,6 +165,7 @@ public class ClubService {
             return ResponseEntity.ok(new Message("삭제되었습니다"));
         }
     }
+
 
 
     /////////////////////private method///////////////////////
