@@ -19,9 +19,9 @@ public class OneDayDetailResponseDto {
     private String oneDayLocation;
     private double oneDayLatitude;
     private double oneDayLongitude;
-    private GenderPolicyEnum genderPolicy;
+    private String genderPolicy;
     private Integer agePolicy;
-    private CategoryEnum category;
+    private String category;
     private List<String> tagString;
     //    private Tag tag;
     private LocalDateTime oneDayStartTime;
@@ -30,23 +30,23 @@ public class OneDayDetailResponseDto {
     private List<String> imageList;
     private List<OneDayAttendant> oneDayAttendantList;
     private int oneDayAttendantListSize;
-    private OneDayTypeEnum type;
+    private String type;
 
     public OneDayDetailResponseDto(OneDay oneDay,List<String> oneDayImageUrlList, List<OneDayAttendant> attendantList, Integer people) {
         this.id = oneDay.getId();
         this.oneDayTitle = oneDay.getOneDayTitle();
         this.oneDayContent = oneDay.getOneDayContent();
-        this.category = oneDay.getCategory();
+        this.category = oneDay.getCategory().getCategory();
         this.tagString = TagEnum.parseTag(oneDay.getTagString());
         this.oneDayLocation = oneDay.getOneDayLocation();
         this.oneDayLatitude = oneDay.getOneDayLatitude();
         this.oneDayLongitude = oneDay.getOneDayLongitude();
-        this.genderPolicy = oneDay.getGenderPolicy();
+        this.genderPolicy = oneDay.getGenderPolicy().getGenderPolicy();
         this.agePolicy = oneDay.getAgePolicy();
         this.oneDayStartTime = oneDay.getOneDayStartTime();
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
         this.deleted = oneDay.getDeleted();
-        this.type = oneDay.getType();
+        this.type = oneDay.getType().getOneDayType();
         this.imageList = oneDayImageUrlList;
         this.oneDayAttendantList = attendantList;
         this.oneDayAttendantListSize = people;
