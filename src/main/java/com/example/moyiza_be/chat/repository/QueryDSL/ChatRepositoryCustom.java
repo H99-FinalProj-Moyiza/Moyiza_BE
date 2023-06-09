@@ -23,10 +23,9 @@ public class ChatRepositoryCustom {
 
     public List<ChatRoomInfo> getClubChatRoomList(Long userId) {
         return jpaQueryFactory
-                .from(chatJoinEntry)
-                .join(user).on(chatJoinEntry.userId.eq(userId))
-                .join(chat).on(chatJoinEntry.chatId.eq(chat.id).and(chat.chatType.eq(ChatTypeEnum.CLUB)))
-                .join(club).on(chat.roomIdentifier.eq(club.id))
+                .from(chat)
+                .join(chatJoinEntry).on(chat.id.eq(chatJoinEntry.chatId).and(chatJoinEntry.userId.eq(userId)))
+                .join(club).on(chat.chatType.eq(ChatTypeEnum.CLUB).and(chat.roomIdentifier.eq(club.id)))
                 .select(
                         new QChatRoomInfo(
                                 chat.id,
@@ -42,9 +41,8 @@ public class ChatRepositoryCustom {
     public List<ChatRoomInfo> getOnedayChatRoomList(Long userId) {
         return jpaQueryFactory
                 .from(chatJoinEntry)
-                .join(user).on(chatJoinEntry.userId.eq(userId))
-                .join(chat).on(chatJoinEntry.chatId.eq(chat.id).and(chat.chatType.eq(ChatTypeEnum.ONEDAY)))
-                .join(oneDay).on(chat.roomIdentifier.eq(oneDay.id))
+                .join(chatJoinEntry).on(chat.id.eq(chatJoinEntry.chatId).and(chatJoinEntry.userId.eq(userId)))
+                .join(oneDay).on(chat.chatType.eq(ChatTypeEnum.ONEDAY).and(chat.roomIdentifier.eq(club.id)))
                 .select(
                         new QChatRoomInfo(
                                 chat.id,
