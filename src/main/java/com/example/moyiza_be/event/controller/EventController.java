@@ -1,15 +1,9 @@
 package com.example.moyiza_be.event.controller;
 
-import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
-import com.example.moyiza_be.event.dto.DataResponseDto;
-import com.example.moyiza_be.event.dto.EventCreateResponseDto;
 import com.example.moyiza_be.event.dto.EventRequestDto;
-import com.example.moyiza_be.event.dto.ResponseDto;
-import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.event.service.EventService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor

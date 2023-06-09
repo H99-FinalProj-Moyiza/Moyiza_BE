@@ -1,11 +1,9 @@
 package com.example.moyiza_be.user.email;
 
 import com.example.moyiza_be.common.redis.RedisUtil;
-import com.example.moyiza_be.user.entity.User;
-import com.example.moyiza_be.user.repository.UserRepository;
+import jakarta.mail.Message.RecipientType;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.Message.RecipientType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;

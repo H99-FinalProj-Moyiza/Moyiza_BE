@@ -5,7 +5,6 @@ import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
-import com.example.moyiza_be.event.dto.EventAttendantResponseDto;
 import com.example.moyiza_be.event.dto.EventDetailResponseDto;
 import com.example.moyiza_be.event.dto.EventRequestDto;
 import com.example.moyiza_be.event.dto.EventUpdateRequestDto;
@@ -14,9 +13,6 @@ import com.example.moyiza_be.event.entity.EventAttendant;
 import com.example.moyiza_be.event.repository.EventAttendantRepository;
 import com.example.moyiza_be.event.repository.EventRepository;
 import com.example.moyiza_be.user.entity.User;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.JoinColumn;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 
 @Slf4j
 @Service

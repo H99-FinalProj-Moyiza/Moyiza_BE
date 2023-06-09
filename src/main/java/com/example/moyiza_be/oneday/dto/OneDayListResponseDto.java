@@ -1,11 +1,7 @@
 package com.example.moyiza_be.oneday.dto;
 
 import com.example.moyiza_be.oneday.entity.OneDay;
-import com.example.moyiza_be.oneday.entity.OneDayAttendant;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
-
-import java.util.List;
 
 @Getter
 public class OneDayListResponseDto {

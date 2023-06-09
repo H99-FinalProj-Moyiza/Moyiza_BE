@@ -4,8 +4,6 @@ import com.example.moyiza_be.event.entity.Event;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Calendar;
 
 @Getter
 public class EventCreateResponseDto {

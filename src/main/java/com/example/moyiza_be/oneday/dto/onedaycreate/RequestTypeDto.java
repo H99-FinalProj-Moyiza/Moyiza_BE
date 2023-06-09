@@ -1,6 +1,5 @@
 package com.example.moyiza_be.oneday.dto.onedaycreate;
 
-import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.OneDayTypeEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

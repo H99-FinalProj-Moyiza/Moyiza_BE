@@ -1,8 +1,5 @@
 package com.example.moyiza_be.oneday.dto;
 
-import com.example.moyiza_be.common.enums.CategoryEnum;
-import com.example.moyiza_be.common.enums.GenderPolicyEnum;
-import com.example.moyiza_be.common.enums.OneDayTypeEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.oneday.entity.OneDayAttendant;

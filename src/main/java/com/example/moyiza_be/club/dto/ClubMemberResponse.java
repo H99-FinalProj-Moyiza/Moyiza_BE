@@ -1,6 +1,5 @@
 package com.example.moyiza_be.club.dto;
 
-import com.example.moyiza_be.club.entity.ClubJoinEntry;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;

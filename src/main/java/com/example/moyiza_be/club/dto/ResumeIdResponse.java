@@ -1,7 +1,6 @@
 package com.example.moyiza_be.club.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class ResumeIdResponse {

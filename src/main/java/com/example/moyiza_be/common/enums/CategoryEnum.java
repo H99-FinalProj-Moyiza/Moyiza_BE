@@ -1,7 +1,5 @@
 package com.example.moyiza_be.common.enums;
 
-import jdk.jfr.Category;
-
 public enum CategoryEnum {
     SPORTS("스포츠"),
     FITNESS("운동"),

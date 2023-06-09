@@ -1,6 +1,5 @@
 package com.example.moyiza_be.club.repository;
 
-import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.entity.ClubJoinEntry;
 import org.springframework.data.jpa.repository.JpaRepository;
 

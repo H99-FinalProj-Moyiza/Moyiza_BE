@@ -2,9 +2,7 @@ package com.example.moyiza_be.oneday.repository;
 
 import com.example.moyiza_be.oneday.entity.OneDayImageUrl;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
-import java.util.Arrays;
 import java.util.List;
 
 public interface OneDayImageUrlRepository extends JpaRepository<OneDayImageUrl, Long> {

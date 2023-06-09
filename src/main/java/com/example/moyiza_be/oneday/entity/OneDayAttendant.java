@@ -1,11 +1,9 @@
 package com.example.moyiza_be.oneday.entity;
 
-import com.example.moyiza_be.common.utils.TimeStamped;
 import com.example.moyiza_be.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Entity
