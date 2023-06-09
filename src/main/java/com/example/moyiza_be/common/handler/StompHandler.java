@@ -101,6 +101,7 @@ public class StompHandler implements ChannelInterceptor {
         ChannelInterceptor.super.afterSendCompletion(message, channel, sent, ex);
     }
 
+
     ////////
 
     private Long getChatIdFromDestination(String destination){
