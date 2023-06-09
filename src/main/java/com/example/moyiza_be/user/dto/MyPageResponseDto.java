@@ -2,6 +2,8 @@ package com.example.moyiza_be.user.dto;
 
 import com.example.moyiza_be.club.dto.ClubDetailResponse;
 import com.example.moyiza_be.club.dto.ClubListOnMyPage;
+import com.example.moyiza_be.oneday.dto.OneDayDetailResponseDto;
+import com.example.moyiza_be.oneday.dto.OneDayListOnMyPage;
 import com.example.moyiza_be.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,13 +22,13 @@ public class MyPageResponseDto {
     private Integer clubsInParticipatingCount;
     private List<ClubDetailResponse> clubsInOperationInfo;
     private List<ClubDetailResponse> clubsInParticipatingInfo;
+    private Integer oneDaysInOperationCount;
+    private Integer oneDaysInParticipatingCount;
+    private List<OneDayDetailResponseDto> oneDaysInOperationInfo;
+    private List<OneDayDetailResponseDto> oneDaysInParticipatingInfo;
 
-//    private List<OnedayResponseDto> onedaysInOperationInfo;
-//    private List<OnedayResponseDto> onedaysInParticipatingInfo;
-//    private Integer onedaysInOperationCount;
-//    private Integer onedaysInParticipatingCount;
 
-    public MyPageResponseDto(User user, ClubListOnMyPage clubListOnMyPage) {
+    public MyPageResponseDto(User user, ClubListOnMyPage clubListOnMyPage, OneDayListOnMyPage oneDayListOnMyPage) {
         this.user_id = user.getId();
         this.nickname = user.getNickname();
         this.email = user.getEmail();
@@ -35,7 +37,9 @@ public class MyPageResponseDto {
         this.clubsInParticipatingCount = clubListOnMyPage.getClubsInParticipatingInfo().size();
         this.clubsInOperationInfo = clubListOnMyPage.getClubsInOperationInfo();
         this.clubsInParticipatingInfo = clubListOnMyPage.getClubsInParticipatingInfo();
-//        this.onedaysInOperationInfo = onedaysInOperationInfo;
-//        this.onedaysInParticipatingInfo = onedaysInParticipatingInfo;
+        this.oneDaysInOperationCount = oneDayListOnMyPage.getOneDaysInOperationInfo().size();
+        this.oneDaysInParticipatingCount = oneDayListOnMyPage.getOneDaysInParticipatingInfo().size();
+        this.oneDaysInOperationInfo = oneDayListOnMyPage.getOneDaysInOperationInfo();
+        this.oneDaysInParticipatingInfo = oneDayListOnMyPage.getOneDaysInParticipatingInfo();
     }
 }

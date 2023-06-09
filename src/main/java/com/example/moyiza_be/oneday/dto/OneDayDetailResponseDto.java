@@ -3,12 +3,16 @@ package com.example.moyiza_be.oneday.dto;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.oneday.entity.OneDayAttendant;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class OneDayDetailResponseDto {
     private final long id;
     private final String oneDayTitle;
