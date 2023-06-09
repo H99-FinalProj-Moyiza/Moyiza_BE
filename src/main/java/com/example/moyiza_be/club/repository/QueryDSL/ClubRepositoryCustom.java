@@ -129,7 +129,7 @@ public class ClubRepositoryCustom {
                 )
                 .from(club)
                 .join(user).on(club.ownerId.eq(user.id))
-                .where(user.id.eq(clubId))
+                .where(club.id.eq(clubId))
                 .fetchOne();
     }
 
