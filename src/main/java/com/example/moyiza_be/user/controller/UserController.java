@@ -4,6 +4,7 @@ import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.email.EmailRequestDto;
 import com.example.moyiza_be.user.email.EmailService;
+import com.example.moyiza_be.user.service.MypageService;
 import com.example.moyiza_be.user.service.UserService;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ public class UserController {
 
     private final UserService userService;
     private final EmailService emailService;
+    private final MypageService mypageService;
 
     //회원가입
     @PostMapping ("/signup")
@@ -70,7 +72,7 @@ public class UserController {
     //마이페이지
     @GetMapping("/mypage")
     public ResponseEntity<?> getMypage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userService.getMypage(userDetails.getUser());
+        return mypageService.getMypage(userDetails.getUser());
     }
 
 

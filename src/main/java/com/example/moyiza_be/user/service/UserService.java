@@ -38,7 +38,6 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AwsS3Uploader awsS3Uploader;
     private final ClubService clubService;
-    private final OneDayService oneDayService;
 
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
