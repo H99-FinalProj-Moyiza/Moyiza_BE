@@ -1,14 +1,17 @@
 package com.example.moyiza_be.oneday.controller;
 
+import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
-import com.example.moyiza_be.oneday.dto.OneDayDetailResponse;
+import com.example.moyiza_be.oneday.dto.OneDayListResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
-import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
 import com.example.moyiza_be.oneday.service.OneDayService;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,9 +36,39 @@ public class OneDayController {
 //    }
     // ReadAll
     @GetMapping
-    public ResponseEntity<?> getOneDayList() {
-        return oneDayService.getOneDayList(Pageable.unpaged(), null, null);
+    public ResponseEntity<Page<OneDayListResponseDto>> getOneDayList(
+            @PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String tag1,
+            @RequestParam(required = false) String tag2,
+            @RequestParam(required = false) String tag3,
+            @RequestParam(required = false) Double longitude,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double radius
+    ) {
+        return oneDayService.getFilteredOneDayList(
+                 pageable, null, null, null, null, null, null, null, null
+        );
     }
+
+    @GetMapping ("/search")
+    public ResponseEntity<Page<OneDayListResponseDto>> searchOneDayList(
+            @PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String tag1,
+            @RequestParam(required = false) String tag2,
+            @RequestParam(required = false) String tag3,
+            @RequestParam(required = false) Double longitude,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double radius
+    ){
+        return oneDayService.getFilteredOneDayList(
+                pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius
+        );
+    }
+
     // ReadOne
     @GetMapping("/{oneDayId}")
     public ResponseEntity<?> getOneDay(@PathVariable Long oneDayId) {
