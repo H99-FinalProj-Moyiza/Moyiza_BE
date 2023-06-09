@@ -86,7 +86,7 @@ public class UserService {
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
         User user = findUser(email);
         checkDuplicatedNick(requestDto.getNickname());
-        if(!imageFile.isEmpty()){
+        if(imageFile != null){
             awsS3Uploader.delete(user.getProfileImage());
             String storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
             user.updateProfileImage(storedFileUrl);

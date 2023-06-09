@@ -16,6 +16,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -49,8 +51,8 @@ public class UserController {
     }
 
     @PostMapping("/signup/verifyCode")
-    public ResponseEntity<?> verifyCode(@RequestBody String code) throws ChangeSetPersister.NotFoundException {
-        return emailService.verifyCode(code);
+    public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> codeMap) throws Exception {
+        return emailService.verifyCode(codeMap.get("code"));
     }
 
     //로그인
