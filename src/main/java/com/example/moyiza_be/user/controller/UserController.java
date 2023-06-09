@@ -16,6 +16,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -30,6 +32,17 @@ public class UserController {
                                     @RequestPart(value = "imageFile")@Nullable MultipartFile image){
         return userService.signup(requestDto, image);
     }
+    /*OAuth2 Provider에서 받아오지 못하는 사용자 정보를 저장하기 위한 임시 api
+      필요한 정보를 전부 받아오기 위해선 사업자 등록, 전환이 필요하다
+     */
+    @PutMapping ("/signup/social")
+    public ResponseEntity<?> updateSocialInfo(@RequestBody UpdateSocialInfoRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.updateSocialInfo(requestDto, userDetails.getUser());
+    }
+    @GetMapping ("/signup/social")
+    public ResponseEntity<?> getSocialInfo(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.getSocialInfo(userDetails.getUser());
+    }
 
     //이메일 인증 - 이메일 전송
     @PostMapping("/signup/confirmEmail")
@@ -38,8 +51,8 @@ public class UserController {
     }
 
     @PostMapping("/signup/verifyCode")
-    public ResponseEntity<?> verifyCode(@RequestBody String code) throws ChangeSetPersister.NotFoundException {
-        return emailService.verifyCode(code);
+    public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> codeMap) throws Exception {
+        return emailService.verifyCode(codeMap.get("code"));
     }
 
     //로그인

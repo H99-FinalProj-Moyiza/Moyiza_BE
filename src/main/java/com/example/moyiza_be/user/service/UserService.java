@@ -54,6 +54,18 @@ public class UserService {
         userRepository.save(user);
         return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
     }
+    public ResponseEntity<?> updateSocialInfo(UpdateSocialInfoRequestDto requestDto, User user) {
+        User foundUser = findUser(user.getEmail());
+        checkDuplicatedNick(requestDto.getNickname());
+        foundUser.updateSocialInfo(requestDto);
+        foundUser.authorizeUser();
+        return new ResponseEntity<>("소셜 회원가입 완료!", HttpStatus.OK);
+    }
+    public ResponseEntity<?> getSocialInfo(User user) {
+//        User foundUser = findUser(user.getEmail());
+        SocialInfoResponseDto responseDto = new SocialInfoResponseDto(user.getName(), user.getNickname());
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 
     //로그인
     public ResponseEntity<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
@@ -87,7 +99,7 @@ public class UserService {
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
         User user = findUser(email);
         checkDuplicatedNick(requestDto.getNickname());
-        if(!imageFile.isEmpty()){
+        if(imageFile != null){
             awsS3Uploader.delete(user.getProfileImage());
             String storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
             user.updateProfileImage(storedFileUrl);

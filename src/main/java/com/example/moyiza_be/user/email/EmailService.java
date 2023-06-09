@@ -62,9 +62,9 @@ public class EmailService {
         return new ResponseEntity<>("이메일을 성공적으로 보냈습니다.", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> verifyCode(String code)throws ChangeSetPersister.NotFoundException {
+    public ResponseEntity<?> verifyCode(String code)throws Exception {
         if (redisUtil.getData(code) == null){
-            throw new ChangeSetPersister.NotFoundException();
+            throw new IllegalArgumentException("옳지 않은 인증번호 입니다.");
         }
         redisUtil.deleteData(code);
         return new ResponseEntity<>("이메일 인증 성공!", HttpStatus.OK);

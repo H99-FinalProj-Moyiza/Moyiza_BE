@@ -109,7 +109,7 @@ public class ClubRepositoryCustom {
 
 
 
-    public ClubDetailResponse getClubDetail(Long userId){
+    public ClubDetailResponse getClubDetail(Long clubId){
         return jpaQueryFactory
                 .select(
                         new QClubDetailResponse(
@@ -129,7 +129,7 @@ public class ClubRepositoryCustom {
                 )
                 .from(club)
                 .join(user).on(club.ownerId.eq(user.id))
-                .where(user.id.eq(userId))
+                .where(user.id.eq(clubId))
                 .fetchOne();
     }
 
