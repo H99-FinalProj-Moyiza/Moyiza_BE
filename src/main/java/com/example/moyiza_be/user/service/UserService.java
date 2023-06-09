@@ -1,10 +1,13 @@
 package com.example.moyiza_be.user.service;
 
+import com.example.moyiza_be.club.dto.ClubListOnMyPage;
+import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
 import com.example.moyiza_be.common.security.jwt.CookieUtil;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
+import com.example.moyiza_be.oneday.service.OneDayService;
 import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
@@ -34,6 +37,8 @@ public class UserService {
     private final CookieUtil cookieUtil;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AwsS3Uploader awsS3Uploader;
+    private final ClubService clubService;
+    private final OneDayService oneDayService;
 
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
@@ -68,6 +73,14 @@ public class UserService {
         refreshTokenRepository.deleteByEmail(email).orElseThrow(
                 ()-> new NoSuchElementException("로그인한 사용자가 아닙니다."));
         return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
+    }
+
+    //마이페이지
+    public ResponseEntity<?> getMypage(User user) {
+        ClubListOnMyPage clubListOnMyPage = clubService.getClubListOnMyPage(user.getId());
+        MyPageResponseDto myPageResponseDto = new MyPageResponseDto(user, clubListOnMyPage);
+        //원데이 추가 필요
+        return ResponseEntity.ok(myPageResponseDto);
     }
 
     //회원정보 수정
