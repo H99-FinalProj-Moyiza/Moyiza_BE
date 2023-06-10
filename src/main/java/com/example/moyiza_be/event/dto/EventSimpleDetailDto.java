@@ -1,21 +1,21 @@
 package com.example.moyiza_be.event.dto;
 
 import com.example.moyiza_be.event.entity.Event;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
-
+@Getter
 public class EventSimpleDetailDto {
-    private Long id;
-    private Long ownerId;
-    private Long clubId;
-    private String eventTitle;
-    private String eventContent;
-    private String eventLocation;
-    private String eventLatitude;
-    private String eventLongitude;
-    private LocalDateTime eventStartTime;
-    private Integer eventGroupSize;
-
+    private final Long id;
+    private final Long ownerId;
+    private final Long clubId;
+    private final String eventTitle;
+    private final String eventContent;
+    private final String eventLocation;
+    private final String eventLatitude;
+    private final String eventLongitude;
+    private final LocalDateTime eventStartTime;
+    private final Integer eventGroupSize;
     private final int attendantsNum;
     public EventSimpleDetailDto(Event event, int size) {
         this.id = event.getId();
