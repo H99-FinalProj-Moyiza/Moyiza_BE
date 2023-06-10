@@ -7,6 +7,7 @@ import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventDetailResponseDto;
 import com.example.moyiza_be.event.dto.EventRequestDto;
+import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.event.dto.EventUpdateRequestDto;
 import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.event.entity.EventAttendant;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -96,8 +99,14 @@ public class EventService {
     }
 
     // 전체 이벤트 조회 : 보류긴 한데
-    public List<Event> getEventList(long clubId) { //ResponseEntity GenericType ListEntity
-        List<Event> eventList = eventRepository.findAllByClubId(clubId);
+    public List<EventSimpleDetailDto> getEventList(long clubId) { //ResponseEntity GenericType ListEntity
+        List<Event> eventsList = eventRepository.findAllByClubId(clubId);
+        List<EventSimpleDetailDto> eventList = new ArrayList<>();
+        for (Event event: eventsList) {
+            List<EventAttendant> eventAttendantList = attendantRepository.findByEventId(event.getId());
+            EventSimpleDetailDto simpleDetailDto = new EventSimpleDetailDto(event, eventAttendantList.size());
+            eventList.add(simpleDetailDto);
+        }
         return eventList;
     }
 
