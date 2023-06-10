@@ -97,46 +97,37 @@ public class OneDayService {
     public OneDayListOnMyPage getOneDayListOnMyPage(Long userId) {
         // 운영중인 원데이 정보 리스트
         List<OneDay> oneDaysInOperation = oneDayRepository.findAllByOwnerId(userId);
-        List<OneDayDetailResponseDto> oneDaysInOperationInfo = oneDaysInOperation.stream()
-                .map(oneDay -> OneDayDetailResponseDto.builder()
-                        .id(oneDay.getId())
+        List<OneDayDetailOnMyPage> oneDaysInOperationInfo = oneDaysInOperation.stream()
+                .map(oneDay -> new OneDayDetailOnMyPage(oneDay).builder()
+                        .oneDayId(oneDay.getId())
                         .oneDayTitle(oneDay.getOneDayTitle())
                         .oneDayContent(oneDay.getOneDayContent())
                         .oneDayLocation(oneDay.getOneDayLocation())
-                        .oneDayLatitude(oneDay.getOneDayLatitude())
-                        .oneDayLongitude(oneDay.getOneDayLongitude())
-                        .genderPolicy(oneDay.getGenderPolicy().getGenderPolicy())
-                        .agePolicy(oneDay.getAgePolicy())
                         .category(oneDay.getCategory().getCategory())
                         .tagString(TagEnum.parseTag(oneDay.getTagString()))
-                        .oneDayStartTime(oneDay.getOneDayStartTime())
                         .oneDayGroupSize(oneDay.getOneDayGroupSize())
-                        .oneDayAttendantListSize(oneDay.getAttendantsNum())
+                        .oneDayImage(oneDay.getOneDayImage())
+                        .oneDayAttendantListSize(oneDaysInOperation.size())
                         .build())
                 .collect(Collectors.toList());
 
         // 참여중인 원데이 정보 리스트
         List<OneDayAttendant> oneDaysInParticipatingEntry = attendantRepository.findByUserId(userId);
-        List<Long> oneDayIds = oneDaysInParticipatingEntry.stream()
+        List<Long> oneDaysInParticipatingIds = oneDaysInParticipatingEntry.stream()
                 .map(OneDayAttendant::getOneDayId)
                 .collect(Collectors.toList());
-
-        List<OneDay> oneDaysInParticipating = oneDayRepository.findAllByIdIn(oneDayIds);
-        List<OneDayDetailResponseDto> oneDaysInParticipatingInfo = oneDaysInParticipating.stream()
-                .map(oneDay -> OneDayDetailResponseDto.builder()
-                        .id(oneDay.getId())
+        List<OneDay> oneDaysInParticipating = oneDayRepository.findAllByIdIn(oneDaysInParticipatingIds);
+        List<OneDayDetailOnMyPage> oneDaysInParticipatingInfo = oneDaysInParticipating.stream()
+                .map(oneDay -> new OneDayDetailOnMyPage(oneDay).builder()
+                        .oneDayId(oneDay.getId())
                         .oneDayTitle(oneDay.getOneDayTitle())
                         .oneDayContent(oneDay.getOneDayContent())
                         .oneDayLocation(oneDay.getOneDayLocation())
-                        .oneDayLatitude(oneDay.getOneDayLatitude())
-                        .oneDayLongitude(oneDay.getOneDayLongitude())
-                        .genderPolicy(oneDay.getGenderPolicy().getGenderPolicy())
-                        .agePolicy(oneDay.getAgePolicy())
                         .category(oneDay.getCategory().getCategory())
                         .tagString(TagEnum.parseTag(oneDay.getTagString()))
-                        .oneDayStartTime(oneDay.getOneDayStartTime())
                         .oneDayGroupSize(oneDay.getOneDayGroupSize())
-                        .oneDayAttendantListSize(oneDay.getAttendantsNum())
+                        .oneDayImage(oneDay.getOneDayImage())
+                        .oneDayAttendantListSize(oneDaysInParticipating.size())
                         .build())
                 .collect(Collectors.toList());
 

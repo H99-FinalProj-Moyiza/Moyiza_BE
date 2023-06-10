@@ -8,11 +8,11 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class OneDayListOnMyPage {
-    private List<OneDayDetailResponseDto> oneDaysInOperationInfo;
-    private List<OneDayDetailResponseDto> oneDaysInParticipatingInfo;
+    private List<OneDayDetailOnMyPage> oneDaysInOperationInfo;
+    private List<OneDayDetailOnMyPage> oneDaysInParticipatingInfo;
 
-    public OneDayListOnMyPage(List<OneDayDetailResponseDto> oneDaysInOperationInfo,
-                              List<OneDayDetailResponseDto> oneDaysInParticipatingInfo) {
+    public OneDayListOnMyPage(List<OneDayDetailOnMyPage> oneDaysInOperationInfo,
+                              List<OneDayDetailOnMyPage> oneDaysInParticipatingInfo) {
         this.oneDaysInOperationInfo = oneDaysInOperationInfo;
         this.oneDaysInParticipatingInfo = oneDaysInParticipatingInfo;
     }

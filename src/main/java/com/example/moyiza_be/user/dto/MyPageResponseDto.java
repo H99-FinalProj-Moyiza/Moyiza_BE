@@ -2,6 +2,7 @@ package com.example.moyiza_be.user.dto;
 
 import com.example.moyiza_be.club.dto.ClubDetailResponse;
 import com.example.moyiza_be.club.dto.ClubListOnMyPage;
+import com.example.moyiza_be.oneday.dto.OneDayDetailOnMyPage;
 import com.example.moyiza_be.oneday.dto.OneDayDetailResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayListOnMyPage;
 import com.example.moyiza_be.user.entity.User;
@@ -20,25 +21,25 @@ public class MyPageResponseDto {
     private String profileImage;
     private Integer clubsInOperationCount;
     private Integer clubsInParticipatingCount;
-    private List<ClubDetailResponse> clubsInOperationInfo;
-    private List<ClubDetailResponse> clubsInParticipatingInfo;
     private Integer oneDaysInOperationCount;
     private Integer oneDaysInParticipatingCount;
-    private List<OneDayDetailResponseDto> oneDaysInOperationInfo;
-    private List<OneDayDetailResponseDto> oneDaysInParticipatingInfo;
+    private List<ClubDetailResponse> clubsInOperationInfo;
+    private List<ClubDetailResponse> clubsInParticipatingInfo;
+    private List<OneDayDetailOnMyPage> oneDaysInOperationInfo;
+    private List<OneDayDetailOnMyPage> oneDaysInParticipatingInfo;
 
 
-    public MyPageResponseDto(UserInfoOnMyPage userInfoOnMyPage, ClubListOnMyPage clubListOnMyPage, OneDayListOnMyPage oneDayListOnMyPage) {
-        this.user_id = userInfoOnMyPage.getUser_id();
-        this.nickname = userInfoOnMyPage.getNickname();
-        this.email = userInfoOnMyPage.getEmail();
-        this.profileImage = userInfoOnMyPage.getProfileImage();
+    public MyPageResponseDto(User user, ClubListOnMyPage clubListOnMyPage, OneDayListOnMyPage oneDayListOnMyPage) {
+        this.user_id = user.getId();
+        this.nickname = user.getNickname();
+        this.email = user.getEmail();
+        this.profileImage = user.getProfileImage();
         this.clubsInOperationCount = clubListOnMyPage.getClubsInOperationInfo().size();
         this.clubsInParticipatingCount = clubListOnMyPage.getClubsInParticipatingInfo().size();
-        this.clubsInOperationInfo = clubListOnMyPage.getClubsInOperationInfo();
-        this.clubsInParticipatingInfo = clubListOnMyPage.getClubsInParticipatingInfo();
         this.oneDaysInOperationCount = oneDayListOnMyPage.getOneDaysInOperationInfo().size();
         this.oneDaysInParticipatingCount = oneDayListOnMyPage.getOneDaysInParticipatingInfo().size();
+        this.clubsInOperationInfo = clubListOnMyPage.getClubsInOperationInfo();
+        this.clubsInParticipatingInfo = clubListOnMyPage.getClubsInParticipatingInfo();
         this.oneDaysInOperationInfo = oneDayListOnMyPage.getOneDaysInOperationInfo();
         this.oneDaysInParticipatingInfo = oneDayListOnMyPage.getOneDaysInParticipatingInfo();
     }
