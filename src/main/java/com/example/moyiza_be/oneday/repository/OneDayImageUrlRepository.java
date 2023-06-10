@@ -9,4 +9,7 @@ public interface OneDayImageUrlRepository extends JpaRepository<OneDayImageUrl, 
     List<OneDayImageUrl> findAllByOneDayId(Long oneDayId);
 
     List<OneDayImageUrl> findAllByOneDayCreateId(Long oneDayCreateId);
+
+
+    List<OneDayImageUrl> findAllByOneDayIdIn(List<Long> oneDaysInOperationIds);
 }
