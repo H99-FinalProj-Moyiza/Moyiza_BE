@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class MypageService {
     private final OneDayService oneDayService;
     private final ClubService clubService;
