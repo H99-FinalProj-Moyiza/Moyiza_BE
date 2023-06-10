@@ -8,6 +8,7 @@ import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
+import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -88,7 +89,7 @@ public class ClubController {
     }
 
     @GetMapping("/{club_id}/eventlist")
-    public ResponseEntity<List<Event>> getClubEventList(
+    public ResponseEntity<List<EventSimpleDetailDto>> getClubEventList(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id
     ) {

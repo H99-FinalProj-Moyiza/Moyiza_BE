@@ -14,6 +14,7 @@ import com.example.moyiza_be.club.repository.QueryDSL.ClubRepositoryCustom;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.utils.Message;
+import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.event.service.EventService;
 import com.example.moyiza_be.user.entity.User;
@@ -144,8 +145,8 @@ public class ClubService {
         return new ClubDetailResponse(club, clubImageUrlList); // querydsl에서 List로 projection이 가능한가 확인해봐야함
     }
 
-    public ResponseEntity<List<Event>> getClubEventList(User user, Long clubId) {
-        List<Event> eventList = eventService.getEventList(clubId);
+    public ResponseEntity<List<EventSimpleDetailDto>> getClubEventList(User user, Long clubId) {
+        List<EventSimpleDetailDto> eventList = eventService.getEventList(clubId);
         return ResponseEntity.ok(eventList);
     }
 
