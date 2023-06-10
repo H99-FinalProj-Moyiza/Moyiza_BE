@@ -17,6 +17,7 @@ public class EventSimpleDetailDto {
     private final LocalDateTime eventStartTime;
     private final Integer eventGroupSize;
     private final int attendantsNum;
+    private final String image;
     public EventSimpleDetailDto(Event event, int size) {
         this.id = event.getId();
         this.ownerId = event.getOwnerId();
@@ -29,5 +30,6 @@ public class EventSimpleDetailDto {
         this.eventStartTime = event.getEventStartTime();
         this.eventGroupSize = event.getEventGroupSize();
         this.attendantsNum = size;
+        this.image = event.getImage();
     }
 }
