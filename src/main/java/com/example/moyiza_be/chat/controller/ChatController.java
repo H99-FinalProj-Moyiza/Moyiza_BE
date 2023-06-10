@@ -32,14 +32,13 @@ import java.util.List;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/chat")
 public class ChatController {
     private final ChatService chatService;
     private final RedisCacheService redisCacheService;
 
 
     //채팅 메시지 전송, 수신
-    @MessageMapping("/{chatId}")
+    @MessageMapping("/chat/{chatId}")
     public void receiveAndSendChat(
             @DestinationVariable Long chatId, ChatMessageInput chatMessageInput,
             Message<?> message
@@ -56,7 +55,7 @@ public class ChatController {
     }
 
     //채팅방 목록 조회
-    @GetMapping("/clubchat")
+    @GetMapping("/chat/clubchat")
     public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails == null){
             throw new NullPointerException("사용자 정보가 없습니다");
@@ -64,7 +63,7 @@ public class ChatController {
         User user = userDetails.getUser();
         return chatService.getClubChatRoomList(user.getId());
     }
-    @GetMapping("/onedaychat")
+    @GetMapping("/chat/onedaychat")
     public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails == null){
             throw new NullPointerException("사용자 정보가 없습니다");
@@ -76,7 +75,7 @@ public class ChatController {
 
 
     //채팅 내역 조회
-    @GetMapping("/{chatId}")
+    @GetMapping("/chat/{chatId}")
     public ResponseEntity<Page<ChatMessageOutput>> getChatRecordList(
             @PageableDefault(page = 0, size = 50, sort = "CreatedAt", direction = Sort.Direction.ASC) Pageable pageable,
             @PathVariable Long chatId,

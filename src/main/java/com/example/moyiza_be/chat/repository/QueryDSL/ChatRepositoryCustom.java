@@ -14,7 +14,6 @@ import static com.example.moyiza_be.chat.entity.QChat.chat;
 import static com.example.moyiza_be.chat.entity.QChatJoinEntry.chatJoinEntry;
 import static com.example.moyiza_be.club.entity.QClub.club;
 import static com.example.moyiza_be.oneday.entity.QOneDay.oneDay;
-import static com.example.moyiza_be.user.entity.QUser.user;
 
 @Repository
 @RequiredArgsConstructor

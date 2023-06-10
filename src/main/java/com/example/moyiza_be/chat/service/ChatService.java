@@ -39,7 +39,6 @@ public class ChatService {
                                    ChatMessageInput chatMessageInput
     ) {
         //필터링 ? some logic
-
         ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userPrincipal.getUserId());
         chatRecordRepository.save(chatRecord);  // id받아오려면 saveAndFlush로 변경
         Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
