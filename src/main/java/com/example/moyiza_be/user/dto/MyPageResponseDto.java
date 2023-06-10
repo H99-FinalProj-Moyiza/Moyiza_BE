@@ -28,11 +28,11 @@ public class MyPageResponseDto {
     private List<OneDayDetailResponseDto> oneDaysInParticipatingInfo;
 
 
-    public MyPageResponseDto(User user, ClubListOnMyPage clubListOnMyPage, OneDayListOnMyPage oneDayListOnMyPage) {
-        this.user_id = user.getId();
-        this.nickname = user.getNickname();
-        this.email = user.getEmail();
-        this.profileImage = user.getProfileImage();
+    public MyPageResponseDto(UserInfoOnMyPage userInfoOnMyPage, ClubListOnMyPage clubListOnMyPage, OneDayListOnMyPage oneDayListOnMyPage) {
+        this.user_id = userInfoOnMyPage.getUser_id();
+        this.nickname = userInfoOnMyPage.getNickname();
+        this.email = userInfoOnMyPage.getEmail();
+        this.profileImage = userInfoOnMyPage.getProfileImage();
         this.clubsInOperationCount = clubListOnMyPage.getClubsInOperationInfo().size();
         this.clubsInParticipatingCount = clubListOnMyPage.getClubsInParticipatingInfo().size();
         this.clubsInOperationInfo = clubListOnMyPage.getClubsInOperationInfo();
