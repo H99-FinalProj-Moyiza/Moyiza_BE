@@ -8,11 +8,13 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.example.moyiza_be.oneday.entity.QOneDay.oneDay;
@@ -27,7 +29,7 @@ public class OneDayRepositoryCustom {
 
     public Page<OneDayListResponseDto> getFilteredOnedayList(
             Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
-            Double nowLongitude, Double nowLatitude, Double radius
+            Double nowLongitude, Double nowLatitude, Double radius, LocalDateTime timeCondition
     ){
         List<OneDayListResponseDto> onedayList =
                 jpaQueryFactory
@@ -54,7 +56,8 @@ public class OneDayRepositoryCustom {
                         eqTag3(tag3),
                         eqCategory(category),
                         titleContainOrContentContain(q),
-                        nearby(radius, nowLongitude, nowLatitude)
+                        nearby(radius, nowLongitude, nowLatitude),
+                        startTimeAfter(timeCondition)
                 )
                 .fetch();
 
@@ -63,6 +66,10 @@ public class OneDayRepositoryCustom {
 
     private BooleanExpression titleContainOrContentContain(String q) {
         return q == null ? null : titleContain(q).or(contentContain(q));
+    }
+
+    private BooleanExpression startTimeAfter(LocalDateTime timeCondition){
+        return timeCondition == null ? null : oneDay.oneDayStartTime.after(timeCondition);
     }
 
     private BooleanExpression eqTag1(String tag) {

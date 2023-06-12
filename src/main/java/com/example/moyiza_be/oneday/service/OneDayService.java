@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,12 +85,11 @@ public class OneDayService {
     // 원데이 목록 조회
     public ResponseEntity<Page<OneDayListResponseDto>> getFilteredOneDayList(
             Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
-            Double longitude, Double latitude, Double radius
+            Double longitude, Double latitude, Double radius, LocalDateTime startafter
     ) {
         Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
-                pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius
+                pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
         );
-
         return ResponseEntity.ok(filteredOnedayList);
     }
 
