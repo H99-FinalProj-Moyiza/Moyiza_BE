@@ -1,6 +1,5 @@
 package com.example.moyiza_be.oneday.entity;
 
-import com.example.moyiza_be.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

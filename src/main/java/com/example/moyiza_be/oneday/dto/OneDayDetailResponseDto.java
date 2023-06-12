@@ -28,11 +28,11 @@ public class OneDayDetailResponseDto {
     private final LocalDateTime oneDayStartTime;
     private final int oneDayGroupSize;
     private final List<String> imageList;
-    private final List<OneDayAttendant> oneDayAttendantList;
+    private final List<OneDayMemberResponse> oneDayMemberResponseList;
     private final int oneDayAttendantListSize;
     private final String type;
 
-    public OneDayDetailResponseDto(OneDay oneDay,List<String> oneDayImageUrlList, List<OneDayAttendant> attendantList, Integer people) {
+    public OneDayDetailResponseDto(OneDay oneDay,List<String> oneDayImageUrlList, List<OneDayMemberResponse> oneDayMemberResponseList) {
         this.id = oneDay.getId();
         this.oneDayTitle = oneDay.getOneDayTitle();
         this.oneDayContent = oneDay.getOneDayContent();
@@ -47,7 +47,7 @@ public class OneDayDetailResponseDto {
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
         this.type = oneDay.getType().getOneDayType();
         this.imageList = oneDayImageUrlList;
-        this.oneDayAttendantList = attendantList;
-        this.oneDayAttendantListSize = people;
+        this.oneDayMemberResponseList = oneDayMemberResponseList;
+        this.oneDayAttendantListSize = oneDayMemberResponseList.size();
     }
 }
