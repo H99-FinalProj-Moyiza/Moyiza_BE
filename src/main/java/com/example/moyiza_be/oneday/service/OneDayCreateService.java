@@ -1,6 +1,7 @@
 package com.example.moyiza_be.oneday.service;
 
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
+import com.example.moyiza_be.common.enums.OneDayTypeEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
@@ -42,8 +43,10 @@ public class OneDayCreateService {
     public ResponseEntity<?> initCreateOneDay(Long userId) {
         OneDayCreate bluePrint = createRepository.findByOwnerIdAndConfirmedIsFalse(userId).orElse(null);
         if (bluePrint != null) {
+            log.info("returning preexisting createoneday Id : " + bluePrint.getId());
             return new ResponseEntity<>(new OneDayIdResponseDto(bluePrint.getId()), HttpStatus.ACCEPTED);
         }
+        log.info("has no previous createOneday");
         OneDayCreate oneDayCreate = new OneDayCreate(userId);
         createRepository.save(oneDayCreate);
         CreateOneDayIdResponseDto createOneDayIdResponse = new CreateOneDayIdResponseDto(oneDayCreate.getId());
@@ -52,23 +55,27 @@ public class OneDayCreateService {
 
     public ResponseEntity<CreatingDto> getExistCreatingOneDay(Long userId, Long createOneDayId) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
+        log.info("returning info for createoneday id : " + createOneDayId);
         return new ResponseEntity<>(new CreatingDto(oneDayCreate), HttpStatus.OK);
     }
 
     public ResponseEntity<Message> setTitle(Long userId, Long createOneDayId, RequestTitleDto titleDto) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setOneDayTitle(titleDto.getOneDayTitle());
+        log.info("set oneday title : " + titleDto.getOneDayTitle() +  "for id : " + createOneDayId);
         return new ResponseEntity<>(new Message("성공"), HttpStatus.OK);
     }
 
     public ResponseEntity<Message> setContent(Long userId, Long createOneDayId, RequestContentDto contentDto) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setOneDayContent(contentDto.getOneDayContent());
+        log.info("set oneday content : " + contentDto.getOneDayContent() +  "for id : " + createOneDayId);
         return new ResponseEntity<>(new Message("성공"), HttpStatus.OK);
     }
     public ResponseEntity<Message> setCategory(Long userId, Long createOneDayId, RequestCategoryDto categoryEnum) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setCategory(categoryEnum.getCategoryEnum());
+        log.info("set oneday category : " + categoryEnum.getCategoryEnum() +  "for id : " + createOneDayId);
         return new ResponseEntity<>(new Message("설정 완료"), HttpStatus.OK);
     }
 
@@ -80,6 +87,7 @@ public class OneDayCreateService {
             sb.setCharAt(tagEnum.ordinal(), '1');
         }
         oneDayCreate.setTagString(sb.toString());
+        log.info("set oneday tag : " + sb.toString() +  "for id : " + createOneDayId);
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
 
@@ -89,13 +97,15 @@ public class OneDayCreateService {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setGenderPolicy(GenderPolicyEnum.fromString(policyRequest.getGenderPolicy()));
         oneDayCreate.setAgePolicy(policyRequest.getAgePolicy());
+        log.info("set oneday genderpolicy : " + policyRequest.getGenderPolicy() +  "for id : " + createOneDayId);
+        log.info("set oneday agepolicy : " + policyRequest.getAgePolicy() +  "for id : " + createOneDayId);
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
     public ResponseEntity<Message> setMaxGroupSize(Long userId, Long createOneDayId, RequestSizeDto maxSize) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
-        System.out.println(maxSize.getSize());
+        log.info("set oneday maxSize : " + maxSize.getSize() +  "for id : " + createOneDayId);
         oneDayCreate.setOneDayGroupSize(maxSize.getSize());
-        System.out.println("여기야");
+        log.info("set oneday oneDayGroupSize : " + oneDayCreate.getOneDayGroupSize() +  "for id : " + createOneDayId);
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
 
@@ -134,6 +144,7 @@ public class OneDayCreateService {
         oneDayCreate.setOneDayImage(imageUrlList.get(0));
         List<OneDayImageUrl> imageEntityList = imageUrlList.stream().map(i -> new OneDayImageUrl(createOneDayId, i)).toList();
         imageUrlRepository.saveAll(imageEntityList);
+        log.info("set : " + imageEntityList.size() +  "images for id : " + createOneDayId);
 
         return new ResponseEntity<>(new Message("이미지 업로드 완료 !"), HttpStatus.OK);
     }
@@ -147,7 +158,9 @@ public class OneDayCreateService {
     public ResponseEntity<?> confirmCreation(User user, Long createOneDayId) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, user.getId());
         OneDayCreateConfirmDto confirmDto = new OneDayCreateConfirmDto(oneDayCreate);
+        System.out.println("confirmDto.getOneDayGroupSize() = " + confirmDto.getOneDayGroupSize());
         OneDayDetailResponse newOneDay = oneDayService.createOneDay(user, confirmDto);
+        System.out.println("newOneDay.getOneDayGroupSize() = " + newOneDay.getOneDayGroupSize());
         oneDayCreate.setConfirmed(true);
         return new ResponseEntity<>(newOneDay, HttpStatus.OK);
     }

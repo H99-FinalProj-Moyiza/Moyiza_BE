@@ -16,7 +16,6 @@ import com.example.moyiza_be.oneday.entity.OneDayImageUrl;
 import com.example.moyiza_be.oneday.repository.OneDayAttendantRepository;
 import com.example.moyiza_be.oneday.repository.OneDayImageUrlRepository;
 import com.example.moyiza_be.oneday.repository.OneDayRepository;
-import com.example.moyiza_be.oneday.repository.QueryDSL.OneDayAttendantRepositoryCustom;
 import com.example.moyiza_be.oneday.repository.QueryDSL.OneDayRepositoryCustom;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.service.UserService;
@@ -51,7 +50,6 @@ public class OneDayService {
     private final UserService userService;
     private final OneDayImageUrlRepository imageUrlRepository;
     private final OneDayRepositoryCustom oneDayRepositoryCustom;
-    private final OneDayAttendantRepositoryCustom oneDayAttendantRepositoryCustom;
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
@@ -59,16 +57,15 @@ public class OneDayService {
     //revisit
     public OneDayDetailResponse createOneDay(User user, OneDayCreateConfirmDto confirmDto) {
         OneDay oneDay = new OneDay(confirmDto);
-        oneDayRepository.saveAndFlush(oneDay);
         List<String> oneDayImageUrlList = imageUrlRepository.findAllById(Collections.singleton(confirmDto.getCreateOneDayId()))
                 .stream()
                 .peek(image -> image.setOneDayId(oneDay.getId()))
                 .map(OneDayImageUrl::getImageUrl)
                 .toList();
-        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         oneDay.setDeleted(false);
         oneDay.setAttendantsNum(1);
         oneDayRepository.saveAndFlush(oneDay);
+        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         // 방장 추가
         joinOneDay(oneDay.getId(), user);
         return new OneDayDetailResponse(oneDay, oneDayImageUrlList);
@@ -79,61 +76,21 @@ public class OneDayService {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         // 이미지 처리 어떻게 하지?
         List<String> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDayId).stream().map(OneDayImageUrl::getImageUrl).toList();
-        List<OneDayMemberResponse> oneDayMemberResponseList = oneDayAttendantRepositoryCustom.getOneDayMemberList(oneDayId);
-        OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(oneDay, oneDayImageUrlList, oneDayMemberResponseList);
+        List<OneDayAttendant> attendantList = attendantRepository.findAllByOneDayId(oneDayId);
+        OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(oneDay, oneDayImageUrlList, attendantList, attendantList.size());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     // 원데이 목록 조회
     public ResponseEntity<Page<OneDayListResponseDto>> getFilteredOneDayList(
             Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
-            Double longitude, Double latitude, Double radius, LocalDateTime startafter
+            Double longitude, Double latitude, Double radius
     ) {
         Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
-                pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
+                pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius
         );
+
         return ResponseEntity.ok(filteredOnedayList);
-    }
-
-    // 마이페이지 원데이 목록 조회
-    public OneDayListOnMyPage getOneDayListOnMyPage(Long userId) {
-        // 운영중인 원데이 정보 리스트
-        List<OneDay> oneDaysInOperation = oneDayRepository.findAllByOwnerId(userId);
-        List<OneDayDetailOnMyPage> oneDaysInOperationInfo = oneDaysInOperation.stream()
-                .map(oneDay -> new OneDayDetailOnMyPage(oneDay).builder()
-                        .oneDayId(oneDay.getId())
-                        .oneDayTitle(oneDay.getOneDayTitle())
-                        .oneDayContent(oneDay.getOneDayContent())
-                        .oneDayLocation(oneDay.getOneDayLocation())
-                        .category(oneDay.getCategory().getCategory())
-                        .tagString(TagEnum.parseTag(oneDay.getTagString()))
-                        .oneDayGroupSize(oneDay.getOneDayGroupSize())
-                        .oneDayImage(oneDay.getOneDayImage())
-                        .oneDayAttendantListSize(oneDaysInOperation.size())
-                        .build())
-                .collect(Collectors.toList());
-
-        // 참여중인 원데이 정보 리스트
-        List<OneDayAttendant> oneDaysInParticipatingEntry = attendantRepository.findByUserId(userId);
-        List<Long> oneDaysInParticipatingIds = oneDaysInParticipatingEntry.stream()
-                .map(OneDayAttendant::getOneDayId)
-                .collect(Collectors.toList());
-        List<OneDay> oneDaysInParticipating = oneDayRepository.findAllByIdIn(oneDaysInParticipatingIds);
-        List<OneDayDetailOnMyPage> oneDaysInParticipatingInfo = oneDaysInParticipating.stream()
-                .map(oneDay -> new OneDayDetailOnMyPage(oneDay).builder()
-                        .oneDayId(oneDay.getId())
-                        .oneDayTitle(oneDay.getOneDayTitle())
-                        .oneDayContent(oneDay.getOneDayContent())
-                        .oneDayLocation(oneDay.getOneDayLocation())
-                        .category(oneDay.getCategory().getCategory())
-                        .tagString(TagEnum.parseTag(oneDay.getTagString()))
-                        .oneDayGroupSize(oneDay.getOneDayGroupSize())
-                        .oneDayImage(oneDay.getOneDayImage())
-                        .oneDayAttendantListSize(oneDaysInParticipating.size())
-                        .build())
-                .collect(Collectors.toList());
-
-        return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }
 
     // 원데이 수정

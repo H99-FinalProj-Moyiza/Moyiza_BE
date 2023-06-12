@@ -5,7 +5,6 @@ import com.example.moyiza_be.oneday.entity.OneDay;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
-import javax.swing.text.html.HTML;
 import java.util.List;
 
 @Getter

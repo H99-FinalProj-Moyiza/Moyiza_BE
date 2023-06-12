@@ -1,6 +1,5 @@
 package com.example.moyiza_be.oneday.repository;
 
-import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.oneday.entity.OneDayAttendant;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,11 +15,11 @@ public interface OneDayAttendantRepository extends JpaRepository<OneDayAttendant
 //    List<OneDayAttendant> findByOneDayId(long oneDayId);
 
     @Query("SELECT a.oneDayId AS oneDayId, u.name AS userName, u.nickname AS userNickName, u.profileImage AS userImage FROM OneDayAttendant a JOIN users u ON a.userId = u.id  WHERE a.oneDayId = :oneDayId")
-    List<OneDayAttendant> findAttendantsByOneDayId(@Param("oneDayId") Long oneDayId);
+    List<OneDayAttendant> findOneDayByOneDayId(@Param("oneDayId") Long oneDayId);
 
     Optional<OneDayAttendant> findByOneDayIdAndUserId(Long oneDayId, Long id);
 
     boolean existsByOneDayIdAndUserId(Long oneDayId, Long id);
 
-    List<OneDayAttendant> findByUserId(Long userId);
+    List<OneDayAttendant> findAllByOneDayId(Long oneDayId);
 }

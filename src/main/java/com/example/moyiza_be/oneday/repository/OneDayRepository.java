@@ -1,8 +1,6 @@
 package com.example.moyiza_be.oneday.repository;
 
 import com.example.moyiza_be.common.enums.CategoryEnum;
-import com.example.moyiza_be.oneday.dto.OneDayDetailResponseDto;
-import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
 import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.user.entity.User;
 import org.springframework.data.domain.Page;
@@ -48,5 +46,6 @@ public interface OneDayRepository extends JpaRepository<OneDay, User> {
             "ORDER BY distance")
     List<Object[]> findNearByOneDays(@Param("nowLatitude") double nowLatitude, @Param("nowLongitude") double nowLongitude);
 
+//    List<OneDay> findAllByOneDayStartTime(LocalDate today, LocalTime nowAfter30);
     List<OneDay> findAllByIdIn(List<Long> oneDayIds);
 }

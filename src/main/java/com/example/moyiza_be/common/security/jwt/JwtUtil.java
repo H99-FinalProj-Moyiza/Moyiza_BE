@@ -166,4 +166,7 @@ public class JwtUtil {
         return userInfo;
     }
 
+    public String getUserNameFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+    }
 }
