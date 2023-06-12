@@ -37,11 +37,11 @@ public class UserController {
     /*OAuth2 Provider에서 받아오지 못하는 사용자 정보를 저장하기 위한 임시 api
       필요한 정보를 전부 받아오기 위해선 사업자 등록, 전환이 필요하다
      */
-    @PutMapping ("/signup/social")
+    @PutMapping ("/social/signup")
     public ResponseEntity<?> updateSocialInfo(@RequestBody UpdateSocialInfoRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.updateSocialInfo(requestDto, userDetails.getUser());
     }
-    @GetMapping ("/signup/social")
+    @GetMapping ("/social/signup")
     public ResponseEntity<?> getSocialInfo(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.getSocialInfo(userDetails.getUser());
     }
