@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -45,10 +46,12 @@ public class OneDayController {
             @RequestParam(required = false) String tag3,
             @RequestParam(required = false) Double longitude,
             @RequestParam(required = false) Double latitude,
-            @RequestParam(required = false) Double radius
+            @RequestParam(required = false) Double radius,
+            @RequestParam(required = false) LocalDateTime startafter
     ) {
         return oneDayService.getFilteredOneDayList(
-                 pageable, null, null, null, null, null, null, null, null
+                pageable, null, null, null, null, null, null, null, null,
+                null
         );
     }
 
@@ -62,10 +65,12 @@ public class OneDayController {
             @RequestParam(required = false) String tag3,
             @RequestParam(required = false) Double longitude,
             @RequestParam(required = false) Double latitude,
-            @RequestParam(required = false) Double radius
-    ){
+            @RequestParam(required = false) Double radius,
+            @RequestParam(required = false) LocalDateTime startafter
+            ){
         return oneDayService.getFilteredOneDayList(
-                pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius
+                pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius,
+                startafter
         );
     }
 

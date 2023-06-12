@@ -89,7 +89,7 @@ public class OneDayService {
             Double longitude, Double latitude, Double radius
     ) {
         Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
-                pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius
+                pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
         );
 
         return ResponseEntity.ok(filteredOnedayList);

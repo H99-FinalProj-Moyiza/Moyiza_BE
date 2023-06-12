@@ -12,6 +12,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +47,6 @@ public interface OneDayRepository extends JpaRepository<OneDay, User> {
             "WHERE (6371 * acos(cos(radians(:nowLatitude)) * cos(radians(o.oneDayLatitude)) * cos(radians(o.oneDayLongitude) - radians(:nowLongitude)) + sin(radians(:nowLatitude)) * sin(radians(o.oneDayLatitude)))) <= 10 " +
             "ORDER BY distance")
     List<Object[]> findNearByOneDays(@Param("nowLatitude") double nowLatitude, @Param("nowLongitude") double nowLongitude);
-
 
     List<OneDay> findAllByIdIn(List<Long> oneDayIds);
 }

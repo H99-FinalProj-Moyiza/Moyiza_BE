@@ -39,7 +39,7 @@ public class OneDayCreate {
     private Integer attendantsNum;
     private String oneDayImage;
     private Boolean confirmed = false;
-    private OneDayTypeEnum oneDayType;
+    private OneDayTypeEnum oneDayType = OneDayTypeEnum.FCFSB;
 
     public OneDayCreate(Long ownerId) {
         this.ownerId = ownerId;

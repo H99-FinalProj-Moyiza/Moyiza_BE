@@ -35,6 +35,7 @@ public class OneDayCreateService {
     private final OneDayCreateRepository createRepository;
     private final UserRepository userRepository;
 
+    private final static LocalDateTime timeNow = LocalDateTime.now();
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
 
@@ -110,7 +111,13 @@ public class OneDayCreateService {
     // 날짜
     public ResponseEntity<Message> setDate(Long userId, Long createOneDayId, RequestDateDto dateTime) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
-        oneDayCreate.setOneDayStartTime(dateTime.getOneDayStartTime());
+        if (dateTime.getOneDayStartTime() == null) {
+            throw new RuntimeException("시작 시간을 입력하세요");
+        } else if (timeNow.isAfter(dateTime.getOneDayStartTime())) {
+            throw new RuntimeException("유효하지 않은 시간입니다.");
+        } else {
+            oneDayCreate.setOneDayStartTime(dateTime.getOneDayStartTime());
+        }
         return new ResponseEntity<>(new Message("성공"),HttpStatus.OK);
     }
 
