@@ -3,6 +3,7 @@ package com.example.moyiza_be.common.handler;
 
 import com.example.moyiza_be.chat.dto.ChatMessageOutput;
 import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
+import com.example.moyiza_be.common.enums.MessageDestinationEnum;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +33,10 @@ public class StompHandler implements ChannelInterceptor {
         String sessionId = headerAccessor.getSessionId();
         log.info("Command : " + headerAccessor.getCommand());
 
-        if(StompCommand.CONNECT.equals(headerAccessor.getCommand())){
+        if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
             String bearerToken = headerAccessor.getFirstNativeHeader("ACCESS_TOKEN");
             String token = jwtUtil.removePrefix(bearerToken);
-            if(!jwtUtil.validateToken(token)){
+            if (!jwtUtil.validateToken(token)) {
                 throw new IllegalArgumentException("토큰이 유효하지 않습니다");
             }
 
@@ -49,18 +50,21 @@ public class StompHandler implements ChannelInterceptor {
             return message;
         }
 
-        if(StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())){
+        if (StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand()) &&
+                MessageDestinationEnum.CHAT.equals(destinationChecker(headerAccessor.getDestination()))
+        ) {
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
-            unsubscribe(userPrincipal, sessionId);
+            handleChatUnsubscribe(userPrincipal, sessionId);
         }
 
-        if(StompCommand.DISCONNECT.equals(headerAccessor.getCommand())){
+        if (StompCommand.DISCONNECT.equals(headerAccessor.getCommand()) &&
+                MessageDestinationEnum.CHAT.equals(destinationChecker(headerAccessor.getDestination()))
+        ) {
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
-            if(userPrincipal.getSubscribedChatId().equals(-1L)){
+            if (userPrincipal.getSubscribedChatId().equals(-1L)) {
                 log.info("User is not subscribed to any chat .. continue DISCONNECT");
-            }
-            else{
-                unsubscribe(userPrincipal,sessionId);
+            } else {
+                handleChatUnsubscribe(userPrincipal, sessionId);
             }
             redisCacheService.deleteUserInfoFromCache(sessionId);
         }
@@ -72,7 +76,9 @@ public class StompHandler implements ChannelInterceptor {
     public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
 
-        if(StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())){
+        if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) &&
+               MessageDestinationEnum.CHAT.equals(destinationChecker(headerAccessor.getDestination()))
+        ) {
             String destination = headerAccessor.getDestination();
             String sessionId = headerAccessor.getSessionId();
             Long chatId = getChatIdFromDestination(destination);
@@ -85,10 +91,9 @@ public class StompHandler implements ChannelInterceptor {
             redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
 
             Long lastReadMessageId = redisCacheService.getUserLastReadMessageId(chatId.toString(), userId);
-            if(lastReadMessageId == null){
+            if (lastReadMessageId == null) {
                 log.info("User " + userId + " has no lastReadMessage... continue without sending decrease message");
-            }
-            else{
+            } else {
                 Message<byte[]> lastReadIdMessage = buildLastReadMessage(destination, lastReadMessageId, userId);
                 channel.send(lastReadIdMessage);
                 log.info("sending subscritionInfo of user : " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
@@ -102,26 +107,37 @@ public class StompHandler implements ChannelInterceptor {
     }
 
 
-    ////////
+    ////////////////////////////////////////
 
-    private Long getChatIdFromDestination(String destination){
-        if(destination == null){
+    private Long getChatIdFromDestination(String destination) {
+        if (destination == null) {
             throw new NullPointerException("subscribe destination not defined");
         }
         return Long.valueOf(destination.replaceAll("\\D", ""));
     }
 
-    private void unsubscribe(ChatUserPrincipal userPrincipal, String sessionId){
+    private MessageDestinationEnum destinationChecker(String destination) {
+        String type = destination.split("/")[1];
+        if (type.equals("chat")) {
+            return MessageDestinationEnum.CHAT;
+        }
+        if (type.equals("chatalarm")) {
+            return MessageDestinationEnum.CHATALARM;
+        }
+        throw new NullPointerException("Unknown Destination");
+
+    }
+
+    private void handleChatUnsubscribe(ChatUserPrincipal userPrincipal, String sessionId) {
         log.info(userPrincipal.getUserId() + " unsubscribing chatroom " + userPrincipal.getSubscribedChatId());
         String chatId = userPrincipal.getSubscribedChatId().toString();
         String userId = userPrincipal.getUserId().toString();
 
-        ChatMessageOutput recentMessage = redisCacheService.loadRecentChat(chatId.toString());
+        ChatMessageOutput recentMessage = redisCacheService.loadRecentChat(chatId);
         Long recentMessageId;
-        if(recentMessage == null){
+        if (recentMessage == null) {
             log.info("recent message not present for chatId : " + chatId);
-        }
-        else{
+        } else {
             recentMessageId = recentMessage.getChatRecordId();
             redisCacheService.addUnsubscribedUser(chatId, userId);
             log.info("adding recent message " + recentMessageId + " to userId : " + userId);
@@ -129,16 +145,14 @@ public class StompHandler implements ChannelInterceptor {
 
         redisCacheService.removeSubscriptionFromChatId(chatId, userId);
         userPrincipal.setSubscribedChatId(-1L);
-        redisCacheService.saveUserInfoToCache(sessionId,userPrincipal);
-
-
+        redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
     }
 
     //유저 SUBSCRIBE 시 해당 유저의 마지막 읽은 메시지 ID를 클라이언트에게 전하는 메시지
-    private Message<byte[]> buildLastReadMessage(String destination, Long lastReadMessageId, String userId){
+    private Message<byte[]> buildLastReadMessage(String destination, Long lastReadMessageId, String userId) {
         StompHeaderAccessor newHeader = StompHeaderAccessor.create(StompCommand.MESSAGE);
         newHeader.setDestination(destination);
-        newHeader.setNativeHeader("lastReadMessage",String.valueOf(lastReadMessageId));
+        newHeader.setNativeHeader("lastReadMessage", String.valueOf(lastReadMessageId));
         newHeader.setNativeHeader("subscribedUserId", userId);
         return MessageBuilder.createMessage("new subscription".getBytes(StandardCharsets.UTF_8), newHeader.getMessageHeaders());
     }

@@ -70,7 +70,7 @@ public class ChatService {
             throw new NullPointerException("chat room already exists by id = " + chat.getId());
         }
         Chat new_chat = new Chat(roomIdentifier, chatType, roomName);
-        chatRepository.save(new_chat);
+        chatRepository.saveAndFlush(new_chat);
     }
     //채팅 내역 조회
 
