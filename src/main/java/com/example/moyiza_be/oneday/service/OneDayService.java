@@ -4,6 +4,7 @@ import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.enums.OneDayTypeEnum;
+import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.oneday.dto.*;
@@ -15,6 +16,7 @@ import com.example.moyiza_be.oneday.entity.OneDayImageUrl;
 import com.example.moyiza_be.oneday.repository.OneDayAttendantRepository;
 import com.example.moyiza_be.oneday.repository.OneDayImageUrlRepository;
 import com.example.moyiza_be.oneday.repository.OneDayRepository;
+import com.example.moyiza_be.oneday.repository.QueryDSL.OneDayRepositoryCustom;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.service.UserService;
 import jakarta.transaction.Transactional;
@@ -29,10 +31,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -45,6 +49,7 @@ public class OneDayService {
     private final ChatService chatService;
     private final UserService userService;
     private final OneDayImageUrlRepository imageUrlRepository;
+    private final OneDayRepositoryCustom oneDayRepositoryCustom;
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
@@ -77,21 +82,55 @@ public class OneDayService {
     }
 
     // 원데이 목록 조회
-    public ResponseEntity<Page<OneDayListPageResponseDto>> getOneDayList(Pageable pageable, CategoryEnum category, String q) {
-        Page<OneDayListPageResponseDto> responseList;
-        if (category != null && q != null) {
-            //카테고리와 검색어를 모두 입력한 경우
-            responseList = oneDayRepository.findByCategoryAndDeletedFalseAndOneDayTitleContaining(pageable, category, q).map(OneDayListPageResponseDto::new);
-        } else if (category != null) {
-            //카테고리만 입력한 경우
-            responseList = oneDayRepository.findByCategoryAndDeletedFalse(pageable, category).map(OneDayListPageResponseDto::new);
-        } else if (q != null) {
-            responseList = oneDayRepository.findByDeletedFalseAndOneDayTitleContaining(pageable, q).map(OneDayListPageResponseDto::new);
-        } else {
-            //카테고리와 검색어가 모두 입력되지 않은 경우 전체 클럽 조회
-            responseList = oneDayRepository.findAllByDeletedFalse(pageable).map(OneDayListPageResponseDto::new);
-        }
-        return new ResponseEntity<>(responseList, HttpStatus.OK);
+    public ResponseEntity<Page<OneDayListResponseDto>> getFilteredOneDayList(
+            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
+            Double longitude, Double latitude, Double radius, LocalDateTime startafter
+    ) {
+        Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
+                pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
+        );
+        return ResponseEntity.ok(filteredOnedayList);
+    }
+
+    // 마이페이지 원데이 목록 조회
+    public OneDayListOnMyPage getOneDayListOnMyPage(Long userId) {
+        // 운영중인 원데이 정보 리스트
+        List<OneDay> oneDaysInOperation = oneDayRepository.findAllByOwnerId(userId);
+        List<OneDayDetailOnMyPage> oneDaysInOperationInfo = oneDaysInOperation.stream()
+                .map(oneDay -> new OneDayDetailOnMyPage(oneDay).builder()
+                        .oneDayId(oneDay.getId())
+                        .oneDayTitle(oneDay.getOneDayTitle())
+                        .oneDayContent(oneDay.getOneDayContent())
+                        .oneDayLocation(oneDay.getOneDayLocation())
+                        .category(oneDay.getCategory().getCategory())
+                        .tagString(TagEnum.parseTag(oneDay.getTagString()))
+                        .oneDayGroupSize(oneDay.getOneDayGroupSize())
+                        .oneDayImage(oneDay.getOneDayImage())
+                        .oneDayAttendantListSize(oneDaysInOperation.size())
+                        .build())
+                .collect(Collectors.toList());
+
+        // 참여중인 원데이 정보 리스트
+        List<OneDayAttendant> oneDaysInParticipatingEntry = attendantRepository.findByUserId(userId);
+        List<Long> oneDaysInParticipatingIds = oneDaysInParticipatingEntry.stream()
+                .map(OneDayAttendant::getOneDayId)
+                .collect(Collectors.toList());
+        List<OneDay> oneDaysInParticipating = oneDayRepository.findAllByIdIn(oneDaysInParticipatingIds);
+        List<OneDayDetailOnMyPage> oneDaysInParticipatingInfo = oneDaysInParticipating.stream()
+                .map(oneDay -> new OneDayDetailOnMyPage(oneDay).builder()
+                        .oneDayId(oneDay.getId())
+                        .oneDayTitle(oneDay.getOneDayTitle())
+                        .oneDayContent(oneDay.getOneDayContent())
+                        .oneDayLocation(oneDay.getOneDayLocation())
+                        .category(oneDay.getCategory().getCategory())
+                        .tagString(TagEnum.parseTag(oneDay.getTagString()))
+                        .oneDayGroupSize(oneDay.getOneDayGroupSize())
+                        .oneDayImage(oneDay.getOneDayImage())
+                        .oneDayAttendantListSize(oneDaysInParticipating.size())
+                        .build())
+                .collect(Collectors.toList());
+
+        return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }
 
     // 원데이 수정
@@ -191,6 +230,7 @@ public class OneDayService {
                 () -> new NullPointerException("oneDay를 찾을 수 없습니다")
         );
     }
+
     private Boolean checkOnedayOwnership(Long userId, OneDay oneday) {
         return oneday.getOwnerId().equals(userId);
     }

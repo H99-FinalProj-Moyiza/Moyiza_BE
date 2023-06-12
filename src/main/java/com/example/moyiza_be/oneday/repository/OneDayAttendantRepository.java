@@ -22,5 +22,5 @@ public interface OneDayAttendantRepository extends JpaRepository<OneDayAttendant
 
     boolean existsByOneDayIdAndUserId(Long oneDayId, Long id);
 
-    List<OneDayAttendant> findAllByOneDay(OneDay oneDay);
+    List<OneDayAttendant> findByUserId(Long userId);
 }

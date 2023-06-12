@@ -1,10 +1,13 @@
 package com.example.moyiza_be.user.service;
 
+import com.example.moyiza_be.club.dto.ClubListOnMyPage;
+import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
 import com.example.moyiza_be.common.security.jwt.CookieUtil;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
+import com.example.moyiza_be.oneday.service.OneDayService;
 import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
@@ -34,6 +37,7 @@ public class UserService {
     private final CookieUtil cookieUtil;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AwsS3Uploader awsS3Uploader;
+    private final ClubService clubService;
 
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
@@ -48,6 +52,18 @@ public class UserService {
         user.authorizeUser();
         userRepository.save(user);
         return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
+    }
+    public ResponseEntity<?> updateSocialInfo(UpdateSocialInfoRequestDto requestDto, User user) {
+        User foundUser = findUser(user.getEmail());
+        checkDuplicatedNick(requestDto.getNickname());
+        foundUser.updateSocialInfo(requestDto);
+        foundUser.authorizeUser();
+        return new ResponseEntity<>("소셜 회원가입 완료!", HttpStatus.OK);
+    }
+    public ResponseEntity<?> getSocialInfo(User user) {
+//        User foundUser = findUser(user.getEmail());
+        SocialInfoResponseDto responseDto = new SocialInfoResponseDto(user.getName(), user.getNickname());
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     //로그인
@@ -74,7 +90,7 @@ public class UserService {
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
         User user = findUser(email);
         checkDuplicatedNick(requestDto.getNickname());
-        if(!imageFile.isEmpty()){
+        if(imageFile != null){
             awsS3Uploader.delete(user.getProfileImage());
             String storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
             user.updateProfileImage(storedFileUrl);

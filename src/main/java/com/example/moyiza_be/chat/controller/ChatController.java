@@ -7,6 +7,7 @@ import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
+import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -44,22 +46,29 @@ public class ChatController {
 
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         String sessionId = headerAccessor.getSessionId();
-        if(StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())){
-            System.out.println("\"SUBSCRIBE message comming through to controller\" = " + "SUBSCRIBE message comming through to controller");
-            System.out.println("headerAccessor = " + headerAccessor);
-        }
         ChatUserPrincipal userInfo = redisCacheService.getUserInfoFromCache(sessionId);
         chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
     }
 
     //채팅방 목록 조회
-    @GetMapping("/chat")
-    public ResponseEntity<List<ChatRoomInfo>> getChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @GetMapping("/chat/clubchat")
+    public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (userDetails == null){
             throw new NullPointerException("사용자 정보가 없습니다");
         }
-        return chatService.getChatRoomList(userDetails.getUser());
+        User user = userDetails.getUser();
+        return chatService.getClubChatRoomList(user.getId());
     }
+    @GetMapping("/chat/onedaychat")
+    public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (userDetails == null){
+            throw new NullPointerException("사용자 정보가 없습니다");
+        }
+        User user = userDetails.getUser();
+        return chatService.getOnedayChatRoomList(user.getId());
+    }
+
+
 
     //채팅 내역 조회
     @GetMapping("/chat/{chatId}")
