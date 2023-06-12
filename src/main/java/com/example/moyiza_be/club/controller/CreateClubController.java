@@ -64,7 +64,7 @@ public class CreateClubController {
 
         User user = userDetails.getUser();
         return createClubService.setTag(
-                user.getId(), createclub_id, requestTagDto.getTagEnumList()
+                user.getId(), createclub_id, requestTagDto.getTag()
         );
     }
 

@@ -70,15 +70,12 @@ public class CreateClubService {
 
     }
 
-    public ResponseEntity<Message> setTag(Long userId, Long createclub_id, List<TagEnum> tagEnumList) {
+    public ResponseEntity<Message> setTag(Long userId, Long createclub_id, List<String> tagList) {
+        System.out.println("tagList.toString() = " + tagList.toString());
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
-        String newString = "0".repeat(TagEnum.values().length);
-
-        StringBuilder sb = new StringBuilder(newString);
-        for (TagEnum tagEnum : tagEnumList) {
-            sb.setCharAt(tagEnum.ordinal(), '1');
-        }
-        createClub.setTagString(sb.toString());
+        String newString = TagEnum.tagListToTagString(tagList);
+        System.out.println("newString = " + newString);
+        createClub.setTagString(newString);
 
         return ResponseEntity.ok(new Message("성공"));
     }
@@ -134,7 +131,6 @@ public class CreateClubService {
         createClub.setFlagConfirmed(true);
         return ResponseEntity.ok(newClub);
     }
-
     //////////////////////private methods///////////////////
 
     private CreateClub loadCreateClubById(Long createclub_id) {
