@@ -2,8 +2,8 @@ package com.example.moyiza_be.user.dto;
 
 import com.example.moyiza_be.club.dto.ClubDetailResponse;
 import com.example.moyiza_be.club.dto.ClubListOnMyPage;
+import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.dto.OneDayDetailOnMyPage;
-import com.example.moyiza_be.oneday.dto.OneDayDetailResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayListOnMyPage;
 import com.example.moyiza_be.user.entity.User;
 import lombok.Getter;
@@ -19,6 +19,7 @@ public class MyPageResponseDto {
     private String nickname;
     private String email;
     private String profileImage;
+    private List<String> tags;
     private Integer clubsInOperationCount;
     private Integer clubsInParticipatingCount;
     private Integer oneDaysInOperationCount;
@@ -34,6 +35,7 @@ public class MyPageResponseDto {
         this.nickname = user.getNickname();
         this.email = user.getEmail();
         this.profileImage = user.getProfileImage();
+        this.tags = TagEnum.parseTag(user.getTagString());
         this.clubsInOperationCount = clubListOnMyPage.getClubsInOperationInfo().size();
         this.clubsInParticipatingCount = clubListOnMyPage.getClubsInParticipatingInfo().size();
         this.oneDaysInOperationCount = oneDayListOnMyPage.getOneDaysInOperationInfo().size();

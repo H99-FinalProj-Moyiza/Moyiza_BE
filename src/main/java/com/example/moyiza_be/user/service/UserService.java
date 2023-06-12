@@ -3,6 +3,7 @@ package com.example.moyiza_be.user.service;
 import com.example.moyiza_be.club.dto.ClubListOnMyPage;
 import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
+import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.security.jwt.CookieUtil;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
@@ -90,12 +91,21 @@ public class UserService {
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
         User user = findUser(email);
         checkDuplicatedNick(requestDto.getNickname());
+
         if(imageFile != null){
             awsS3Uploader.delete(user.getProfileImage());
             String storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
             user.updateProfileImage(storedFileUrl);
         }
-        user.updateProfile(requestDto);
+
+        List<TagEnum> tagEnumList = requestDto.getTagEnumList();
+        String newString = "0".repeat(TagEnum.values().length);
+        StringBuilder tagBuilder = new StringBuilder(newString);
+        for (TagEnum tagEnum : tagEnumList) {
+            tagBuilder.setCharAt(tagEnum.ordinal(), '1');
+        }
+        user.updateProfile(requestDto.getNickname(), tagBuilder.toString());
+
         return new ResponseEntity<>("회원정보 수정 완료", HttpStatus.OK);
     }
 

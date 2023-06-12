@@ -41,6 +41,8 @@ public class User extends TimeStamped {
 
     private String phone;
 
+    private String tagString;
+
     @Column(name = "image_url")
     @Lob
     private String profileImage;
@@ -69,18 +71,17 @@ public class User extends TimeStamped {
         this.role = Role.USER;
     }
 
-    public void updateProfile(UpdateRequestDto requestDto){
-        this.nickname = requestDto.getNickname();
-        this.password = requestDto.getPassword();
+    public void updateProfile(String nickname, String tagString){
+        this.nickname = nickname;
+        this.tagString = tagString;
+    }
+    public void updateProfileImage(String storedFileName) {
+        this.profileImage = storedFileName;
     }
 
     public User (String nickName, Long id){
         this.nickname = nickName;
         this.id = id;
-    }
-
-    public void updateProfileImage(String storedFileName) {
-        this.profileImage = storedFileName;
     }
 
     public void updateSocialLogin(OAuthAttributes attributes, SocialType socialType){
