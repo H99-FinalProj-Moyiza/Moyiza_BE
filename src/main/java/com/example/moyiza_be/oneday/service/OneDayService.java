@@ -225,7 +225,7 @@ public class OneDayService {
         return new ResponseEntity<>(oneDays, HttpStatus.OK);
     }
 
-    ///////////////////////////////////////////
+    /////////////////////////////////////////
 
     private OneDay loadExistingOnedayById(Long onedayId) {
         return oneDayRepository.findByIdAndDeletedFalse(onedayId).orElseThrow(
