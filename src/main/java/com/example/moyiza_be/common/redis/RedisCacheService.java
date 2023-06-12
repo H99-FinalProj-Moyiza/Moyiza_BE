@@ -9,12 +9,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class RedisCacheService {
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -118,7 +120,13 @@ public class RedisCacheService {
 
     public Long getInactiveReadCount(String chatId, Long nowMessageId){
         ZSetOperations<String, String> zSetOperations = redisStringStringTemplate.opsForZSet();
-        return zSetOperations.count(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, nowMessageId, -1);
+        try{
+            return zSetOperations.count(chatId + LAST_MESSAGE_ZSET_IDENTIFIER, nowMessageId, Double.POSITIVE_INFINITY);
+        }
+        catch(Exception e){
+            log.info("error counting inactive readCount : " + e.getMessage());
+            throw e;
+        }
     }
 
     public Long getTotalReadCount(String chatId, Long nowMessageId){

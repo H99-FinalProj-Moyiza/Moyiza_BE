@@ -59,7 +59,6 @@ public enum TagEnum {
     LOVERELATED("연애관련?", CategoryEnum.DATE);
 
 
-
     private final String tag;
     private final CategoryEnum categoryEnum;
 
@@ -68,8 +67,13 @@ public enum TagEnum {
         this.categoryEnum = categoryEnum;
     }
 
-    public String getTag(){return this.tag;}
-    public CategoryEnum getCategoryEnum(){return this.categoryEnum;}
+    public String getTag() {
+        return this.tag;
+    }
+
+    public CategoryEnum getCategoryEnum() {
+        return this.categoryEnum;
+    }
 
     public static TagEnum fromString(String tag) {
         for (TagEnum tagEnum : TagEnum.values()) {
@@ -77,22 +81,47 @@ public enum TagEnum {
                 return tagEnum;
             }
         }
-        throw new IllegalArgumentException(String.format("%s에 해당하는 Tag를 찾을 수 없습니다",tag));
+        throw new IllegalArgumentException(String.format("%s에 해당하는 Tag를 찾을 수 없습니다", tag));
     }
 
-    public static List<String> parseTag(String tagString){
-        if(tagString == null){return null;}
-        List<String> tagList= new ArrayList<>();
+    public static List<String> parseTag(String tagString) {
+        if (tagString == null) {
+            return null;
+        }
+        List<String> tagList = new ArrayList<>();
         TagEnum[] tagValues = TagEnum.values();
         int i = 0;
-        while(i <= tagString.length() -1){
-             int idx = tagString.indexOf('1',i);
-             if(idx == -1){break;}
-             else{
-                 tagList.add(tagValues[idx].getTag());
-                 i = idx+1;
-             }
+        while (i <= tagString.length() - 1) {
+            int idx = tagString.indexOf('1', i);
+            if (idx == -1) {
+                break;
+            } else {
+                tagList.add(tagValues[idx].getTag());
+                i = idx + 1;
+            }
         }
         return tagList;
+    }
+
+    public static String tagListToTagString(List<String> tagList) {
+        if (tagList == null){
+            tagList = new ArrayList<>();
+        }
+        List<TagEnum> tagEnumList = tagListToEnumList(tagList);
+        String newString = "0".repeat(TagEnum.values().length);
+
+        StringBuilder sb = new StringBuilder(newString);
+        for (TagEnum tagEnum : tagEnumList) {
+            sb.setCharAt(tagEnum.ordinal(), '1');
+        }
+
+        return sb.toString();
+    }
+
+    private static List<TagEnum> tagListToEnumList(List<String> tagList) {
+        return tagList.stream()
+                .map(TagEnum::fromString)
+                .sorted()
+                .toList();
     }
 }

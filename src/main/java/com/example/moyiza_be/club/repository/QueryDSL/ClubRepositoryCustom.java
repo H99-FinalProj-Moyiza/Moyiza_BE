@@ -18,6 +18,8 @@ import java.util.List;
 
 import static com.example.moyiza_be.club.entity.QClub.club;
 import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.example.moyiza_be.club.entity.QClubJoinEntry.clubJoinEntry;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -129,6 +131,54 @@ public class ClubRepositoryCustom {
                 .join(user).on(club.ownerId.eq(user.id))
                 .where(club.id.eq(clubId))
                 .fetchOne();
+    }
+
+//운영중인 마이페이지 클럽 리스트 조회
+    public List<ClubDetailResponse> getManagedClubDetail(Long userId) {
+        return jpaQueryFactory
+                .select(
+                        new QClubDetailResponse(
+                                club.id,
+                                user.nickname,
+                                club.title,
+                                club.category,
+                                club.tagString,
+                                club.content,
+                                club.agePolicy,
+                                club.genderPolicy,
+                                club.maxGroupSize,
+                                club.nowMemberCount,
+                                club.thumbnailUrl
+                        )
+                )
+                .from(club)
+                .join(user).on(club.ownerId.eq(userId))
+                .where(user.id.eq(userId))
+                .fetch();
+    }
+
+    public List<ClubDetailResponse> getJoinedClubDetail(Long userId) {
+        return jpaQueryFactory
+                .select(
+                        new QClubDetailResponse(
+                                club.id,
+                                user.nickname,
+                                club.title,
+                                club.category,
+                                club.tagString,
+                                club.content,
+                                club.agePolicy,
+                                club.genderPolicy,
+                                club.maxGroupSize,
+                                club.nowMemberCount,
+                                club.thumbnailUrl
+                        )
+                )
+                .from(club)
+                .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
+                .join(user).on(clubJoinEntry.userId.eq(userId))
+                .where(user.id.eq(userId))
+                .fetch();
     }
 
 //    private OrderSpecifier createOrderSpecifier(OrderCondition orderCondition) {
