@@ -61,7 +61,7 @@ public class OneDay extends TimeStamped {
     private String  oneDayImage;
     @Column
     @Enumerated(EnumType.STRING)
-    private OneDayTypeEnum type;
+    private OneDayTypeEnum type = OneDayTypeEnum.FCFSB;
 //    @Column
 //    private boolean expired = false;
 
