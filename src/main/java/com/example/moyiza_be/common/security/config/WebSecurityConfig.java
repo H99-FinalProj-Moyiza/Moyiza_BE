@@ -44,6 +44,7 @@ public class WebSecurityConfig {
             "/oauth2/authorization/**",
             "/login",
             "/login/**",
+            "/signup/social",
             "/enums",
             "/.well-known/acme-challenge/**" //Certbot의 도메인 소유권 확인
     };
