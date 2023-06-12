@@ -10,7 +10,6 @@ import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -75,7 +74,6 @@ public class UserController {
         return mypageService.getMypage(userDetails.getUser());
     }
 
-
     //회원정보 수정
     @PutMapping(value = "/profile",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
@@ -102,4 +100,16 @@ public class UserController {
     public ResponseEntity<?> isDuplicatedNick(@RequestBody CheckNickRequestDto requestDto){
         return userService.isDuplicatedNick(requestDto);
     }
+
+    //이메일 찾기 - 문자 전송
+    @PostMapping("/find/email")
+    public ResponseEntity<?> findUserEmail(@RequestBody FindEmailRequestDto requestDto){
+        return userService.sendSmsToFindEmail(requestDto);
+    }
+    //이메일 찾기 - 코드 검증
+    @PostMapping("/find/email/verifyCode")
+    public ResponseEntity<?> findUserEmailVerifyCode(@RequestBody Map<String, String> codeMap) throws Exception {
+        return userService.verifyCodeToFindEmail(codeMap.get("code"));
+    }
+
 }
