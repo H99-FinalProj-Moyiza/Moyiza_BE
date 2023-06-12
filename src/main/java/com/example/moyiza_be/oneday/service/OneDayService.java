@@ -16,6 +16,7 @@ import com.example.moyiza_be.oneday.entity.OneDayImageUrl;
 import com.example.moyiza_be.oneday.repository.OneDayAttendantRepository;
 import com.example.moyiza_be.oneday.repository.OneDayImageUrlRepository;
 import com.example.moyiza_be.oneday.repository.OneDayRepository;
+import com.example.moyiza_be.oneday.repository.QueryDSL.OneDayAttendantRepositoryCustom;
 import com.example.moyiza_be.oneday.repository.QueryDSL.OneDayRepositoryCustom;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.service.UserService;
@@ -50,6 +51,7 @@ public class OneDayService {
     private final UserService userService;
     private final OneDayImageUrlRepository imageUrlRepository;
     private final OneDayRepositoryCustom oneDayRepositoryCustom;
+    private final OneDayAttendantRepositoryCustom oneDayAttendantRepositoryCustom;
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
@@ -57,15 +59,16 @@ public class OneDayService {
     //revisit
     public OneDayDetailResponse createOneDay(User user, OneDayCreateConfirmDto confirmDto) {
         OneDay oneDay = new OneDay(confirmDto);
+        oneDayRepository.saveAndFlush(oneDay);
         List<String> oneDayImageUrlList = imageUrlRepository.findAllById(Collections.singleton(confirmDto.getCreateOneDayId()))
                 .stream()
                 .peek(image -> image.setOneDayId(oneDay.getId()))
                 .map(OneDayImageUrl::getImageUrl)
                 .toList();
+        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         oneDay.setDeleted(false);
         oneDay.setAttendantsNum(1);
         oneDayRepository.saveAndFlush(oneDay);
-        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         // 방장 추가
         joinOneDay(oneDay.getId(), user);
         return new OneDayDetailResponse(oneDay, oneDayImageUrlList);
@@ -76,8 +79,8 @@ public class OneDayService {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         // 이미지 처리 어떻게 하지?
         List<String> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDayId).stream().map(OneDayImageUrl::getImageUrl).toList();
-        List<OneDayAttendant> attendantList = attendantRepository.findAttendantsByOneDayId(oneDayId);
-        OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(oneDay, oneDayImageUrlList, attendantList, attendantList.size());
+        List<OneDayMemberResponse> oneDayMemberResponseList = oneDayAttendantRepositoryCustom.getOneDayMemberList(oneDayId);
+        OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(oneDay, oneDayImageUrlList, oneDayMemberResponseList);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
