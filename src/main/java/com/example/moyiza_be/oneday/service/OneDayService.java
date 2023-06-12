@@ -59,7 +59,6 @@ public class OneDayService {
     //revisit
     public OneDayDetailResponse createOneDay(User user, OneDayCreateConfirmDto confirmDto) {
         OneDay oneDay = new OneDay(confirmDto);
-        oneDayRepository.saveAndFlush(oneDay);
         List<String> oneDayImageUrlList = imageUrlRepository.findAllById(Collections.singleton(confirmDto.getCreateOneDayId()))
                 .stream()
                 .peek(image -> image.setOneDayId(oneDay.getId()))
