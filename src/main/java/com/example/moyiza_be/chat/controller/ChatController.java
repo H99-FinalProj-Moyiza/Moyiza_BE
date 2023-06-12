@@ -46,10 +46,6 @@ public class ChatController {
 
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         String sessionId = headerAccessor.getSessionId();
-        if(StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())){
-            System.out.println("\"SUBSCRIBE message comming through to controller\" = " + "SUBSCRIBE message comming through to controller");
-            System.out.println("headerAccessor = " + headerAccessor);
-        }
         ChatUserPrincipal userInfo = redisCacheService.getUserInfoFromCache(sessionId);
         chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
     }
