@@ -64,10 +64,10 @@ public class OneDayService {
                 .peek(image -> image.setOneDayId(oneDay.getId()))
                 .map(OneDayImageUrl::getImageUrl)
                 .toList();
-        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         oneDay.setDeleted(false);
         oneDay.setAttendantsNum(1);
         oneDayRepository.saveAndFlush(oneDay);
+        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         // 방장 추가
         joinOneDay(oneDay.getId(), user);
         return new OneDayDetailResponse(oneDay, oneDayImageUrlList);
