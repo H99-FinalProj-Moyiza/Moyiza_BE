@@ -4,6 +4,7 @@ import com.example.moyiza_be.club.dto.ClubListOnMyPage;
 import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
+import com.example.moyiza_be.common.redis.RedisUtil;
 import com.example.moyiza_be.common.security.jwt.CookieUtil;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
@@ -12,11 +13,15 @@ import com.example.moyiza_be.oneday.service.OneDayService;
 import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
+import com.example.moyiza_be.user.sms.SmsUtil;
+import com.example.moyiza_be.user.util.ValidationUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,6 +44,9 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AwsS3Uploader awsS3Uploader;
     private final ClubService clubService;
+    private final SmsUtil smsUtil;
+    private final ValidationUtil validationUtil;
+    private final RedisUtil redisUtil;
 
     //회원가입
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
@@ -134,12 +142,34 @@ public class UserService {
         result.put("isDuplicatedNick", false);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+    //이메일 찾기 - 문자 전송
+    public ResponseEntity<?> sendSmsToFindEmail(FindEmailRequestDto requestDto) {
+        String name = requestDto.getName();
+        String phoneNum = requestDto.getPhone().replaceAll("-","");
+        User foundUser = userRepository.findByNameAndPhone(name, phoneNum).orElseThrow(()->
+                new NoSuchElementException("사용자가 존재하지 않습니다."));
+        String receiverEmail = foundUser.getEmail();
+        String verificationCode = validationUtil.createCode();
+        smsUtil.sendSms(phoneNum, verificationCode);
+        redisUtil.setDataExpire(verificationCode, receiverEmail, 60 * 5L); //유효시간 5분
+
+        return new ResponseEntity<>("문자 전송 성공", HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> verifyCodeToFindEmail(String code) {
+        String userEmail = redisUtil.getData(code);
+        if(userEmail == null){
+            throw new NullPointerException("잘못된 인증번호입니다.");
+        }
+        redisUtil.deleteData(code);
+        EmailResponseDto responseDto = new EmailResponseDto(userEmail);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
 
     public User findUser(String email){
         return userRepository.findByEmail(email).orElseThrow(()->
                 new NoSuchElementException("사용자가 존재하지 않습니다."));
     }
-
 
     public void checkDuplicatedEmail(String email){
         Optional<User> findUserByEmail = userRepository.findByEmail(email);
@@ -147,7 +177,6 @@ public class UserService {
             throw new IllegalArgumentException("중복된 이메일 사용");
         }
     }
-
     public void checkDuplicatedNick(String nickname){
         Optional<User> findUserByNickname = userRepository.findByNickname(nickname);
         if (findUserByNickname.isPresent()) {
@@ -158,6 +187,7 @@ public class UserService {
     public List<User> loadUserListByIdList(List<Long> userIdList){    // club멤버조회 시 사용
         return userRepository.findAllById(userIdList);
     }
+
     public User loadUserById(Long userId){
         return userRepository.findById(userId).orElseThrow(
                 () -> new NullPointerException("유저를 찾을 수 없습니다"));
