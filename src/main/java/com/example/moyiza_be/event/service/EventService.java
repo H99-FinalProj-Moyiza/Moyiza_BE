@@ -137,6 +137,7 @@ public class EventService {
         }
         EventAttendant eventAttendant = new EventAttendant(eventId, user.getId(), user);
         attendantRepository.save(eventAttendant);
+        event.addAttend();
         return ResponseEntity.ok("참석되었습니다.");
     }
     public ResponseEntity<?> cancelEvent(Long eventId, User user) {
@@ -144,6 +145,7 @@ public class EventService {
         EventAttendant eventAttendant = attendantRepository.findByEventIdAndUserId(eventId, user.getId());
         if (eventAttendant != null) {
             attendantRepository.delete(eventAttendant);
+            event.cancelAttend();
             return ResponseEntity.ok("취소되었습니다.");
         } else {
             return ResponseEntity.ok("참석권한이 없습니다.");

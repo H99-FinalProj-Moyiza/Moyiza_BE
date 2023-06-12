@@ -57,16 +57,15 @@ public class OneDayService {
     //revisit
     public OneDayDetailResponse createOneDay(User user, OneDayCreateConfirmDto confirmDto) {
         OneDay oneDay = new OneDay(confirmDto);
-        oneDayRepository.saveAndFlush(oneDay);
         List<String> oneDayImageUrlList = imageUrlRepository.findAllById(Collections.singleton(confirmDto.getCreateOneDayId()))
                 .stream()
                 .peek(image -> image.setOneDayId(oneDay.getId()))
                 .map(OneDayImageUrl::getImageUrl)
                 .toList();
-        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         oneDay.setDeleted(false);
         oneDay.setAttendantsNum(1);
         oneDayRepository.saveAndFlush(oneDay);
+        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         // 방장 추가
         joinOneDay(oneDay.getId(), user);
         return new OneDayDetailResponse(oneDay, oneDayImageUrlList);
@@ -77,7 +76,7 @@ public class OneDayService {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         // 이미지 처리 어떻게 하지?
         List<String> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDayId).stream().map(OneDayImageUrl::getImageUrl).toList();
-        List<OneDayAttendant> attendantList = attendantRepository.findByOneDayId(oneDayId);
+        List<OneDayAttendant> attendantList = attendantRepository.findAttendantsByOneDayId(oneDayId);
         OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(oneDay, oneDayImageUrlList, attendantList, attendantList.size());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
