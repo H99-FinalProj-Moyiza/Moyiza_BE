@@ -33,10 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -112,6 +109,7 @@ public class OneDayService {
                         .oneDayImage(oneDay.getOneDayImage())
                         .oneDayAttendantListSize(oneDaysInOperation.size())
                         .build())
+                .sorted(Comparator.comparing(OneDayDetailOnMyPage::getOneDayId).reversed())
                 .collect(Collectors.toList());
 
         // List For Attending OneDay
@@ -132,6 +130,7 @@ public class OneDayService {
                         .oneDayImage(oneDay.getOneDayImage())
                         .oneDayAttendantListSize(oneDaysInParticipating.size())
                         .build())
+                .sorted(Comparator.comparing(OneDayDetailOnMyPage::getOneDayId).reversed())
                 .collect(Collectors.toList());
 
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
