@@ -41,9 +41,11 @@ public class WebSecurityConfig {
             "/user/signup/**",
             "/user/check/**",
             "/user/test/**",
+            "/user/find/email/**",
             "/oauth2/authorization/**",
             "/login",
             "/login/**",
+            "/signup/social",
             "/enums",
             "/.well-known/acme-challenge/**" //Verify domain ownership for Certbot
     };

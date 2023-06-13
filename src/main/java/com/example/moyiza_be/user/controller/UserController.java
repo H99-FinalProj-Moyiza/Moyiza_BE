@@ -10,7 +10,6 @@ import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,8 +33,8 @@ public class UserController {
                                     @RequestPart(value = "imageFile")@Nullable MultipartFile image){
         return userService.signup(requestDto, image);
     }
-    /*Temporary API for storing user information not received from the OAuth2 Provider
-      To get all the information, we'll need to register and convert your business.
+    /*OAuth2 Provider에서 받아오지 못하는 사용자 정보를 저장하기 위한 임시 api
+      필요한 정보를 전부 받아오기 위해선 사업자 등록, 전환이 필요하다
      */
     @PutMapping ("/signup/social")
     public ResponseEntity<?> updateSocialInfo(@RequestBody UpdateSocialInfoRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
@@ -46,7 +45,7 @@ public class UserController {
         return userService.getSocialInfo(userDetails.getUser());
     }
 
-    //Email Authentication - Send Email
+    //이메일 인증 - 이메일 전송
     @PostMapping("/signup/confirmEmail")
     public ResponseEntity<?> confirmEmail(@RequestBody EmailRequestDto requestDto) throws Exception {
         return emailService.sendSimpleMessage(requestDto);
@@ -57,26 +56,25 @@ public class UserController {
         return emailService.verifyCode(codeMap.get("code"));
     }
 
-    //Login
+    //로그인
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto, HttpServletResponse response){
         return userService.login(requestDto, response);
     }
 
-    //Logout
+    //로그아웃
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.logout(request, response, userDetails.getUser().getEmail());
     }
 
-    //Mypage
+    //마이페이지
     @GetMapping("/mypage")
     public ResponseEntity<?> getMypage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return mypageService.getMypage(userDetails.getUser());
     }
 
-
-    //Modify Profile
+    //회원정보 수정
     @PutMapping(value = "/profile",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<?> updateProfile(@RequestPart(value = "imageFile") MultipartFile image,
@@ -85,21 +83,42 @@ public class UserController {
         return userService.updateProfile(image, requestDto, userDetails.getUser().getEmail());
     }
 
-    //Reissue an Access token with a Refresh token
+    //Refresh 토큰으로 Access 토큰 재발급
     @GetMapping("/reissue")
     public ResponseEntity<?> reissueToken(@CookieValue(value = "REFRESH_TOKEN", required = false) String refreshToken, HttpServletResponse response){
         return userService.reissueToken(refreshToken, response);
     }
 
-    //Check for email duplicates
+    //이메일 중복 확인
     @PostMapping("/check/email")
     public ResponseEntity<?> isDuplicatedEmail(@RequestBody CheckEmailRequestDto requestDto){
         return userService.isDuplicatedEmail(requestDto);
     }
 
-    //Check for nickname duplicates
+    //닉네임 중복 확인
     @PostMapping("/check/nickname")
     public ResponseEntity<?> isDuplicatedNick(@RequestBody CheckNickRequestDto requestDto){
         return userService.isDuplicatedNick(requestDto);
+    }
+
+    //이메일 찾기 - 문자 전송
+    @PostMapping("/find/email")
+    public ResponseEntity<?> findUserEmail(@RequestBody FindEmailRequestDto requestDto){
+        return userService.sendSmsToFindEmail(requestDto);
+    }
+    //이메일 찾기 - 코드 검증
+    @PostMapping("/find/email/verifyCode")
+    public ResponseEntity<?> findUserEmailVerifyCode(@RequestBody Map<String, String> codeMap) throws Exception {
+        return userService.verifyCodeToFindEmail(codeMap.get("code"));
+    }
+
+    //회원가입 테스트
+    @PostMapping("/test/upload")
+    public ResponseEntity<?> uploadTest(@RequestPart(value = "imageFile") MultipartFile image){
+        return userService.uploadTest(image);
+    }
+    @PostMapping("/test/signup")
+    public ResponseEntity<?> signupTest(@RequestBody TestSignupRequestDto testRequestDto){
+        return userService.signupTest(testRequestDto);
     }
 }

@@ -26,17 +26,17 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException, IOException {
-        log.info("OAuth2 Login Success!");
+        log.info("OAuth2 Login 성공!");
         try {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
             User findUser = userRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(
-                    () -> new NoSuchElementException("Member doesn't exist."));
+                    () -> new NoSuchElementException("회원이 존재하지 않습니다."));
             jwtUtil.createAndSetToken(response, findUser);
             if(oAuth2User.getRole() == Role.GUEST) {
-                // If the user's Role is GUEST, redirect them to the signup page because they don't have enough information.
-                response.sendRedirect("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/signup/social");
+                // User의 Role이 GUEST일 경우 회원정보가 부족한 회원이므로 회원가입 페이지로 리다이렉트
+                response.sendRedirect("http://localhost:3000/signup/social");
             } else {
-                response.sendRedirect("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/");
+                response.sendRedirect("http://localhost:3000/");
             }
 
         } catch (Exception e) {
