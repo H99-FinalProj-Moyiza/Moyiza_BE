@@ -1,6 +1,5 @@
 package com.example.moyiza_be.user.service;
 
-import com.example.moyiza_be.club.dto.ClubListOnMyPage;
 import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
@@ -9,7 +8,6 @@ import com.example.moyiza_be.common.security.jwt.CookieUtil;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
-import com.example.moyiza_be.oneday.service.OneDayService;
 import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
@@ -17,16 +15,13 @@ import com.example.moyiza_be.user.sms.SmsUtil;
 import com.example.moyiza_be.user.util.ValidationUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.Null;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.nurigo.sdk.message.model.Message;
-import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -34,7 +29,6 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
@@ -49,6 +43,7 @@ public class UserService {
     private final RedisUtil redisUtil;
 
     //Signup
+    @Transactional
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
         String storedFileUrl = BasicProfileEnum.getRandomImage().getImageUrl();
@@ -62,6 +57,8 @@ public class UserService {
         userRepository.save(user);
         return new ResponseEntity<>("Sign up successfully", HttpStatus.OK);
     }
+
+    @Transactional
     public ResponseEntity<?> updateSocialInfo(UpdateSocialInfoRequestDto requestDto, User user) {
         User foundUser = findUser(user.getEmail());
         checkDuplicatedNick(requestDto.getNickname());
@@ -69,6 +66,7 @@ public class UserService {
         foundUser.authorizeUser();
         return new ResponseEntity<>("Social signup complete!", HttpStatus.OK);
     }
+
     public ResponseEntity<?> getSocialInfo(User user) {
 //        User foundUser = findUser(user.getEmail());
         SocialInfoResponseDto responseDto = new SocialInfoResponseDto(user.getName(), user.getNickname());
@@ -88,6 +86,7 @@ public class UserService {
     }
 
     //Logout
+    @Transactional
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, String email) {
         cookieUtil.deleteCookie(request, response, "REFRESH_TOKEN");
         refreshTokenRepository.deleteByEmail(email).orElseThrow(
@@ -96,6 +95,7 @@ public class UserService {
     }
 
     //Modify Profile
+    @Transactional
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
         User user = findUser(email);
         checkDuplicatedNick(requestDto.getNickname());
@@ -118,6 +118,7 @@ public class UserService {
     }
 
     //Reissue Token
+    @Transactional
     public ResponseEntity<?> reissueToken(String refreshToken, HttpServletResponse response) {
         jwtUtil.refreshTokenValid(refreshToken);
         String userEmail = jwtUtil.getUserInfoFromToken(refreshToken);
@@ -143,6 +144,7 @@ public class UserService {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
     //Find email - Send text
+    @Transactional
     public ResponseEntity<?> sendSmsToFindEmail(FindEmailRequestDto requestDto) {
         String name = requestDto.getName();
         String phoneNum = requestDto.getPhone().replaceAll("-","");
@@ -175,6 +177,7 @@ public class UserService {
         return new ResponseEntity<>(storedFileUrl, HttpStatus.OK);
     }
 
+    @Transactional
     public ResponseEntity<?> signupTest(TestSignupRequestDto testRequestDto) {
         String password = passwordEncoder.encode(testRequestDto.getPassword());
         checkDuplicatedEmail(testRequestDto.getEmail());
