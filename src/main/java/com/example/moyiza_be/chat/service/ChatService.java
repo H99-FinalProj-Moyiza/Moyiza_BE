@@ -66,6 +66,7 @@ public class ChatService {
     }
 
     public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(Long userId){
+
         List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId)
                 .stream()
                 .peek(chatRoomInfo ->
