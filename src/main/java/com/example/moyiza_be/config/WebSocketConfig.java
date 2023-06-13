@@ -18,14 +18,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-    private final StompHandler stompHandler; // jwt 인증
+    private final StompHandler stompHandler; // JWT Validation
     private final MoyizaHandshakeInterceptor moyizaHandshakeInterceptor;
     private final ChatErrorHandler chatErrorHandler;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/chat");
-        config.setApplicationDestinationPrefixes("/app");  // 유저가 보낼때 // app/보낼주소
+        config.setApplicationDestinationPrefixes("/app");
     }
 
 

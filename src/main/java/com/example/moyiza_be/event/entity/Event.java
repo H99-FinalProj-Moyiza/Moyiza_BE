@@ -74,7 +74,6 @@ public class Event extends TimeStamped {
         this.eventGroupSize = eventRequestDto.getEventGroupSize();
         this.eventStartTime = eventRequestDto.getEventStartTime();
         this.image = imgUrl;
-//        super(); 를 쓸 수 있지 않을까?
     }
     public void updateImage(String image) {
         this.image = image;

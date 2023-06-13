@@ -55,8 +55,8 @@ public class OneDayService {
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
-    // 원데이 생성
-    //revisit
+    // Create OneDay
+    // revisit
     public OneDayDetailResponse createOneDay(User user, OneDayCreateConfirmDto confirmDto) {
         OneDay oneDay = new OneDay(confirmDto);
         List<String> oneDayImageUrlList = imageUrlRepository.findAllById(Collections.singleton(confirmDto.getCreateOneDayId()))
@@ -64,26 +64,26 @@ public class OneDayService {
                 .peek(image -> image.setOneDayId(oneDay.getId()))
                 .map(OneDayImageUrl::getImageUrl)
                 .toList();
-        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         oneDay.setDeleted(false);
         oneDay.setAttendantsNum(1);
         oneDayRepository.saveAndFlush(oneDay);
-        // 방장 추가
+        chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
+        // Add Owner
         joinOneDay(oneDay.getId(), user);
         return new OneDayDetailResponse(oneDay, oneDayImageUrlList);
     }
 
-    // 원데이 상세 조회
+    // Read Detail OneDay
     public ResponseEntity<OneDayDetailResponseDto> getOneDayDetail(Long oneDayId) {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
-        // 이미지 처리 어떻게 하지?
+        // Image Process Issue at here...
         List<String> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDayId).stream().map(OneDayImageUrl::getImageUrl).toList();
         List<OneDayMemberResponse> oneDayMemberResponseList = oneDayAttendantRepositoryCustom.getOneDayMemberList(oneDayId);
         OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(oneDay, oneDayImageUrlList, oneDayMemberResponseList);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    // 원데이 목록 조회
+    // Read OneDay List
     public ResponseEntity<Page<OneDayListResponseDto>> getFilteredOneDayList(
             Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
             Double longitude, Double latitude, Double radius, LocalDateTime startafter
@@ -94,9 +94,9 @@ public class OneDayService {
         return ResponseEntity.ok(filteredOnedayList);
     }
 
-    // 마이페이지 원데이 목록 조회
+    // List For MyPage OneDay
     public OneDayListOnMyPage getOneDayListOnMyPage(Long userId) {
-        // 운영중인 원데이 정보 리스트
+        // List For Operating OneDay
         List<OneDay> oneDaysInOperation = oneDayRepository.findAllByOwnerId(userId);
         List<OneDayDetailOnMyPage> oneDaysInOperationInfo = oneDaysInOperation.stream()
                 .map(oneDay -> new OneDayDetailOnMyPage(oneDay).builder()
@@ -112,7 +112,7 @@ public class OneDayService {
                         .build())
                 .collect(Collectors.toList());
 
-        // 참여중인 원데이 정보 리스트
+        // List For Attending OneDay
         List<OneDayAttendant> oneDaysInParticipatingEntry = attendantRepository.findByUserId(userId);
         List<Long> oneDaysInParticipatingIds = oneDaysInParticipatingEntry.stream()
                 .map(OneDayAttendant::getOneDayId)
@@ -135,82 +135,81 @@ public class OneDayService {
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }
 
-    // 원데이 수정
+    // Update OneDay
     public ResponseEntity<?> updateOneDay(Long id, OneDayUpdateRequestDto requestDto, User user, MultipartFile imageUrl) throws IOException {
-        // 삭제안된 원데이 가져오기
+        // Load Undeleted OneDay
         OneDay oneDay = loadExistingOnedayById(id);
         if (!checkOnedayOwnership(user.getId(), oneDay)) {
-            throw new AccessDeniedException("권한이 없습니다");
+            throw new AccessDeniedException("401 Unauthorized");
         }
-        // 이미지 처리
-        // 이미지가 바뀌지 않아도 업로드 되는 이슈
+        // Imaging Process
+        // Issue : Even Image not changed, Image Upload one more time
         String storedFileUrl = oneDay.getOneDayImage();
         if (!Objects.isNull(imageUrl) && !imageUrl.isEmpty()) {
             storedFileUrl = awsS3Uploader.uploadFile(imageUrl);
         }
-        // 작성자는 맞는가
+        // Is User Author?
         oneDay.updateAll(requestDto);
         oneDay.updateOneDayImage(storedFileUrl);
-        return new ResponseEntity<>("수정성공", HttpStatus.OK);
+        return new ResponseEntity<>("Update Complete", HttpStatus.OK);
     }
 
-    // 원데이 삭제
+    // Deleting OneDay
     public ResponseEntity<Message> deleteOneDay(Long userId, Long oneDayId) {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         checkOnedayOwnership(userId, oneDay);
         oneDay.setDeleted(true);
-        return ResponseEntity.ok(new Message("삭제되었습니다"));
+        return ResponseEntity.ok(new Message("Deleting Complete"));
 
     }
 
-    // 원데이 참석
+    // Attending OneDay
     public ResponseEntity<?> joinOneDay(Long oneDayId, User user) {
         if (attendantRepository.existsByOneDayIdAndUserId(oneDayId, user.getId())) {
-            return new ResponseEntity<>(new Message("중복으로 가입할 수 없습니다"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message("Cannot Attend Twice"), HttpStatus.BAD_REQUEST);
         }
         OneDay oneDay = loadExistingOnedayById(oneDayId);
-        if (oneDay.getType() == OneDayTypeEnum.APPROVAL) { // 방장일경우 Pass하는 로직 추가해야함
-            return new ResponseEntity<>("승인제 구현중", HttpStatus.FORBIDDEN);
+        if (oneDay.getType() == OneDayTypeEnum.APPROVAL) { // Logic should be added if user is owner
+            return new ResponseEntity<>("Approval System Under Constructing", HttpStatus.FORBIDDEN);
         } else {
-            // 선착순제 인 경우 인원이 다 찼는가?
+            // FCGSB -> Is it Fully occupied?
             if (oneDay.getAttendantsNum() < oneDay.getOneDayGroupSize()) {
                 OneDayAttendant attendant = new OneDayAttendant(oneDay, user.getId());
                 attendantRepository.save(attendant);
                 chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
                 oneDay.addAttendantNum();
-                return new ResponseEntity<>("참석되었습니다.", HttpStatus.OK);
+                return new ResponseEntity<>("Attending Success", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("하루속 인원이 가득 찼어요", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("Fully Occupied", HttpStatus.FORBIDDEN);
             }
         }
     }
 
-    // 원데이 참석 취소
+    // Cancel OneDay Attend
     public ResponseEntity<?> cancelOneDay(Long oneDayId, User user) {
         OneDay oneday = loadExistingOnedayById(oneDayId);
         OneDayAttendant oneDayAttendant = findAndLoadOnedayAttendant(oneDayId, user.getId());
         attendantRepository.delete(oneDayAttendant);
         chatService.leaveChat(oneDayId, ChatTypeEnum.ONEDAY, user);
         oneday.minusAttendantNum();
-        return new ResponseEntity<>("하루속에서 탈퇴되었습니다.", HttpStatus.OK);
+        return new ResponseEntity<>("cancel attending completed", HttpStatus.OK);
     }
 
-    // 원데이 강퇴
+    // Ban Person at OneDay
     public ResponseEntity<?> banOneDay(Long oneDayId, Long userId, BanOneDay banRequest) {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         if (!oneDayRepository.existsByIdAndDeletedFalseAndOwnerIdEquals(oneDayId, userId)) {
-            return new ResponseEntity<>(new Message("권한이 없습니다"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message("401 Unauthorized"), HttpStatus.BAD_REQUEST);
         }
         OneDayAttendant attendant = findAndLoadOnedayAttendant(oneDayId, banRequest.getBanUserId());
         attendantRepository.delete(attendant);
         oneDay.minusAttendantNum();
         User banUser = userService.loadUserById(banRequest.getBanUserId());
         chatService.leaveChat(oneDayId, ChatTypeEnum.ONEDAY, banUser);
-        return new ResponseEntity<>(String.format("user %d 가 하루속에서 강퇴되었습니다", banRequest.getBanUserId()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(String.format("user %d has been banned", banRequest.getBanUserId()), HttpStatus.BAD_REQUEST);
     }
 
-    // 원데이 승인제
-    //거리기반 위치 추천
+    // Recommendation Based on Distance
 
     public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(double nowLatitude, double nowLongitude) {
         List<Object[]> nearByOneDays = oneDayRepository.findNearByOneDays(nowLatitude, nowLongitude);
@@ -225,11 +224,11 @@ public class OneDayService {
         return new ResponseEntity<>(oneDays, HttpStatus.OK);
     }
 
-    ///////////////////////////////////////////
+    /////////////////////////////////////////
 
     private OneDay loadExistingOnedayById(Long onedayId) {
         return oneDayRepository.findByIdAndDeletedFalse(onedayId).orElseThrow(
-                () -> new NullPointerException("oneDay를 찾을 수 없습니다")
+                () -> new NullPointerException("404 OneDay Not Found")
         );
     }
 
@@ -239,18 +238,19 @@ public class OneDayService {
 
     private OneDayAttendant findAndLoadOnedayAttendant(Long onedayId, Long userId) {
         return attendantRepository.findByOneDayIdAndUserId(onedayId, userId)
-                .orElseThrow(() -> new NullPointerException("참여정보가 없습니다"));
+                .orElseThrow(() -> new NullPointerException("No Such Attendant"));
     }
 
+//      OneDay Approval System
 //    private ResponseEntity<?> approvalOneDay(Long oneDayId, Long userId, Long ownerId) {
-//        User owner = userRepository.findById(ownerId).orElseThrow(() -> new NullPointerException("생성된 하루속이 없어요!"));
-//        User guest = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("참석을 신청해 주세요"));
-//        OneDay oneDay = loadExistingOnedayById(oneDayId);
+//        User owner = userRepository.findById(ownerId).orElseThrow(() -> new NullPointerException("404 No Such Created OneDay!"));
+//        User guest = userRepository.findById(userId).orElseThrow(() -> new NullPointerException("Request Attending First"));
+//        OneDay oneDay = loadExistingOneDayById(oneDayId);
 //        if (ownerId.equals(userId)) {
 //            return new ResponseEntity<>("Hey! You own this!", HttpStatus.UNAUTHORIZED);
 //        } else {
-//            // 승인 푸시 생성
-//            return new ResponseEntity<>("승인 요청되었습니다.", HttpStatus.OK);
+//            // Approval Push Create
+//            return new ResponseEntity<>("Approval Request Succeed", HttpStatus.OK);
 //        }
 //    }
 }

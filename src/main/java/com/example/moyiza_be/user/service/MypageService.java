@@ -16,7 +16,6 @@ public class MypageService {
     private final OneDayService oneDayService;
     private final ClubService clubService;
 
-    //마이페이지
     public ResponseEntity<?> getMypage(User user) {
         ClubListOnMyPage clubListOnMyPage = clubService.getClubListOnMyPage(user.getId());
         OneDayListOnMyPage oneDayListOnMyPage = oneDayService.getOneDayListOnMyPage(user.getId());

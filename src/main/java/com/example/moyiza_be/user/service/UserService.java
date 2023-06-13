@@ -44,7 +44,7 @@ public class UserService {
     private final ValidationUtil validationUtil;
     private final RedisUtil redisUtil;
 
-    //회원가입
+    //Signup
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
         String storedFileUrl = BasicProfileEnum.getRandomImage().getImageUrl();
@@ -56,14 +56,14 @@ public class UserService {
         User user = new User(password, requestDto, storedFileUrl);
         user.authorizeUser();
         userRepository.save(user);
-        return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
+        return new ResponseEntity<>("Sign up successfully", HttpStatus.OK);
     }
     public ResponseEntity<?> updateSocialInfo(UpdateSocialInfoRequestDto requestDto, User user) {
         User foundUser = findUser(user.getEmail());
         checkDuplicatedNick(requestDto.getNickname());
         foundUser.updateSocialInfo(requestDto);
         foundUser.authorizeUser();
-        return new ResponseEntity<>("소셜 회원가입 완료!", HttpStatus.OK);
+        return new ResponseEntity<>("Social signup complete!", HttpStatus.OK);
     }
     public ResponseEntity<?> getSocialInfo(User user) {
 //        User foundUser = findUser(user.getEmail());
@@ -71,27 +71,27 @@ public class UserService {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    //로그인
+    //Login
     public ResponseEntity<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();
         User user = findUser(email);
         if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 틀립니다.");
+            throw new IllegalArgumentException("Invalid password.");
         }
         jwtUtil.createAndSetToken(response, user);
-        return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
+        return new ResponseEntity<>("Successful login", HttpStatus.OK);
     }
 
-    //로그아웃
+    //Logout
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, String email) {
         cookieUtil.deleteCookie(request, response, "REFRESH_TOKEN");
         refreshTokenRepository.deleteByEmail(email).orElseThrow(
-                ()-> new NoSuchElementException("로그인한 사용자가 아닙니다."));
-        return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
+                ()-> new NoSuchElementException("You are not the logged in user."));
+        return new ResponseEntity<>("Successful logout", HttpStatus.OK);
     }
 
-    //회원정보 수정
+    //Modify Profile
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
         User user = findUser(email);
         checkDuplicatedNick(requestDto.getNickname());
@@ -110,7 +110,7 @@ public class UserService {
         }
         user.updateProfile(requestDto.getNickname(), tagBuilder.toString());
 
-        return new ResponseEntity<>("회원정보 수정 완료", HttpStatus.OK);
+        return new ResponseEntity<>("Edit your membership information", HttpStatus.OK);
     }
 
     public ResponseEntity<?> tagsOfCategory(String category) {
@@ -118,18 +118,18 @@ public class UserService {
         TagResponseDto responseDto = new TagResponseDto(TagEnum.tagEnumListOfCategory(categoryEnum));
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
-
-    //토큰 재발급
+  
+    //Reissue Token
     public ResponseEntity<?> reissueToken(String refreshToken, HttpServletResponse response) {
         jwtUtil.refreshTokenValid(refreshToken);
         String userEmail = jwtUtil.getUserInfoFromToken(refreshToken);
         User user = userRepository.findByEmail(userEmail).get();
         String newAccessToken = jwtUtil.createToken(user, "Access");
         response.setHeader("ACCESS_TOKEN", newAccessToken);
-        return new ResponseEntity<>("토큰 재발급 성공!", HttpStatus.OK);
+        return new ResponseEntity<>("Successful token reissue!", HttpStatus.OK);
     }
 
-    //이메일 중복 확인
+    //Check for email duplicates
     public ResponseEntity<?> isDuplicatedEmail(CheckEmailRequestDto requestDto) {
         checkDuplicatedEmail(requestDto.getEmail());
         Map<String, Boolean> result = new HashMap<>();
@@ -137,38 +137,38 @@ public class UserService {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    //닉네임 중복 확인
+    //Check for nickname duplicates
     public ResponseEntity<?> isDuplicatedNick(CheckNickRequestDto requestDto) {
         checkDuplicatedNick(requestDto.getNickname());
         Map<String, Boolean> result = new HashMap<>();
         result.put("isDuplicatedNick", false);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    //이메일 찾기 - 문자 전송
+    //Find email - Send text
     public ResponseEntity<?> sendSmsToFindEmail(FindEmailRequestDto requestDto) {
         String name = requestDto.getName();
         String phoneNum = requestDto.getPhone().replaceAll("-","");
         User foundUser = userRepository.findByNameAndPhone(name, phoneNum).orElseThrow(()->
-                new NoSuchElementException("사용자가 존재하지 않습니다."));
+                new NoSuchElementException("The user does not exist."));
         String receiverEmail = foundUser.getEmail();
         String verificationCode = validationUtil.createCode();
         smsUtil.sendSms(phoneNum, verificationCode);
-        redisUtil.setDataExpire(verificationCode, receiverEmail, 60 * 5L); //유효시간 5분
+        redisUtil.setDataExpire(verificationCode, receiverEmail, 60 * 5L); //Valid for 5 minutes
 
-        return new ResponseEntity<>("문자 전송 성공", HttpStatus.OK);
+        return new ResponseEntity<>("Text sent successfully", HttpStatus.OK);
     }
 
     public ResponseEntity<?> verifyCodeToFindEmail(String code) {
         String userEmail = redisUtil.getData(code);
         if(userEmail == null){
-            throw new NullPointerException("잘못된 인증번호입니다.");
+            throw new NullPointerException("Invalid authentication number.");
         }
         redisUtil.deleteData(code);
         EmailResponseDto responseDto = new EmailResponseDto(userEmail);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    //테스트
+    //Test
     public ResponseEntity<?> uploadTest(MultipartFile image) {
         if(image.isEmpty()){
             return new ResponseEntity<>(BasicProfileEnum.getRandomImage().getImageUrl(), HttpStatus.OK);
@@ -189,28 +189,28 @@ public class UserService {
 
     public User findUser(String email){
         return userRepository.findByEmail(email).orElseThrow(()->
-                new NoSuchElementException("사용자가 존재하지 않습니다."));
+                new NoSuchElementException("The user does not exist."));
     }
 
     public void checkDuplicatedEmail(String email){
         Optional<User> findUserByEmail = userRepository.findByEmail(email);
         if (findUserByEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 이메일 사용");
+            throw new IllegalArgumentException("Using duplicate emails");
         }
     }
     public void checkDuplicatedNick(String nickname){
         Optional<User> findUserByNickname = userRepository.findByNickname(nickname);
         if (findUserByNickname.isPresent()) {
-            throw new IllegalArgumentException("중복된 닉네임 사용");
+            throw new IllegalArgumentException("Using duplicate nickname");
         }
     }
 
-    public List<User> loadUserListByIdList(List<Long> userIdList){    // club멤버조회 시 사용
+    public List<User> loadUserListByIdList(List<Long> userIdList){    // Used to view club members
         return userRepository.findAllById(userIdList);
     }
 
     public User loadUserById(Long userId){
         return userRepository.findById(userId).orElseThrow(
-                () -> new NullPointerException("유저를 찾을 수 없습니다"));
+                () -> new NullPointerException("User not found"));
     }
 }
