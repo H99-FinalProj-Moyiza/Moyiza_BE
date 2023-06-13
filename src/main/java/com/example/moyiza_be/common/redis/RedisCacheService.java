@@ -59,19 +59,19 @@ public class RedisCacheService {
         log.info("removed userInfo cache for sessionId : " + sessionId);
     }
 
-    public void saveSessionChatSubId(String sessionId, String subId){
+    public void saveSessionChatSubId(String sessionId, String subId) {
         SetOperations<String, String> setOperations = redisStringStringTemplate.opsForSet();
-        setOperations.add(sessionId + SESSION_SUBIDLIST , subId);
-        log.info("adding subId : "+ subId + "for sessionId : " + sessionId);
+        setOperations.add(sessionId + SESSION_SUBIDLIST, subId);
+        log.info("adding subId : " + subId + "for sessionId : " + sessionId);
     }
 
-    public void removeSubIdFromSession(String sessionId, String subId){
+    public void removeSubIdFromSession(String sessionId, String subId) {
         SetOperations<String, String> setOperations = redisStringStringTemplate.opsForSet();
         setOperations.remove(sessionId + SESSION_SUBIDLIST, subId);
-        log.info("removing subId : "+ subId + "for sessionId : " + sessionId);
+        log.info("removing subId : " + subId + "for sessionId : " + sessionId);
     }
 
-    public Set<String> getSessionSubIdSet(String sessionId){
+    public Set<String> getSessionSubIdSet(String sessionId) {
         SetOperations<String, String> setOperations = redisStringStringTemplate.opsForSet();
         return setOperations.members(sessionId + SESSION_SUBIDLIST);
     }
@@ -102,7 +102,6 @@ public class RedisCacheService {
         ListOperations<String, ChatMessageOutput> listOperations = redisRecentChatTemplate.opsForList();
         return listOperations.index(chatId + RECENTCHAT_IDENTIFIER, 0);
     }
-
 
     //그냥 숫자로 변경해도 될듯 ?
     public void addSubscriptionToChatId(String chatId, String userId) {
@@ -159,25 +158,26 @@ public class RedisCacheService {
         return score.longValue();
     }
 
-    public void saveChatSubscriptionDestination(String subId, Long chatId) {
+    public void saveChatSubscriptionDestination(String subId,String sessionId, Long chatId) {
         ValueOperations<String, Long> valueOperations = redisLongtemplate.opsForValue();
-        valueOperations.set(subId + CHAT_DESTINATION, chatId);
+        valueOperations.set(subId + sessionId + CHAT_DESTINATION, chatId);
         log.info("setting subId : " + subId + " for destination : " + chatId);
     }
-    public String getChatIdFromSubId(String subId){
+
+    public String getChatIdFromSubId(String subId, String sessionId) {
         ValueOperations<String, String> valueOperations = redisStringStringTemplate.opsForValue();
-        return valueOperations.get(subId + CHAT_DESTINATION);
+        return valueOperations.get(subId + sessionId + CHAT_DESTINATION);
     }
 
-    public Long removeAndChatSubcriptionDestination(String subId) {
+    public Long removeAndGetChatSubcriptionDestination(String subId, String sessionId) {
         ValueOperations<String, Long> valueOperations = redisLongtemplate.opsForValue();
-        Long chatId = valueOperations.get(subId + CHAT_DESTINATION);
-        if(chatId == null){
-            log.info("no chat subscribed... for subId : " + subId);
+        Long chatId = valueOperations.get(subId + sessionId + CHAT_DESTINATION);
+        if (chatId == null) {
+            log.info("no chat subscribed... for subId + sessionId : " + subId + sessionId);
             return null;
         }
         log.info("deleting subscriptionDestination for subId : " + subId);
-        redisTemplate.delete(subId+ CHAT_DESTINATION);
+        redisTemplate.delete(subId + sessionId + CHAT_DESTINATION);
         return chatId;
     }
 
