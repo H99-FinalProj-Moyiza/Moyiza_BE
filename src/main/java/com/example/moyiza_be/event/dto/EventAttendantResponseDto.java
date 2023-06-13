@@ -24,7 +24,7 @@ public class EventAttendantResponseDto {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    // 메인리스트의 attendantsList 용
+    // For AttendantsList in MainList
     public static class simpleResponseDto{
         private Long userId;
         private String userProfileImg;
