@@ -44,6 +44,7 @@ public class ChatService {
         Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
         Long chatMemberCount = getChatMemberCount(chatId);
         ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal, chatMemberCount - subscriptionCount);
+        messageOutput.setChatId(chatId);
         String destination = "/chat/" + chatId;
         String alarmDestination = "/chatalarm/" + chatId;
         cacheService.addRecentChatToList(chatId.toString(), messageOutput);
@@ -55,11 +56,22 @@ public class ChatService {
 
     public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(Long userId) {
         //나중에 쿼리 바꿀 대상
-        List<ChatRoomInfo> clubChatRoomInfoList = chatRepositoryCustom.getClubChatRoomList(userId);
+        List<ChatRoomInfo> clubChatRoomInfoList = chatRepositoryCustom.getClubChatRoomList(userId)
+                .stream()
+                .peek(chatRoomInfo ->
+                        chatRoomInfo.setLastMessage(
+                                cacheService.loadRecentChat(chatRoomInfo.getChatId().toString())))
+                .toList();
+
         return ResponseEntity.ok(clubChatRoomInfoList);
     }
     public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(Long userId){
-        List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId);
+        List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId)
+                .stream()
+                .peek(chatRoomInfo ->
+                        chatRoomInfo.setLastMessage(
+                                cacheService.loadRecentChat(chatRoomInfo.getChatId().toString())))
+                .toList();
         return ResponseEntity.ok(onedayChatRoomInfoList);
     }
 

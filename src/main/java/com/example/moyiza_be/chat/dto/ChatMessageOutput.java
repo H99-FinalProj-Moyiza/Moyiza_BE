@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ChatMessageOutput {
+    private Long chatId;
     private Long chatRecordId;
     private Long senderId;
     private String senderNickname;
@@ -20,6 +21,7 @@ public class ChatMessageOutput {
 
 
     public ChatMessageOutput(ChatRecord chatRecord, ChatUserPrincipal userPrincipal, Long unreadCount) {
+        this.chatId = chatRecord.getChatId();
         this.senderId = chatRecord.getSenderId();
         this.senderProfileUrl = userPrincipal.getProfileUrl();
         this.senderNickname = userPrincipal.getUserNickname();
@@ -31,6 +33,7 @@ public class ChatMessageOutput {
     }
 
     public ChatMessageOutput(ChatRecord chatRecord, Long memberCount, Long readCount){
+        this.chatId = chatRecord.getChatId();
         this.senderId = chatRecord.getSenderId();
         this.senderProfileUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/20fa6d6a-09ba-4cf1-800b-6f225703c85c_shawn_raboutou2.jpg";
         this.senderNickname = chatRecord.getSenderId().toString();
