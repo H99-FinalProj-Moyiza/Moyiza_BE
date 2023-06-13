@@ -1,6 +1,7 @@
 package com.example.moyiza_be.oneday.service;
 
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
+import com.example.moyiza_be.common.enums.OneDayTypeEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
@@ -183,6 +184,7 @@ public class OneDayCreateService {
     public ResponseEntity<?> confirmCreation(User user, Long createOneDayId) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, user.getId());
         OneDayCreateConfirmDto confirmDto = new OneDayCreateConfirmDto(oneDayCreate);
+        OneDayCreateService.nullCheck(oneDayCreate);
         System.out.println("confirmDto.getOneDayGroupSize() = " + confirmDto.getOneDayGroupSize());
         OneDayDetailResponse newOneDay = oneDayService.createOneDay(user, confirmDto);
         System.out.println("newOneDay.getOneDayGroupSize() = " + newOneDay.getOneDayGroupSize());
@@ -194,6 +196,29 @@ public class OneDayCreateService {
     private OneDayCreate loadOnedayCreate(Long createOnedayId, Long userId){
         return createRepository.findByIdAndOwnerIdAndConfirmedIsFalse(createOnedayId, userId)
                 .orElseThrow(()->new NullPointerException("OnedayCreate not found"));
+    }
+
+    private static void nullCheck(OneDayCreate oneDayCreate) {
+        if(oneDayCreate.getOneDayTitle() == null) {
+            throw new NullPointerException("Title Is Empty");
+        } else if (oneDayCreate.getOneDayContent()==null) {
+            throw new NullPointerException("Content Is Empty");
+        } else if (oneDayCreate.getCategory() == null) {
+            throw new NullPointerException("Category Is Empty");
+        } else if (oneDayCreate.getTagString() == null) {
+            throw new NullPointerException("Tag Is Empty");
+        } else if (oneDayCreate.getOneDayLocation()==null) {
+            throw new NullPointerException("Location Is Empty");
+        } else if (oneDayCreate.getOneDayGroupSize() == null) {
+            throw new NullPointerException("GroupSize Is Empty");
+        } else if (oneDayCreate.getOneDayStartTime()==null) {
+            throw new NullPointerException("StartTime Is Empty");
+        } else if (oneDayCreate.getOneDayImage()==null) {
+            oneDayCreate.setOneDayImage(DEFAULT_IMAGE_URL);
+//            throw new NullPointerException("Image Is Empty");
+        } else if (oneDayCreate.getOneDayType()!= OneDayTypeEnum.FCFSB && oneDayCreate.getOneDayType()!=OneDayTypeEnum.APPROVAL) {
+            oneDayCreate.setOneDayType(OneDayTypeEnum.FCFSB);
+        }
     }
 
 }
