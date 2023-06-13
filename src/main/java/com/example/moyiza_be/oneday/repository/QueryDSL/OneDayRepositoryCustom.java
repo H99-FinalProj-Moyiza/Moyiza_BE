@@ -48,6 +48,8 @@ public class OneDayRepositoryCustom {
                         )
                 )
                 .from(oneDay)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .join(user).on(oneDay.ownerId.eq(user.id))
                 .where(
                         oneDay.deleted.isFalse(),
