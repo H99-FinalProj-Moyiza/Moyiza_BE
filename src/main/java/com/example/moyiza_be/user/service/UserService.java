@@ -1,15 +1,14 @@
 package com.example.moyiza_be.user.service;
 
-import com.example.moyiza_be.club.dto.ClubListOnMyPage;
 import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
+import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.redis.RedisUtil;
 import com.example.moyiza_be.common.security.jwt.CookieUtil;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
-import com.example.moyiza_be.oneday.service.OneDayService;
 import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
@@ -17,11 +16,8 @@ import com.example.moyiza_be.user.sms.SmsUtil;
 import com.example.moyiza_be.user.util.ValidationUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.nurigo.sdk.message.model.Message;
-import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -117,6 +113,12 @@ public class UserService {
         return new ResponseEntity<>("Edit your membership information", HttpStatus.OK);
     }
 
+    public ResponseEntity<?> tagsOfCategory(String category) {
+        CategoryEnum categoryEnum = CategoryEnum.fromString(category);
+        TagResponseDto responseDto = new TagResponseDto(TagEnum.tagEnumListOfCategory(categoryEnum));
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+  
     //Reissue Token
     public ResponseEntity<?> reissueToken(String refreshToken, HttpServletResponse response) {
         jwtUtil.refreshTokenValid(refreshToken);
