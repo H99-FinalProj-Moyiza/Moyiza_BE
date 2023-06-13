@@ -31,7 +31,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class ClubService {
 
     private final ClubRepository clubRepository;
@@ -45,6 +44,7 @@ public class ClubService {
 
 
     //Join Club
+    @Transactional
     public ResponseEntity<Message> joinClub(Long clubId, User user) {
         Club club = loadClubByClubId(clubId);
 
@@ -75,6 +75,7 @@ public class ClubService {
     }
 
     //Get Club Detail
+    @Transactional
     public ResponseEntity<ClubDetailResponse> getClubDetail(Long clubId) {
         ClubDetailResponse clubDetailResponse = clubRepositoryCustom.getClubDetail(clubId);
         if(clubDetailResponse == null){
@@ -101,6 +102,8 @@ public class ClubService {
     }
 
     //Leave Club
+
+    @Transactional
     public ResponseEntity<Message> goodbyeClub(Long clubId, User user) {
         //Can't I use the query to get the number of members ? entity has no attend number.
         Club club = loadClubByClubId(clubId);
@@ -115,6 +118,7 @@ public class ClubService {
     }
 
     //Ban Club
+    @Transactional
     public ResponseEntity<Message> banClub(Long clubId, User user, BanRequest banRequest) {
         if (!clubRepository.existsByIdAndIsDeletedFalseAndOwnerIdEquals(clubId, user.getId())) {
             throw new IllegalAccessError("You are not authorized.");
@@ -135,6 +139,7 @@ public class ClubService {
     }
 
     //Create Club
+    @Transactional
     public ClubDetailResponse createClub(ConfirmClubCreationDto creationRequest, User user) {
         Club club = new Club(creationRequest);
         clubRepository.saveAndFlush(club);
@@ -153,6 +158,7 @@ public class ClubService {
         return ResponseEntity.ok(eventList);
     }
 
+    @Transactional
     public ResponseEntity<Message> deleteClub(User user, Long clubId) {
         //Temporary implementation, logic changes may be required (softdelete ? orphanremoval ?)
         Club club = loadClubByClubId(clubId);
