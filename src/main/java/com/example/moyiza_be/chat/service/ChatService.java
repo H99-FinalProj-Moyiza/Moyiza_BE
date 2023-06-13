@@ -110,7 +110,7 @@ public class ChatService {
         cacheService.addUnsubscribedUser(chat.getId().toString(), user.getId().toString());
 
         //구독자들한테 JOIN메시지 보내기
-        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage", null);
+        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage");
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다"));
 
     }
@@ -128,7 +128,7 @@ public class ChatService {
         cacheService.removeSubscriptionFromChatId(chat.getId().toString(), user.getId().toString());
 
         //구독자들한테 LEAVE메시지 보내기
-        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf", null);
+        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf");
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다"));
     }
 

@@ -156,8 +156,7 @@ public class JwtUtil {
             userInfo = new ChatUserPrincipal(
                     Long.valueOf(claims.get("userId").toString()),
                     claims.get("nickName").toString(),
-                    claims.get("profileUrl").toString(),
-                    -1L
+                    claims.get("profileUrl").toString()
             );
         } catch(Exception e){
             log.info("Chat: Unable to get user information from token ");
