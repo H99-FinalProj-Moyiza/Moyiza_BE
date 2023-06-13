@@ -124,4 +124,14 @@ public enum TagEnum {
                 .sorted()
                 .toList();
     }
+
+    public static List<TagEnum> tagEnumListOfCategory(CategoryEnum categoryEnum) {
+        List<TagEnum> tagEnumList = new ArrayList<>();
+        for (TagEnum tagEnum : TagEnum.values()) {
+            if(tagEnum.getCategoryEnum() == categoryEnum) {
+                tagEnumList.add(tagEnum);
+            }
+        }
+        return tagEnumList;
+    }
 }
