@@ -180,6 +180,7 @@ public class UserService {
         checkDuplicatedEmail(testRequestDto.getEmail());
         checkDuplicatedNick(testRequestDto.getNickname());
         User user = new User(password, testRequestDto);
+        user.authorizeUser();
         userRepository.save(user);
         return new ResponseEntity<>("🎊테스트 성공!!🎊 고생하셨어요ㅠㅠ", HttpStatus.OK);
     }

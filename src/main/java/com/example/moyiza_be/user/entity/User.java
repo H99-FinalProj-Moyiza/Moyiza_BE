@@ -108,6 +108,6 @@ public class User extends TimeStamped {
         this.gender = requestDto.getGender();
         this.birth = requestDto.getBirth();
         this.phone = requestDto.getPhone();
-        this.profileImage = (requestDto.getImageUrl() != null) ? requestDto.getImageUrl() : BasicProfileEnum.getRandomImage().getImageUrl();
+        this.profileImage = (!requestDto.getImageUrl().isEmpty()) ? requestDto.getImageUrl() : BasicProfileEnum.getRandomImage().getImageUrl();
     }
 }
