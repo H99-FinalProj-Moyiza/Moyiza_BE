@@ -27,7 +27,7 @@ public class CreateClubController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails.getUser();
-        /// user.getUserId 검증로직 (anonymous일 경우 getId exception처리)
+        // Require validation logic (handle getId exception if anonymous)
         return createClubService.initCreateClubId(user.getId());
     }
 
@@ -38,7 +38,7 @@ public class CreateClubController {
             @PathVariable Long createclub_id
     ){
         User user = userDetails.getUser();
-        /// user.getUserId 검증로직 (anonymous일 경우 getId exception처리)
+        // Require validation logic (handle getId exception if anonymous)
         return createClubService.getPreviousCreateClub(user.getId(), createclub_id);
     }
 

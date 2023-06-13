@@ -26,9 +26,9 @@ public class CookieUtil {
     public void addCookie(HttpServletResponse response, String name, String value) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
-//        cookie.setSecure(true); 인증서 발급 후 Https 적용시 주석 제거
+//        cookie.setSecure(true); Remove this comments when applying Https after certificate issuance
         cookie.setHttpOnly(true);
-        cookie.setMaxAge(14 * 24 * 60 * 60); //쿠키 만료 기간 14일
+        cookie.setMaxAge(14 * 24 * 60 * 60); //Cookie expiration period 14 days
         response.addCookie(cookie);
     }
 

@@ -58,7 +58,7 @@ spring:
             - profile_image
           clientName: Kakao
 
-      # Provider 설정
+      # Provider settings
       provider:
         naver:
           authorizationUri: https://nid.naver.com/oauth2.0/authorize
@@ -70,7 +70,7 @@ spring:
           tokenUri: https://kauth.kakao.com/oauth/token
           userInfoUri: https://kapi.kakao.com/v2/user/me
           userNameAttribute: id
-  #Redis 설정
+  #Redis settings
   data:
     redis:
       pool:
@@ -81,7 +81,7 @@ spring:
       host: 43.200.169.48
       password: ENC(V8HByRExsO7bDwqCirBLQw==)
 
-  # WebSocket 관련 설정
+  # WebSocket settings
   mvc:
     websocket:
       enabled: true
@@ -100,5 +100,3 @@ server:
     key-store-type: PKCS12
     key-store-password: ENC(BrX+B0Pn+L3sk/TKC53WFSSo2ZBBgjh8hCAXHSuHOMI=)
   port: 8443
-
-

@@ -45,7 +45,7 @@ public class WebSecurityConfig {
             "/login",
             "/login/**",
             "/enums",
-            "/.well-known/acme-challenge/**" //Certbot의 도메인 소유권 확인
+            "/.well-known/acme-challenge/**" //Verify domain ownership for Certbot
     };
 
     @Bean
@@ -55,7 +55,7 @@ public class WebSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        // resources 접근 허용 설정
+        // Allow access to resources
         return (web) -> web.ignoring()
 //                .requestMatchers(PathRequest.toH2Console())
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());

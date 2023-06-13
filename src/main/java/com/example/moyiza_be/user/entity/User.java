@@ -35,7 +35,7 @@ public class User extends TimeStamped {
 
     private String nickname;
 
-    private GenderEnum gender;  // 0 : 남자,  1 : 여자
+    private GenderEnum gender;  // 0 : MALE,  1 : FEMALE
 
     private Calendar birth;
 
@@ -51,7 +51,7 @@ public class User extends TimeStamped {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-    private String socialLoginId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
+    private String socialLoginId; // The identifier value of the social type you are logged in as (null for normal login)
 
     public User (String password, SignupRequestDto requestDto, String storedFileUrl){
         this.email = requestDto.getEmail();
@@ -64,7 +64,7 @@ public class User extends TimeStamped {
         this.profileImage = storedFileUrl;
     }
 
-    // 유저 권한 설정 메소드
+    // Methods for setting user permissions
     public void authorizeUser() {
         this.role = Role.USER;
     }
