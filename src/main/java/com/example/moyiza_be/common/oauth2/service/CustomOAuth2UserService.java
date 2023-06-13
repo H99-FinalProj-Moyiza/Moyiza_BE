@@ -5,6 +5,7 @@ import com.example.moyiza_be.common.oauth2.CustomOAuth2User;
 import com.example.moyiza_be.common.oauth2.OAuthAttributes;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -75,11 +76,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         }
         return savedUser;
     }
+
+    @Transactional
     private User updateUser(User user, OAuthAttributes attributes, SocialType socialType) {
         user.updateSocialLogin(attributes, socialType);
         userRepository.save(user);
         return user;
     }
+
+    @Transactional
     private User saveUser(OAuthAttributes attributes, SocialType socialType) {
         User createdUser = attributes.toEntity(socialType, attributes.getOauth2Userinfo());
         return userRepository.save(createdUser);

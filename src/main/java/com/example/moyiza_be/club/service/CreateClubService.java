@@ -26,7 +26,6 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class CreateClubService {
     private final CreateClubRepository createClubRepository;
     private final ClubService clubService;
@@ -39,6 +38,7 @@ public class CreateClubService {
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
 
+    @Transactional
     public ResponseEntity<?> initCreateClubId(Long userId) {
         CreateClub previousCreate = createClubRepository.findByOwnerIdAndFlagConfirmedIsFalse(userId).orElse(null);
         if (previousCreate != null) {
@@ -63,13 +63,14 @@ public class CreateClubService {
         return ResponseEntity.ok(new ResumeCreationDto(createClub));
     }
 
+    @Transactional
     public ResponseEntity<Message> setCategory(Long userId, Long createclub_id, CategoryEnum categoryEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setCategory(categoryEnum);
         return ResponseEntity.ok(new Message("Success"));
-
     }
 
+    @Transactional
     public ResponseEntity<Message> setTag(Long userId, Long createclub_id, List<String> tagList) {
         System.out.println("tagList.toString() = " + tagList.toString());
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
@@ -80,18 +81,21 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("Success"));
     }
 
+    @Transactional
     public ResponseEntity<Message> setTitle(Long userId, Long createclub_id, String title) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setTitle(title);
         return ResponseEntity.ok(new Message("Success"));
     }
 
+    @Transactional
     public ResponseEntity<Message> setContent(Long userId, Long createclub_id, String content) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setContent(content);
         return ResponseEntity.ok(new Message("Success"));
     }
 
+    @Transactional
     public ResponseEntity<Message> setPolicy
             (Long userId, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
@@ -101,6 +105,7 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("Success"));
     }
 
+    @Transactional
     public ResponseEntity<Message> setMaxGroupSize(Long userId, Long createclub_id, Integer requestMaxSize) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setMaxGroupSize(requestMaxSize);
@@ -108,6 +113,7 @@ public class CreateClubService {
     }
 
 
+    @Transactional
     public ResponseEntity<Message> setImageList(Long userId, Long createclub_id, List<MultipartFile> imageFileList) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         List<String> imageUrlList;
@@ -124,6 +130,7 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("Image upload complete!"));
     }
 
+    // clubService.createClub is transactional, so we don't need it here
     public ResponseEntity<ClubDetailResponse> confirmCreation(User user, Long createclub_id) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, user.getId());
         ConfirmClubCreationDto confirmClubCreationDto = new ConfirmClubCreationDto(createClub);
