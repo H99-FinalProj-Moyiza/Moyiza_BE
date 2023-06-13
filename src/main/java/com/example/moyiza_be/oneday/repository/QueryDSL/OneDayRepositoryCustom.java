@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.example.moyiza_be.club.entity.QClub.club;
 import static com.example.moyiza_be.oneday.entity.QOneDay.oneDay;
 import static com.example.moyiza_be.user.entity.QUser.user;
 import static com.querydsl.core.types.dsl.MathExpressions.power;
@@ -61,6 +62,7 @@ public class OneDayRepositoryCustom {
                         nearby(radius, nowLongitude, nowLatitude),
                         startTimeAfter(timeCondition)
                 )
+                .orderBy(oneDay.id.desc())
                 .fetch();
 
         return new PageImpl<>(onedayList,pageable, 1000L);
