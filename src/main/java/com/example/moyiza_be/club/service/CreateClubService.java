@@ -66,6 +66,7 @@ public class CreateClubService {
     @Transactional
     public ResponseEntity<Message> setCategory(Long userId, Long createclub_id, CategoryEnum categoryEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
+        validateCategory(categoryEnum);
         createClub.setCategory(categoryEnum);
         return ResponseEntity.ok(new Message("Success"));
     }
@@ -76,6 +77,7 @@ public class CreateClubService {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         String newString = TagEnum.tagListToTagString(tagList);
         System.out.println("newString = " + newString);
+        validateTag(newString);
         createClub.setTagString(newString);
 
         return ResponseEntity.ok(new Message("Success"));
@@ -83,6 +85,7 @@ public class CreateClubService {
 
     @Transactional
     public ResponseEntity<Message> setTitle(Long userId, Long createclub_id, String title) {
+        validateTitle(title);
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setTitle(title);
         return ResponseEntity.ok(new Message("Success"));
@@ -91,6 +94,7 @@ public class CreateClubService {
     @Transactional
     public ResponseEntity<Message> setContent(Long userId, Long createclub_id, String content) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
+        validateContent(content);
         createClub.setContent(content);
         return ResponseEntity.ok(new Message("Success"));
     }
@@ -99,6 +103,7 @@ public class CreateClubService {
     public ResponseEntity<Message> setPolicy
             (Long userId, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
+        validatePolicy(agePolicy, genderPolicyEnum);
         createClub.setGenderPolicy(genderPolicyEnum);
         createClub.setAgePolicy(agePolicy);
 
@@ -156,6 +161,36 @@ public class CreateClubService {
             throw new IllegalCallerException("Not my createClub.");
         }
         return createClub;
+    }
+
+    private static void validateCategory(CategoryEnum categoryEnum) {
+        if (categoryEnum == null) {
+            throw new NullPointerException("Category can't be null.");
+        }
+    }
+
+    private static void validateTag(String newString) {
+        if (newString == null) {
+            throw new NullPointerException("Tag can't be null.");
+        }
+    }
+
+    private static void validateTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new NullPointerException("Title can't be null or empty.");
+        }
+    }
+
+    private static void validateContent(String content) {
+        if (content == null || content.trim().isEmpty()) {
+            throw new NullPointerException("Content can't be null or empty.");
+        }
+    }
+
+    private static void validatePolicy(Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
+        if (agePolicy == null || genderPolicyEnum == null) {
+            throw new NullPointerException("Policy can't be null.");
+        }
     }
 
 }
