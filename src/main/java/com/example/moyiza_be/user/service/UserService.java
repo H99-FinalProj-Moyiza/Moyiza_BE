@@ -166,6 +166,24 @@ public class UserService {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
+    //테스트
+    public ResponseEntity<?> uploadTest(MultipartFile image) {
+        if(image.isEmpty()){
+            return new ResponseEntity<>(BasicProfileEnum.getRandomImage().getImageUrl(), HttpStatus.OK);
+        }
+        String storedFileUrl  = awsS3Uploader.uploadFile(image);
+        return new ResponseEntity<>(storedFileUrl, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> signupTest(TestSignupRequestDto testRequestDto) {
+        String password = passwordEncoder.encode(testRequestDto.getPassword());
+        checkDuplicatedEmail(testRequestDto.getEmail());
+        checkDuplicatedNick(testRequestDto.getNickname());
+        User user = new User(password, testRequestDto);
+        userRepository.save(user);
+        return new ResponseEntity<>("🎊테스트 성공!!🎊 고생하셨어요ㅠㅠ", HttpStatus.OK);
+    }
+
     public User findUser(String email){
         return userRepository.findByEmail(email).orElseThrow(()->
                 new NoSuchElementException("사용자가 존재하지 않습니다."));

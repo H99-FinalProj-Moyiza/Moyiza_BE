@@ -112,4 +112,13 @@ public class UserController {
         return userService.verifyCodeToFindEmail(codeMap.get("code"));
     }
 
+    //회원가입 테스트
+    @PostMapping("/test/upload")
+    public ResponseEntity<?> uploadTest(@RequestPart(value = "imageFile") MultipartFile image){
+        return userService.uploadTest(image);
+    }
+    @PostMapping("/test/signup")
+    public ResponseEntity<?> signupTest(@RequestBody TestSignupRequestDto testRequestDto){
+        return userService.signupTest(testRequestDto);
+    }
 }

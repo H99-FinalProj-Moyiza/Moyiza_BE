@@ -40,6 +40,7 @@ public class WebSecurityConfig {
             "/user/login",
             "/user/signup/**",
             "/user/check/**",
+            "/user/test/**",
             "/user/find/email/**",
             "/oauth2/authorization/**",
             "/login",
