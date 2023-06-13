@@ -156,8 +156,7 @@ public class JwtUtil {
             userInfo = new ChatUserPrincipal(
                     Long.valueOf(claims.get("userId").toString()),
                     claims.get("nickName").toString(),
-                    claims.get("profileUrl").toString(),
-                    -1L
+                    claims.get("profileUrl").toString()
             );
         } catch(Exception e){
             log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
