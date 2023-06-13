@@ -16,7 +16,6 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class RedisCacheService {
 
     private final RedisTemplate<String, Object> redisTemplate;
