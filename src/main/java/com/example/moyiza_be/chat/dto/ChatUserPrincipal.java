@@ -11,7 +11,6 @@ public class ChatUserPrincipal implements Principal {
     private final Long userId;
     private final String userNickname;
     private final String profileUrl;
-    private Long subscribedChatId;
 
 
     @Override
@@ -23,13 +22,9 @@ public class ChatUserPrincipal implements Principal {
     public boolean implies(Subject subject) {
         return Principal.super.implies(subject);
     }
-    public ChatUserPrincipal(Long userId, String userNickname, String profileUrl, Long subscriptionChatId) {
+    public ChatUserPrincipal(Long userId, String userNickname, String profileUrl) {
         this.userId = userId;
         this.userNickname = userNickname;
         this.profileUrl = profileUrl;
-        this.subscribedChatId = subscriptionChatId;
-    }
-    public void setSubscribedChatId(Long subscribedChatId){
-        this.subscribedChatId = subscribedChatId;
     }
 }

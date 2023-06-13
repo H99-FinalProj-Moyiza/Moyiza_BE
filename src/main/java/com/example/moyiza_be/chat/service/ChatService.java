@@ -44,6 +44,7 @@ public class ChatService {
         Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
         Long chatMemberCount = getChatMemberCount(chatId);
         ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal, chatMemberCount - subscriptionCount);
+        messageOutput.setChatId(chatId);
         String destination = "/chat/" + chatId;
         String alarmDestination = "/chatalarm/" + chatId;
         cacheService.addRecentChatToList(chatId.toString(), messageOutput);
@@ -54,12 +55,23 @@ public class ChatService {
     //Get Club Chat Room List
     public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(Long userId) {
         //나중에 쿼리 바꿀 대상
-        List<ChatRoomInfo> clubChatRoomInfoList = chatRepositoryCustom.getClubChatRoomList(userId);
+        List<ChatRoomInfo> clubChatRoomInfoList = chatRepositoryCustom.getClubChatRoomList(userId)
+                .stream()
+                .peek(chatRoomInfo ->
+                        chatRoomInfo.setLastMessage(
+                                cacheService.loadRecentChat(chatRoomInfo.getChatId().toString())))
+                .toList();
+
         return ResponseEntity.ok(clubChatRoomInfoList);
     }
 
     public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(Long userId){
-        List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId);
+        List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId)
+                .stream()
+                .peek(chatRoomInfo ->
+                        chatRoomInfo.setLastMessage(
+                                cacheService.loadRecentChat(chatRoomInfo.getChatId().toString())))
+                .toList();
         return ResponseEntity.ok(onedayChatRoomInfoList);
     }
 
@@ -112,7 +124,7 @@ public class ChatService {
         cacheService.addUnsubscribedUser(chat.getId().toString(), user.getId().toString());
 
         //구독자들한테 JOIN메시지 보내기
-        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage", null);
+        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage");
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다"));
 
     }
@@ -131,7 +143,7 @@ public class ChatService {
         cacheService.removeSubscriptionFromChatId(chat.getId().toString(), user.getId().toString());
 
         //구독자들한테 LEAVE메시지 보내기
-        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf", null);
+        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf");
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다"));
     }
 

@@ -2,6 +2,7 @@ package com.example.moyiza_be.user.service;
 
 import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
+import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.redis.RedisUtil;
 import com.example.moyiza_be.common.security.jwt.CookieUtil;
@@ -15,13 +16,13 @@ import com.example.moyiza_be.user.sms.SmsUtil;
 import com.example.moyiza_be.user.util.ValidationUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -117,6 +118,12 @@ public class UserService {
         return new ResponseEntity<>("Edit your membership information", HttpStatus.OK);
     }
 
+    public ResponseEntity<?> tagsOfCategory(String category) {
+        CategoryEnum categoryEnum = CategoryEnum.fromString(category);
+        TagResponseDto responseDto = new TagResponseDto(TagEnum.tagEnumListOfCategory(categoryEnum));
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+  
     //Reissue Token
     @Transactional
     public ResponseEntity<?> reissueToken(String refreshToken, HttpServletResponse response) {
@@ -143,6 +150,7 @@ public class UserService {
         result.put("isDuplicatedNick", false);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
     //Find email - Send text
     @Transactional
     public ResponseEntity<?> sendSmsToFindEmail(FindEmailRequestDto requestDto) {
