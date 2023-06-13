@@ -58,21 +58,21 @@ public class EmailService {
         String verificationCode = validationUtil.createCode();
         MimeMessage message = createMessage(receiverEmail, verificationCode);
         try{
-            redisUtil.setDataExpire(verificationCode, receiverEmail, 60 * 5L); //유효시간 5분
+            redisUtil.setDataExpire(verificationCode, receiverEmail, 60 * 5L); //Valid for 5 minutes
             emailSender.send(message);
         }catch(MailException es){
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
-        return new ResponseEntity<>("이메일을 성공적으로 보냈습니다.", HttpStatus.OK);
+        return new ResponseEntity<>("The email was sent successfully.", HttpStatus.OK);
     }
 
     public ResponseEntity<?> verifyCode(String code)throws Exception {
         if (redisUtil.getData(code) == null){
-            throw new IllegalArgumentException("옳지 않은 인증번호 입니다.");
+            throw new IllegalArgumentException("Invalid credentials.");
         }
         redisUtil.deleteData(code);
-        return new ResponseEntity<>("이메일 인증 성공!", HttpStatus.OK);
+        return new ResponseEntity<>("Email verification successful!", HttpStatus.OK);
     }
 
 }

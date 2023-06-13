@@ -70,8 +70,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             return updateUser(savedUser, attributes, socialType);
         }
         if (savedUser.getSocialType() != socialType) {
-                throw new RuntimeException("이미 가입된 소셜로그인이 있습니다."
-                                + savedUser.getSocialType() + "로그인을 사용하시길 바랍니다.");
+                throw new RuntimeException("Looks like you're signed up with " + savedUser.getSocialType()
+                        + " account. Please use your " + savedUser.getSocialType() + " account to login.");
         }
         return savedUser;
     }

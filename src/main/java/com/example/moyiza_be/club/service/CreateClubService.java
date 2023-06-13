@@ -47,7 +47,7 @@ public class CreateClubService {
         }
         if (clubService.userOwnedClubCount(userId) >= CLUB_OWNERSHIP_MAX_COUNT) {
             log.info("createClub denied by user " + userId + " having too many club");
-            throw new IllegalArgumentException("클럽을 " + CLUB_OWNERSHIP_MAX_COUNT + " 개 이상 가질 수 없습니다");
+            throw new IllegalArgumentException("You can't have more than " + CLUB_OWNERSHIP_MAX_COUNT + " clubs");
         }
         CreateClub createClub = new CreateClub();
         createClub.setOwnerId(userId);
@@ -66,7 +66,7 @@ public class CreateClubService {
     public ResponseEntity<Message> setCategory(Long userId, Long createclub_id, CategoryEnum categoryEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setCategory(categoryEnum);
-        return ResponseEntity.ok(new Message("성공"));
+        return ResponseEntity.ok(new Message("Success"));
 
     }
 
@@ -77,34 +77,34 @@ public class CreateClubService {
         System.out.println("newString = " + newString);
         createClub.setTagString(newString);
 
-        return ResponseEntity.ok(new Message("성공"));
+        return ResponseEntity.ok(new Message("Success"));
     }
 
     public ResponseEntity<Message> setTitle(Long userId, Long createclub_id, String title) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setTitle(title);
-        return ResponseEntity.ok(new Message("성공"));
+        return ResponseEntity.ok(new Message("Success"));
     }
 
     public ResponseEntity<Message> setContent(Long userId, Long createclub_id, String content) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setContent(content);
-        return ResponseEntity.ok(new Message("성공"));
+        return ResponseEntity.ok(new Message("Success"));
     }
 
     public ResponseEntity<Message> setPolicy
             (Long userId, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setGenderPolicy(genderPolicyEnum);
-        createClub.setAgePolicy(agePolicy);   // 모두 가능할시 null로 받아서 null로 세팅 가능한지 알아봐야함
+        createClub.setAgePolicy(agePolicy);
 
-        return ResponseEntity.ok(new Message("성공"));
+        return ResponseEntity.ok(new Message("Success"));
     }
 
     public ResponseEntity<Message> setMaxGroupSize(Long userId, Long createclub_id, Integer requestMaxSize) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setMaxGroupSize(requestMaxSize);
-        return ResponseEntity.ok(new Message("성공"));
+        return ResponseEntity.ok(new Message("Success"));
     }
 
 
@@ -121,7 +121,7 @@ public class CreateClubService {
         List<ClubImageUrl> imageEntityList = imageUrlList.stream().map(i -> new ClubImageUrl(createclub_id, i)).toList();
         clubImageUrlRepository.saveAll(imageEntityList);
 
-        return ResponseEntity.ok(new Message("이미지 업로드 완료 !"));
+        return ResponseEntity.ok(new Message("Image upload complete!"));
     }
 
     public ResponseEntity<ClubDetailResponse> confirmCreation(User user, Long createclub_id) {
@@ -135,7 +135,7 @@ public class CreateClubService {
 
     private CreateClub loadCreateClubById(Long createclub_id) {
         return createClubRepository.findByIdAndFlagConfirmedFalse(createclub_id)
-                .orElseThrow(() -> new NullPointerException("생성중인 클럽을 찾을 수 없습니다"));
+                .orElseThrow(() -> new NullPointerException("Can't find the club you're creating"));
     }
 
     private Boolean checkCreateClubOwnerShip(CreateClub createClub, Long userId) {
@@ -146,7 +146,7 @@ public class CreateClubService {
         CreateClub createClub = loadCreateClubById(createclub_id);
         if (!checkCreateClubOwnerShip(createClub, userId)) {
             log.info("loadCreateClub denied : user " + userId + " does not own createClub " + createclub_id);
-            throw new IllegalCallerException("내 createClub이 아닙니다");
+            throw new IllegalCallerException("Not my createClub.");
         }
         return createClub;
     }
