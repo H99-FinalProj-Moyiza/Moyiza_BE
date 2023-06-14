@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -167,11 +169,11 @@ public class OneDayCreateService {
     // Image
     public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, List<MultipartFile> imageFileList) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
-        List<String> imageUrlList;
+        List<String> imageUrlList = new ArrayList<>();
         log.info("Image List Setting");
         if(imageFileList == null) {
             log.info("Image File is Null, Set Image to Default File");
-            imageUrlList = List.of(DEFAULT_IMAGE_URL);
+            imageUrlList.add(DEFAULT_IMAGE_URL);
         } else {
             log.info("Get Image File Complete");
             imageUrlList = s3Uploader.uploadMultipleImg(imageFileList);

@@ -16,6 +16,7 @@ import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.event.service.EventService;
+import com.example.moyiza_be.like.service.LikeService;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,7 @@ public class ClubService {
     private final ClubJoinEntryRepositoryCustom clubJoinEntryRepositoryCustom;
     private final ClubRepositoryCustom clubRepositoryCustom;
     private final ClubImageUrlRepositoryCustom clubImageUrlRepositoryCustom;
+    private final LikeService likeService;
 
 
     //Join Club
@@ -66,17 +68,18 @@ public class ClubService {
 
     //Club List Search (including full and search)
     public ResponseEntity<Page<ClubListResponse>> getClubList(
-            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3
+            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3, User user
     ) {
 
         Page<ClubListResponse> responseList = clubRepositoryCustom.filteredClubResponseList(
-                pageable, category, q, tag1, tag2, tag3);
+                pageable, category, q, tag1, tag2, tag3, user);
         return ResponseEntity.ok(responseList);
     }
-
+  
+ 
     //Get Club Detail
-    public ResponseEntity<ClubDetailResponse> getClubDetail(Long clubId) {
-        ClubDetailResponse clubDetailResponse = clubRepositoryCustom.getClubDetail(clubId);
+    public ResponseEntity<ClubDetailResponse> getClubDetail(Long clubId, User user) {
+        ClubDetailResponse clubDetailResponse = clubRepositoryCustom.getClubDetail(clubId, user);
         if(clubDetailResponse == null){
             throw new NullPointerException("Clubs not found.");
         }
@@ -145,7 +148,7 @@ public class ClubService {
                 .peek(clubImageUrl -> clubImageUrl.setClubId(club.getId()))
                 .map(ClubImageUrl::getImageUrl)
                 .toList();
-        return new ClubDetailResponse(club, clubImageUrlList); // Need to check if projection from querydsl to List is possible
+        return new ClubDetailResponse(club, clubImageUrlList, user); // Need to check if projection from querydsl to List is possible
     }
 
     public ResponseEntity<List<EventSimpleDetailDto>> getClubEventList(User user, Long clubId) {
@@ -162,6 +165,28 @@ public class ClubService {
             club.flagDeleted(true);
             return ResponseEntity.ok(new Message("Deleted."));
         }
+    }
+
+    public ResponseEntity<Message> likeClub(User user, Long clubId) {
+        Club club = loadClubByClubId(clubId);
+        ResponseEntity<Message> likeServiceResponse = likeService.clubLike(user.getId(), clubId);
+        if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
+            log.info("Error from Likeservice");
+            throw new InternalError("LikeService Error");
+        }
+        club.addLike();
+        return likeServiceResponse;
+    }
+
+    public ResponseEntity<Message> cancelLikeClub(User user, Long clubId){
+        Club club = loadClubByClubId(clubId);
+        ResponseEntity<Message> likeServiceResponse = likeService.cancelClubLike(user.getId(), clubId);
+        if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
+            log.info("Error from Likeservice");
+            throw new InternalError("LikeService Error");
+        }
+        club.minusLike();
+        return likeServiceResponse;
     }
 
 
