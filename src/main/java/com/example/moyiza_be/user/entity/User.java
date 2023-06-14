@@ -7,10 +7,7 @@ import com.example.moyiza_be.common.oauth2.OAuthAttributes;
 import com.example.moyiza_be.common.oauth2.Role;
 import com.example.moyiza_be.common.utils.TimeStamped;
 
-import com.example.moyiza_be.user.dto.SignupRequestDto;
-import com.example.moyiza_be.user.dto.TestSignupRequestDto;
-import com.example.moyiza_be.user.dto.UpdateRequestDto;
-import com.example.moyiza_be.user.dto.UpdateSocialInfoRequestDto;
+import com.example.moyiza_be.user.dto.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -79,6 +76,12 @@ public class User extends TimeStamped {
     }
     public void updateProfileImage(String storedFileName) {
         this.profileImage = storedFileName;
+    }
+
+    public void updateProfileTest(TestUpdateRequestDto requestDto, String tagString){
+        this.nickname = requestDto.getNickname();
+        this.tagString = tagString;
+        this.profileImage = requestDto.getImageUrl();
     }
 
     public User (String nickName, Long id){

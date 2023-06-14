@@ -39,7 +39,6 @@ public class UserService {
     private final CookieUtil cookieUtil;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AwsS3Uploader awsS3Uploader;
-    private final ClubService clubService;
     private final SmsUtil smsUtil;
     private final ValidationUtil validationUtil;
     private final RedisUtil redisUtil;
@@ -48,8 +47,8 @@ public class UserService {
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
         String storedFileUrl = BasicProfileEnum.getRandomImage().getImageUrl();
-        checkDuplicatedEmail(requestDto.getEmail());
-        checkDuplicatedNick(requestDto.getNickname());
+        validationUtil.checkDuplicatedEmail(requestDto.getEmail());
+        validationUtil.checkDuplicatedNick(requestDto.getNickname());
         if(imageFile != null){
             storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
         }
@@ -59,8 +58,8 @@ public class UserService {
         return new ResponseEntity<>("회원가입 성공", HttpStatus.OK);
     }
     public ResponseEntity<?> updateSocialInfo(UpdateSocialInfoRequestDto requestDto, User user) {
-        User foundUser = findUser(user.getEmail());
-        checkDuplicatedNick(requestDto.getNickname());
+        User foundUser = validationUtil.findUser(user.getEmail());
+        validationUtil.checkDuplicatedNick(requestDto.getNickname());
         foundUser.updateSocialInfo(requestDto);
         foundUser.authorizeUser();
         return new ResponseEntity<>("소셜 회원가입 완료!", HttpStatus.OK);
@@ -75,7 +74,7 @@ public class UserService {
     public ResponseEntity<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();
-        User user = findUser(email);
+        User user = validationUtil.findUser(email);
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new IllegalArgumentException("비밀번호가 틀립니다.");
         }
@@ -93,8 +92,8 @@ public class UserService {
 
     //회원정보 수정
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
-        User user = findUser(email);
-        checkDuplicatedNick(requestDto.getNickname());
+        User user = validationUtil.findUser(email);
+        validationUtil.checkDuplicatedNick(requestDto.getNickname());
 
         if(imageFile != null){
             awsS3Uploader.delete(user.getProfileImage());
@@ -131,7 +130,7 @@ public class UserService {
 
     //이메일 중복 확인
     public ResponseEntity<?> isDuplicatedEmail(CheckEmailRequestDto requestDto) {
-        checkDuplicatedEmail(requestDto.getEmail());
+        validationUtil.checkDuplicatedEmail(requestDto.getEmail());
         Map<String, Boolean> result = new HashMap<>();
         result.put("isDuplicatedEmail", false);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -139,7 +138,7 @@ public class UserService {
 
     //닉네임 중복 확인
     public ResponseEntity<?> isDuplicatedNick(CheckNickRequestDto requestDto) {
-        checkDuplicatedNick(requestDto.getNickname());
+        validationUtil.checkDuplicatedNick(requestDto.getNickname());
         Map<String, Boolean> result = new HashMap<>();
         result.put("isDuplicatedNick", false);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -168,7 +167,7 @@ public class UserService {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    //테스트
+    //테스트 - 이미지 업로드
     public ResponseEntity<?> uploadTest(MultipartFile image) {
         if(image.isEmpty()){
             return new ResponseEntity<>(BasicProfileEnum.getRandomImage().getImageUrl(), HttpStatus.OK);
@@ -176,33 +175,28 @@ public class UserService {
         String storedFileUrl  = awsS3Uploader.uploadFile(image);
         return new ResponseEntity<>(storedFileUrl, HttpStatus.OK);
     }
-
+    //테스트 - 회원 가입
     public ResponseEntity<?> signupTest(TestSignupRequestDto testRequestDto) {
         String password = passwordEncoder.encode(testRequestDto.getPassword());
-        checkDuplicatedEmail(testRequestDto.getEmail());
-        checkDuplicatedNick(testRequestDto.getNickname());
+        validationUtil.checkDuplicatedEmail(testRequestDto.getEmail());
+        validationUtil.checkDuplicatedNick(testRequestDto.getNickname());
         User user = new User(password, testRequestDto);
         user.authorizeUser();
         userRepository.save(user);
         return new ResponseEntity<>("🎊테스트 성공!!🎊 고생하셨어요ㅠㅠ", HttpStatus.OK);
     }
-
-    public User findUser(String email){
-        return userRepository.findByEmail(email).orElseThrow(()->
-                new NoSuchElementException("사용자가 존재하지 않습니다."));
-    }
-
-    public void checkDuplicatedEmail(String email){
-        Optional<User> findUserByEmail = userRepository.findByEmail(email);
-        if (findUserByEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 이메일 사용");
+    //테스트 - 회원정보 수정
+    public ResponseEntity<?> updateProfileTest(TestUpdateRequestDto requestDto, String email) {
+        User user = validationUtil.findUser(email);
+        validationUtil.checkDuplicatedNick(requestDto.getNickname());
+        List<TagEnum> tagEnumList = requestDto.getTagEnumList();
+        String newString = "0".repeat(TagEnum.values().length);
+        StringBuilder tagBuilder = new StringBuilder(newString);
+        for (TagEnum tagEnum : tagEnumList) {
+            tagBuilder.setCharAt(tagEnum.ordinal(), '1');
         }
-    }
-    public void checkDuplicatedNick(String nickname){
-        Optional<User> findUserByNickname = userRepository.findByNickname(nickname);
-        if (findUserByNickname.isPresent()) {
-            throw new IllegalArgumentException("중복된 닉네임 사용");
-        }
+        user.updateProfileTest(requestDto, tagBuilder.toString());
+        return new ResponseEntity<>("회원정보 수정 완료", HttpStatus.OK);
     }
 
     public List<User> loadUserListByIdList(List<Long> userIdList){    // club멤버조회 시 사용
