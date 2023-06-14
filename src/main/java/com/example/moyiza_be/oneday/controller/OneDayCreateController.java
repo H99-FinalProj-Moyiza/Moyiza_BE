@@ -5,6 +5,7 @@ import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.oneday.dto.onedaycreate.*;
 import com.example.moyiza_be.oneday.service.OneDayCreateService;
 import com.example.moyiza_be.user.entity.User;
+import com.example.moyiza_be.user.service.UserService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -90,10 +91,12 @@ public class OneDayCreateController {
         return oneDayCreateService.setType(user.getId(),oneDayTmpId,type);
     }
     // image
+    private final UserService userService;
     @PutMapping("/{oneDayTmpId}/images")
-    public ResponseEntity<Message> setImageList(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart @Nullable List<MultipartFile> image, @PathVariable Long oneDayTmpId){
+    public ResponseEntity<?> setImageList(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart @Nullable MultipartFile image, @PathVariable Long oneDayTmpId){
         User user = userDetails.getUser();
-        return oneDayCreateService.setImageList( user.getId(), oneDayTmpId, image );
+        return userService.uploadTest(image);
+//        return oneDayCreateService.setImageList( user.getId(), oneDayTmpId, image );
     }
     // confirm
     @PostMapping("/{oneDayTmpId}/confirm")
