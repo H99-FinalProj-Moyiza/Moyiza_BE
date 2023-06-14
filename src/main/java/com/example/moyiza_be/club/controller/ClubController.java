@@ -38,9 +38,12 @@ public class ClubController {
     //클럽 전체 조회
     //검색조회와 같은 메서드를 호출하고 있어서 없어도 되는 controller임// 메인에 default로 보여줄 때의 로직이 생길경우 사용하려고 놔둠
     @GetMapping
-    public ResponseEntity<Page<ClubListResponse>> getClubList(@PageableDefault(page = 0, size = 8,
-            sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return clubService.getClubList(pageable, null, null, null, null, null);
+    public ResponseEntity<Page<ClubListResponse>> getClubList(
+            @PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails == null ? null : userDetails.getUser();
+        return clubService.getClubList(pageable, null, null, null, null, null, user);
     }
 
     //클럽 검색 조회
@@ -51,16 +54,22 @@ public class ClubController {
             @RequestParam(required = false) String tag1,
             @RequestParam(required = false) String tag2,
             @RequestParam(required = false) String tag3,
-            @PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return clubService.getClubList(pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3);
+        User user = userDetails == null ? null : userDetails.getUser();
+        return clubService.getClubList(pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, user);
     }
 
 
     //클럽 상세 조회
     @GetMapping("/{club_id}")
-    public ResponseEntity<ClubDetailResponse> getClub(@PathVariable Long club_id) {
-        return clubService.getClubDetail(club_id);
+    public ResponseEntity<ClubDetailResponse> getClub(
+            @PathVariable Long club_id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails == null ? null : userDetails.getUser();
+        return clubService.getClubDetail(club_id, user);
     }
 
 
@@ -105,4 +114,24 @@ public class ClubController {
         User user = userDetails.getUser();
         return clubService.deleteClub(user, club_id);
     }
+
+    @PostMapping("/{club_id}/like")
+    public ResponseEntity<Message> likeClub(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id
+    ){
+        User user = userDetails.getUser();
+        return clubService.likeClub(user, club_id);
+    }
+
+    @DeleteMapping("/{club_id}/like")
+    public ResponseEntity<Message> cancelLikeClub(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id
+    ){
+        User user = userDetails.getUser();
+        return clubService.cancelLikeClub(user, club_id);
+    }
+
+
 }

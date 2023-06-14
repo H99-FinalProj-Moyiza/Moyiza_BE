@@ -17,9 +17,11 @@ import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.event.service.EventService;
+import com.example.moyiza_be.like.service.LikeService;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -44,6 +46,7 @@ public class ClubService {
     private final ClubJoinEntryRepositoryCustom clubJoinEntryRepositoryCustom;
     private final ClubRepositoryCustom clubRepositoryCustom;
     private final ClubImageUrlRepositoryCustom clubImageUrlRepositoryCustom;
+    private final LikeService likeService;
 
 
     //클럽 가입
@@ -68,17 +71,17 @@ public class ClubService {
 
     //클럽 리스트 조회(전체조회, 검색조회 포함)
     public ResponseEntity<Page<ClubListResponse>> getClubList(
-            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3
+            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3, User user
     ) {
 
         Page<ClubListResponse> responseList = clubRepositoryCustom.filteredClubResponseList(
-                pageable, category, q, tag1, tag2, tag3);
+                pageable, category, q, tag1, tag2, tag3, user);
         return ResponseEntity.ok(responseList);
     }
 
     //클럽 상세 조회
-    public ResponseEntity<ClubDetailResponse> getClubDetail(Long clubId) {
-        ClubDetailResponse clubDetailResponse = clubRepositoryCustom.getClubDetail(clubId);
+    public ResponseEntity<ClubDetailResponse> getClubDetail(Long clubId, User user) {
+        ClubDetailResponse clubDetailResponse = clubRepositoryCustom.getClubDetail(clubId, user);
         if(clubDetailResponse == null){
             throw new NullPointerException("클럽을 찾을 수 없습니다");
         }
@@ -148,7 +151,7 @@ public class ClubService {
                 .peek(clubImageUrl -> clubImageUrl.setClubId(club.getId()))
                 .map(ClubImageUrl::getImageUrl)
                 .toList();
-        return new ClubDetailResponse(club, clubImageUrlList); // querydsl에서 List로 projection이 가능한가 확인해봐야함
+        return new ClubDetailResponse(club, clubImageUrlList, user); // querydsl에서 List로 projection이 가능한가 확인해봐야함
     }
 
     public ResponseEntity<List<EventSimpleDetailDto>> getClubEventList(User user, Long clubId) {
@@ -165,6 +168,30 @@ public class ClubService {
             club.flagDeleted(true);
             return ResponseEntity.ok(new Message("삭제되었습니다"));
         }
+    }
+
+    @Transactional
+    public ResponseEntity<Message> likeClub(User user, Long clubId) {
+        Club club = loadClubByClubId(clubId);
+        ResponseEntity<Message> likeServiceResponse = likeService.clubLike(user.getId(), clubId);
+        if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
+            log.info("Error from Likeservice");
+            throw new InternalError("LikeService Error");
+        }
+        club.addLike();
+        return likeServiceResponse;
+    }
+
+    @Transactional
+    public ResponseEntity<Message> cancelLikeClub(User user, Long clubId){
+        Club club = loadClubByClubId(clubId);
+        ResponseEntity<Message> likeServiceResponse = likeService.cancelClubLike(user.getId(), clubId);
+        if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
+            log.info("Error from Likeservice");
+            throw new InternalError("LikeService Error");
+        }
+        club.minusLike();
+        return likeServiceResponse;
     }
 
 

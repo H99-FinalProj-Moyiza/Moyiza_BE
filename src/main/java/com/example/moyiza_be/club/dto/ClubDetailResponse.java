@@ -4,6 +4,7 @@ import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
+import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,10 +26,12 @@ public class ClubDetailResponse {
     private Integer nowMemberCount;
     private String thumbnailUrl;
     private List<String> clubImageUrlList;
+    private Integer numLikes;
+    private Boolean isLikedByUser;
 
-    public ClubDetailResponse(Club club, List<String> clubImageUrlList) {
+    public ClubDetailResponse(Club club, List<String> clubImageUrlList, User user) {
         this.club_id = club.getId();
-        this.ownerNickname = "추후반영예정";    // 쿼리 수정할 때 닉네임 가져오게하기
+        this.ownerNickname = user.getNickname();    // 쿼리 수정할 때 닉네임 가져오게하기
         this.clubTitle = club.getTitle();
         this.clubCategory = club.getCategory().getCategory();
         this.clubTag = TagEnum.parseTag(club.getTagString());
@@ -39,13 +42,15 @@ public class ClubDetailResponse {
         this.nowMemberCount = club.getNowMemberCount();
         this.thumbnailUrl = club.getThumbnailUrl();
         this.clubImageUrlList = clubImageUrlList;  //  쿼리한방에 가능한가 ?
+        this.numLikes = 0;
+        this.isLikedByUser = false;
     }
 
     @QueryProjection
     public ClubDetailResponse(
             Long club_id, String ownerNickname, String clubTitle, CategoryEnum categoryEnum, String tagString,
             String clubContent, Integer agePolicy, GenderPolicyEnum genderPolicyEnum, Integer maxGroupSize,
-            Integer nowMemberCount, String thumbnailUrl) {
+            Integer nowMemberCount, String thumbnailUrl, Integer numLikes, Boolean isLikedByUser) {
         this.club_id = club_id;
         this.ownerNickname = ownerNickname;
         this.clubTitle = clubTitle;
@@ -57,6 +62,8 @@ public class ClubDetailResponse {
         this.maxGroupSize = maxGroupSize;
         this.nowMemberCount = nowMemberCount;
         this.thumbnailUrl = thumbnailUrl;
+        this.numLikes = numLikes;
+        this.isLikedByUser = isLikedByUser;
 //        this.clubImageUrlList = clubImageUrlList; //쿼리에 달아주기 힘든데 ?
     }
     public void setClubImageUrlList(List<String> clubImageUrlList) {
