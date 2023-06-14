@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -89,7 +88,6 @@ public class EventService {
     }
 
     // Read Event Detail
-    @Transactional
     public ResponseEntity<List<EventAttendant>> getEvent(long clubId, long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(()->new IllegalArgumentException("400 Bad Request"));
         // Attending People List
@@ -128,7 +126,7 @@ public class EventService {
     }
 
     // Event Attend/Cancel
-
+    @Transactional
     public ResponseEntity<?> joinEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 EventNot Found"));
         if(attendantRepository.findByEventIdAndUserId(eventId, user.getId()) != null) {
@@ -139,6 +137,8 @@ public class EventService {
         event.addAttend();
         return ResponseEntity.ok("Attending Complete.");
     }
+
+    @Transactional
     public ResponseEntity<?> cancelEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 Event NotFound"));
         EventAttendant eventAttendant = attendantRepository.findByEventIdAndUserId(eventId, user.getId());
@@ -150,6 +150,4 @@ public class EventService {
             return ResponseEntity.ok("401 Unauthorized.");
         }
     }
-
-
 }

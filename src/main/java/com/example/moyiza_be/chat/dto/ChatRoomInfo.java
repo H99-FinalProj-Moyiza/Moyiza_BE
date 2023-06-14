@@ -17,6 +17,7 @@ public class ChatRoomInfo {
     private ChatTypeEnum chatType;
     private Long roomIdentifier;
     private String roomName;
+    private ChatMessageOutput lastMessage;
 
     @QueryProjection
     public ChatRoomInfo(Long chatId, ChatTypeEnum chatType, Long roomIdentifier, String roomName, String chatThumbnail) {

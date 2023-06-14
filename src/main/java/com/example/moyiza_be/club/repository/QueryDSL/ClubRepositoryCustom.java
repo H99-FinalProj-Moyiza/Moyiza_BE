@@ -154,6 +154,7 @@ public class ClubRepositoryCustom {
                 .from(club)
                 .join(user).on(club.ownerId.eq(userId))
                 .where(user.id.eq(userId))
+                .orderBy(club.id.desc())
                 .fetch();
     }
 
@@ -178,6 +179,7 @@ public class ClubRepositoryCustom {
                 .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
                 .join(user).on(clubJoinEntry.userId.eq(userId))
                 .where(user.id.eq(userId))
+                .orderBy(club.id.desc())
                 .fetch();
     }
 

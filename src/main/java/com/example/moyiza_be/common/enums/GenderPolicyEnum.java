@@ -19,6 +19,6 @@ public enum GenderPolicyEnum {
                 return genderPolicyEnum;
             }
         }
-        throw new IllegalArgumentException(String.format("%s에 해당하는 Policy를 찾을 수 없습니다",policy));
+        throw new IllegalArgumentException(String.format("No Policy was found for %s",policy));
     }
 }

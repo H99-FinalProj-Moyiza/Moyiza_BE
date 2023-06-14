@@ -29,9 +29,9 @@ public class AwsS3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    // 프로필 업로드
+    // Upload Profile
     public String uploadFile(MultipartFile multipartFile){
-        // 파일 이름이 같으면 저장이 안돼서 파일이름 앞에 UUID를 붙인다.
+        // If the filename is the same, it won't save, so we prefix the filename with the UUID.
         String fileName = UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
         ObjectMetadata objMeta = new ObjectMetadata();
         objMeta.setContentType(multipartFile.getContentType());
@@ -40,7 +40,7 @@ public class AwsS3Uploader {
         try(InputStream inputStream = multipartFile.getInputStream()){
             amazonS3.putObject(bucket, fileName, multipartFile.getInputStream(), objMeta);
         } catch (IOException e){
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "File upload failed.");
         }
         return amazonS3.getUrl(bucket, fileName).toString();
     }
@@ -57,7 +57,7 @@ public class AwsS3Uploader {
                 amazonS3.putObject(bucket, fileName, multipartFile.getInputStream(), objMeta);
                 imgUrlList.add(String.valueOf(amazonS3.getUrl(bucket, fileName)));
             } catch (IOException e){
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "File upload failed.");
             }
         }
         log.info("uploaded " + imgUrlList.size() + "files to aws");
@@ -71,12 +71,12 @@ public class AwsS3Uploader {
         return uploadImageUrl;
     }
 
-    // 로컬에 저장된 파일 삭제
+    // Delete local stored files
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {
-            log.info("파일이 삭제되었습니다.");
+            log.info("The file was deleted.");
         } else {
-            log.info("파일이 삭제되지 못했습니다.");
+            log.info("The file could not be deleted.");
         }
     }
 
@@ -85,7 +85,7 @@ public class AwsS3Uploader {
         return amazonS3.getUrl(bucket, fileName).toString();
     }
 
-    // 프로필 수정 기존 이미지 삭제
+    // Edit your profile Delete an existing image Edit your profile Delete an existing image
     public boolean delete(String fileUrl) {
         try {
             String[] temp = fileUrl.split("/");

@@ -82,6 +82,11 @@ public class UserController {
                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.updateProfile(image, requestDto, userDetails.getUser().getEmail());
     }
+    //회원정보 수정 - 관심사 추가 tagList 조회
+    @GetMapping("/profile/tags")
+    public ResponseEntity<?> tagsOfCategory(@RequestParam String category){
+        return userService.tagsOfCategory(category);
+    }
 
     //Refresh 토큰으로 Access 토큰 재발급
     @GetMapping("/reissue")

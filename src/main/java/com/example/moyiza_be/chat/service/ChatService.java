@@ -24,7 +24,6 @@ import java.util.List;
 
 @Service
 @Slf4j
-@Transactional  // transaction 때문에 느려질 수 있다
 @RequiredArgsConstructor
 public class ChatService {
     private final SimpMessageSendingOperations sendingOperations;
@@ -34,16 +33,18 @@ public class ChatService {
     private final RedisCacheService cacheService;
     private final ChatRepositoryCustom chatRepositoryCustom;
 
+    @Transactional
     public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
                                    Long chatId,
                                    ChatMessageInput chatMessageInput
     ) {
-        //필터링 ? some logic
+        //Filtering ? need to some logic
         ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userPrincipal.getUserId());
         chatRecordRepository.save(chatRecord);  // id받아오려면 saveAndFlush로 변경
         Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
         Long chatMemberCount = getChatMemberCount(chatId);
         ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal, chatMemberCount - subscriptionCount);
+        messageOutput.setChatId(chatId);
         String destination = "/chat/" + chatId;
         String alarmDestination = "/chatalarm/" + chatId;
         cacheService.addRecentChatToList(chatId.toString(), messageOutput);
@@ -51,18 +52,31 @@ public class ChatService {
         sendingOperations.convertAndSend(alarmDestination, messageOutput);
     }
 
-    //채팅방 목록 조회
-
+    //Get Club Chat Room List
     public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(Long userId) {
         //나중에 쿼리 바꿀 대상
-        List<ChatRoomInfo> clubChatRoomInfoList = chatRepositoryCustom.getClubChatRoomList(userId);
+        List<ChatRoomInfo> clubChatRoomInfoList = chatRepositoryCustom.getClubChatRoomList(userId)
+                .stream()
+                .peek(chatRoomInfo ->
+                        chatRoomInfo.setLastMessage(
+                                cacheService.loadRecentChat(chatRoomInfo.getChatId().toString())))
+                .toList();
+
         return ResponseEntity.ok(clubChatRoomInfoList);
     }
+
     public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(Long userId){
-        List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId);
+
+        List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId)
+                .stream()
+                .peek(chatRoomInfo ->
+                        chatRoomInfo.setLastMessage(
+                                cacheService.loadRecentChat(chatRoomInfo.getChatId().toString())))
+                .toList();
         return ResponseEntity.ok(onedayChatRoomInfoList);
     }
 
+    @Transactional
     public void makeChat(Long roomIdentifier, ChatTypeEnum chatType, String roomName) {
         Chat chat = chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatType).orElse(null);
         if (chat != null) {
@@ -72,10 +86,10 @@ public class ChatService {
         Chat new_chat = new Chat(roomIdentifier, chatType, roomName);
         chatRepository.saveAndFlush(new_chat);
     }
-    //채팅 내역 조회
 
+    // Get Chat Room Record
     public ResponseEntity<Page<ChatMessageOutput>> getChatRoomRecord(User user, Long chatId, Pageable pageable) {
-        //나중에 쿼리 다듬기  ==> senderId, user Join해서, id, nickname, profileUrl도 가져와야함
+        //require the query later ==> join senderId and User, also need to get id, nickname, profileUrl
         Long memberCount = getChatMemberCount(chatId);
         if (pageable.getPageNumber() == 0) {
             return ResponseEntity.ok(cacheService.loadRecentChatList(chatId.toString(), memberCount, pageable));
@@ -85,7 +99,7 @@ public class ChatService {
                 chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
                         .orElse(null);
         if (chatJoinEntry == null) {
-            throw new NullPointerException("채팅방을 찾을 수 없습니다");
+            throw new NullPointerException("Can't find a chat room.");
         }
         Page<ChatMessageOutput> chatRecordDtoPage = chatRecordRepository
                 .findAllByChatIdAndCreatedAtAfter(pageable, chatId, chatJoinEntry.getCreatedAt())
@@ -96,8 +110,9 @@ public class ChatService {
                 ));
         return ResponseEntity.ok(chatRecordDtoPage);
     }
-    //클럽 채팅방 join
 
+    //클럽 채팅방 join
+    @Transactional
     public void joinChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
         Chat chat = loadChat(roomIdentifier, chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);
@@ -110,11 +125,12 @@ public class ChatService {
         cacheService.addUnsubscribedUser(chat.getId().toString(), user.getId().toString());
 
         //구독자들한테 JOIN메시지 보내기
-        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage", null);
+        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage");
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다"));
 
     }
 
+    @Transactional
     public void leaveChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
         Chat chat = loadChat(roomIdentifier, chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);
@@ -128,7 +144,7 @@ public class ChatService {
         cacheService.removeSubscriptionFromChatId(chat.getId().toString(), user.getId().toString());
 
         //구독자들한테 LEAVE메시지 보내기
-        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf", null);
+        ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf");
         receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다"));
     }
 

@@ -29,7 +29,6 @@ import java.util.Objects;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class OneDayCreateService {
     private final OneDayService oneDayService;
     private final AwsS3Uploader s3Uploader;
@@ -41,6 +40,7 @@ public class OneDayCreateService {
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
     // Temporary OneDay Create
+    @Transactional
     public ResponseEntity<?> initCreateOneDay(Long userId) {
         OneDayCreate bluePrint = createRepository.findByOwnerIdAndConfirmedIsFalse(userId).orElse(null);
         if (bluePrint != null) {
@@ -53,13 +53,16 @@ public class OneDayCreateService {
         CreateOneDayIdResponseDto createOneDayIdResponse = new CreateOneDayIdResponseDto(oneDayCreate.getId());
         return new ResponseEntity<>(createOneDayIdResponse, HttpStatus.CREATED);
     }
+
     // load creating OneDay
     public ResponseEntity<CreatingDto> getExistCreatingOneDay(Long userId, Long createOneDayId) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         log.info("returning info for createoneday id : " + createOneDayId);
         return new ResponseEntity<>(new CreatingDto(oneDayCreate), HttpStatus.OK);
     }
+
     // title
+    @Transactional
     public ResponseEntity<Message> setTitle(Long userId, Long createOneDayId, RequestTitleDto titleDto) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if(titleDto.getOneDayTitle() == null) {
@@ -70,6 +73,7 @@ public class OneDayCreateService {
         return new ResponseEntity<>(new Message("Success"), HttpStatus.OK);
     }
     // Content
+    @Transactional
     public ResponseEntity<Message> setContent(Long userId, Long createOneDayId, RequestContentDto contentDto) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if(contentDto.getOneDayContent() == null) {
@@ -79,7 +83,9 @@ public class OneDayCreateService {
         log.info("set oneday content : " + contentDto.getOneDayContent() +  "for id : " + createOneDayId);
         return new ResponseEntity<>(new Message("Success"), HttpStatus.OK);
     }
+
     // category
+    @Transactional
     public ResponseEntity<Message> setCategory(Long userId, Long createOneDayId, RequestCategoryDto categoryEnum) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if(categoryEnum.getCategoryEnum() == null) {
@@ -89,7 +95,9 @@ public class OneDayCreateService {
         log.info("set oneday category : " + categoryEnum.getCategoryEnum() +  "for id : " + createOneDayId);
         return new ResponseEntity<>(new Message("Success"), HttpStatus.OK);
     }
+
     // tag
+    @Transactional
     public ResponseEntity<?> setTag(Long userId, Long createOneDayId, RequestTagDto tagEnumList) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if(tagEnumList.getTagEnumList() == null) {
@@ -106,6 +114,7 @@ public class OneDayCreateService {
     }
 
     // Policy
+    @Transactional
     public ResponseEntity<Message> setPolicy
     (Long userId, Long createOneDayId, RequestPolicyDto policyRequest) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
@@ -120,7 +129,9 @@ public class OneDayCreateService {
         log.info("set oneday agepolicy : " + policyRequest.getAgePolicy() +  "for id : " + createOneDayId);
         return new ResponseEntity<>(new Message("Success"),HttpStatus.OK);
     }
+
     // Size
+    @Transactional
     public ResponseEntity<Message> setMaxGroupSize(Long userId, Long createOneDayId, RequestSizeDto maxSize) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if(maxSize.getSize()==null){
@@ -133,6 +144,7 @@ public class OneDayCreateService {
     }
 
     // Location
+    @Transactional
     public ResponseEntity<Message> setLocation(Long userId, Long createOneDayId, RequestLocationDto requestLocationDto) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if (requestLocationDto.getOneDayLocation() == null || Objects.equals(requestLocationDto.getOneDayLongitude(),null) || Objects.equals(requestLocationDto.getOneDayLatitude(),null)){
@@ -145,6 +157,7 @@ public class OneDayCreateService {
     }
 
     // Date
+    @Transactional
     public ResponseEntity<Message> setDate(Long userId, Long createOneDayId, RequestDateDto dateTime) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if (dateTime.getOneDayStartTime() == null) {
@@ -157,9 +170,9 @@ public class OneDayCreateService {
         return new ResponseEntity<>(new Message("Success"),HttpStatus.OK);
     }
 
-
     // revisit
     // Image
+    @Transactional
     public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, List<MultipartFile> imageFileList) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         List<String> imageUrlList;
@@ -181,12 +194,14 @@ public class OneDayCreateService {
         return new ResponseEntity<>(new Message("Upload Complete!"), HttpStatus.OK);
     }
 
+    @Transactional
     public ResponseEntity<Message> setType(Long userId, Long createOneDayId, RequestTypeDto type) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setOneDayType(type.getOneDayTypeEnum());
         return new ResponseEntity<>(new Message("Success"),HttpStatus.OK);
     }
 
+    // oneDayService.createOneDay is transactional, so we don't need it here
     public ResponseEntity<?> confirmCreation(User user, Long createOneDayId) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, user.getId());
         OneDayCreateConfirmDto confirmDto = new OneDayCreateConfirmDto(oneDayCreate);

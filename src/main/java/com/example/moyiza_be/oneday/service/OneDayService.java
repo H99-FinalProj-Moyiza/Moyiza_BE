@@ -33,10 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,6 +54,8 @@ public class OneDayService {
 
     // Create OneDay
     // revisit
+
+    @Transactional
     public OneDayDetailResponse createOneDay(User user, OneDayCreateConfirmDto confirmDto) {
         OneDay oneDay = new OneDay(confirmDto);
 //        List<String> oneDayImageUrlList = imageUrlRepository.findAllById(Collections.singleton(confirmDto.getCreateOneDayId()))
@@ -118,6 +117,7 @@ public class OneDayService {
                         .oneDayImage(oneDay.getOneDayImage())
                         .oneDayAttendantListSize(oneDaysInOperation.size())
                         .build())
+                .sorted(Comparator.comparing(OneDayDetailOnMyPage::getOneDayId).reversed())
                 .collect(Collectors.toList());
 
         // List For Attending OneDay
@@ -138,12 +138,14 @@ public class OneDayService {
                         .oneDayImage(oneDay.getOneDayImage())
                         .oneDayAttendantListSize(oneDaysInParticipating.size())
                         .build())
+                .sorted(Comparator.comparing(OneDayDetailOnMyPage::getOneDayId).reversed())
                 .collect(Collectors.toList());
 
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }
 
     // Update OneDay
+    @Transactional
     public ResponseEntity<?> updateOneDay(Long id, OneDayUpdateRequestDto requestDto, User user, MultipartFile imageUrl) throws IOException {
         // Load Undeleted OneDay
         OneDay oneDay = loadExistingOnedayById(id);
@@ -163,6 +165,7 @@ public class OneDayService {
     }
 
     // Deleting OneDay
+    @Transactional
     public ResponseEntity<Message> deleteOneDay(Long userId, Long oneDayId) {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         checkOnedayOwnership(userId, oneDay);
@@ -172,6 +175,7 @@ public class OneDayService {
     }
 
     // Attending OneDay
+    @Transactional
     public ResponseEntity<?> joinOneDay(Long oneDayId, User user) {
         if (attendantRepository.existsByOneDayIdAndUserId(oneDayId, user.getId())) {
             return new ResponseEntity<>(new Message("Cannot Attend Twice"), HttpStatus.BAD_REQUEST);
@@ -194,6 +198,7 @@ public class OneDayService {
     }
 
     // Cancel OneDay Attend
+    @Transactional
     public ResponseEntity<?> cancelOneDay(Long oneDayId, User user) {
         OneDay oneday = loadExistingOnedayById(oneDayId);
         OneDayAttendant oneDayAttendant = findAndLoadOnedayAttendant(oneDayId, user.getId());
@@ -204,6 +209,7 @@ public class OneDayService {
     }
 
     // Ban Person at OneDay
+    @Transactional
     public ResponseEntity<?> banOneDay(Long oneDayId, Long userId, BanOneDay banRequest) {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         if (!oneDayRepository.existsByIdAndDeletedFalseAndOwnerIdEquals(oneDayId, userId)) {
