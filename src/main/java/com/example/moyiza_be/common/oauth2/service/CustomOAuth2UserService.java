@@ -3,6 +3,7 @@ package com.example.moyiza_be.common.oauth2.service;
 import com.example.moyiza_be.common.enums.SocialType;
 import com.example.moyiza_be.common.oauth2.CustomOAuth2User;
 import com.example.moyiza_be.common.oauth2.OAuthAttributes;
+import com.example.moyiza_be.common.oauth2.OAuthSocialTypeMissMatchException;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -71,7 +72,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             return updateUser(savedUser, attributes, socialType);
         }
         if (savedUser.getSocialType() != socialType) {
-                throw new RuntimeException("Looks like you're signed up with " + savedUser.getSocialType()
+                throw new OAuthSocialTypeMissMatchException("Looks like you're signed up with " + savedUser.getSocialType()
                         + " account. Please use your " + savedUser.getSocialType() + " account to login.");
         }
         return savedUser;

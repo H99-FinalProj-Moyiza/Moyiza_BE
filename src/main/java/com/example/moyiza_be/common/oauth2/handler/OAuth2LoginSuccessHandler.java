@@ -52,9 +52,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             cookieUtil.deleteCookie(request, response, JwtUtil.REFRESH_TOKEN);
             cookieUtil.addCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
 
+            String tokenName = (findUser.getRole() == Role.GUEST) ? "token" : "confirm";
+
             String targetUrl = "http://localhost:3000/oauth/redirect";
             String redirectUrl = UriComponentsBuilder.fromUriString(targetUrl)
-                    .queryParam("token", tokenDto.getAccessToken().substring(7))
+                    .queryParam(tokenName, tokenDto.getAccessToken().substring(7))
                     .build().toUriString();
             response.sendRedirect(redirectUrl);
 //            if(oAuth2User.getRole() == Role.GUEST) {
