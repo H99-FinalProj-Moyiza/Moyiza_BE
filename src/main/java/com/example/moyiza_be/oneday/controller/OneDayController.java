@@ -102,7 +102,7 @@ public class OneDayController {
         return oneDayService.cancelOneDay(oneDayId, userDetails.getUser());
     }
 
-    //거리기반 원데이 추천
+    // Recommendation Based On Distance
     @GetMapping("/recommend")
     public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(@RequestParam("lat") double nowLatitude, @RequestParam("lon") double nowLongitude) {
         return oneDayService.recommendByDistance(nowLatitude, nowLongitude);

@@ -27,7 +27,7 @@ public class EventController {
     }
 
     // ReadAll
-    // url없음  : 내부적으로 처리
+    // NO url : Process in Club
 
     // ReadOne
     @GetMapping("/{club_id}/event/{event_id}")
@@ -40,7 +40,7 @@ public class EventController {
         return eventService.getEvent(club_id,event_id, user);
     }
 
-    // Update : 보류
+    // Update : Hold
 //    @PutMapping("/{club_id}/event/{event_id}")
 //    public String putEvent() {
 //    }

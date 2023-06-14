@@ -1,9 +1,19 @@
 package com.example.moyiza_be.user.dto;
 
+import com.example.moyiza_be.common.enums.TagEnum;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 public class UpdateRequestDto {
     private String nickname;
-    private String password;
+    private List<String> tags;
+
+    public List<TagEnum> getTagEnumList() {
+        return tags.stream()
+                .map(TagEnum::fromString)
+                .sorted()
+                .toList();
+    }
 }

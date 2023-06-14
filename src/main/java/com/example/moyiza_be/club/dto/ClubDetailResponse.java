@@ -31,7 +31,7 @@ public class ClubDetailResponse {
 
     public ClubDetailResponse(Club club, List<String> clubImageUrlList, User user) {
         this.club_id = club.getId();
-        this.ownerNickname = user.getNickname();    // 쿼리 수정할 때 닉네임 가져오게하기
+        this.ownerNickname = user.getNickname();
         this.clubTitle = club.getTitle();
         this.clubCategory = club.getCategory().getCategory();
         this.clubTag = TagEnum.parseTag(club.getTagString());
@@ -64,7 +64,7 @@ public class ClubDetailResponse {
         this.thumbnailUrl = thumbnailUrl;
         this.numLikes = numLikes;
         this.isLikedByUser = isLikedByUser;
-//        this.clubImageUrlList = clubImageUrlList; //쿼리에 달아주기 힘든데 ?
+//        this.clubImageUrlList = clubImageUrlList; //Difficult to handle with queries
     }
     public void setClubImageUrlList(List<String> clubImageUrlList) {
         this.clubImageUrlList = clubImageUrlList;

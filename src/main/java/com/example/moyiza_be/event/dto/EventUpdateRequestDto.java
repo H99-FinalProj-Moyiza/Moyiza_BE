@@ -16,7 +16,6 @@ public class EventUpdateRequestDto {
     private final String eventLongitude;
     private final int eventGroupSize;
 //    private String image;
-// 수정할 때 not null 메세지 있어야 하지 않을까
     public EventUpdateRequestDto(Event event) {
         this.eventTitle = event.getEventTitle();
         this.eventContent = event.getEventContent();

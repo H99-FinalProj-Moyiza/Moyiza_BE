@@ -3,10 +3,12 @@ package com.example.moyiza_be.oneday.dto;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.entity.OneDay;
+import com.example.moyiza_be.oneday.entity.OneDayImageUrl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -24,7 +26,7 @@ public class OneDayDetailResponse {
     private String oneDayImage;
     private List<String> oneDayImageUrlList;
 
-    public OneDayDetailResponse(OneDay oneDay, List<String> oneDayImageUrl) {
+    public OneDayDetailResponse(OneDay oneDay, List<OneDayImageUrl> oneDayImageUrl) {
         this.oneDayId = oneDay.getId();
         this.ownerName = oneDay.getOwnerId();
         this.oneDayTitle = oneDay.getOneDayTitle();
@@ -36,6 +38,6 @@ public class OneDayDetailResponse {
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
         this.attendantsNum = 1;
         this.oneDayImage = oneDay.getOneDayImage();
-        this.oneDayImageUrlList = oneDayImageUrl;
+        this.oneDayImageUrlList = oneDayImageUrl.stream().map(OneDayImageUrl::getImageUrl).collect(Collectors.toList());
     }
 }

@@ -78,12 +78,12 @@ public class OneDayCreateController {
     @PutMapping("/{oneDayTmpId}/time")
     public ResponseEntity<Message> setTime(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long oneDayTmpId, @RequestBody RequestDateDto time){
         User user = userDetails.getUser();
-        if(time.getOneDayStartTime() == null){
-            throw new IllegalArgumentException("oneday 시작시간이 없습니다");
-        }
+//        if(time.getOneDayStartTime() == null){
+//            throw new IllegalArgumentException("oneDay Cannot Be Null");
+//        }
         return oneDayCreateService.setDate(user.getId(),oneDayTmpId,time);
     }
-    // startTime
+    // Type
     @PutMapping("/{oneDayTmpId}/type")
     public ResponseEntity<Message> setType(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long oneDayTmpId, @RequestBody RequestTypeDto type){
         User user = userDetails.getUser();

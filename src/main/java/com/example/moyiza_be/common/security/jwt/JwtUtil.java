@@ -50,7 +50,7 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    // header 토큰을 가져오기
+    // Get the header token
     public String resolveToken(HttpServletRequest request, String token) {
         String tokenName = token.equals("ACCESS_TOKEN") ? ACCESS_TOKEN : REFRESH_TOKEN;
         String bearerToken = request.getHeader(tokenName);
@@ -70,7 +70,7 @@ public class JwtUtil {
         return null;
     }
 
-    // 토큰 생성
+    // Create All Token
     public JwtTokenDto createAllToken(User user) {
         return new JwtTokenDto(createToken(user, "Access"), createToken(user, "Refresh"));
     }
@@ -102,34 +102,34 @@ public class JwtUtil {
         }
     }
 
-    // 토큰 검증
+    // Validate Token
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
+            log.info("Invalid JWT signature.");
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT token, 만료된 JWT token 입니다.");
+            log.info("Expired JWT token.");
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
+            log.info("Unsupported JWT token.");
         } catch (IllegalArgumentException e) {
-            log.info("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
+            log.info("JWT claims is empty.");
         }
         return false;
     }
 
-    // 토큰에서 사용자 정보 가져오기
+    // Get user information from a token
     public String getUserInfoFromToken(String token) {
         return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject();
     }
 
-    // 인증 객체 생성
+    // Create an authentication object
     public Authentication createAuthentication(String userEmail) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
-    //RefreshToken 검증
+    //Validate RefreshTokenValidate RefreshToken
     public boolean refreshTokenValid(String token) {
         if (!validateToken(token)) return false;
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(getUserInfoFromToken(token));
@@ -159,8 +159,8 @@ public class JwtUtil {
                     claims.get("profileUrl").toString()
             );
         } catch(Exception e){
-            log.info("채팅 : 토큰에서 유저정보를 가져올 수 없음");
-            throw new NullPointerException("chat : 유저정보를 읽을 수 없습니다");
+            log.info("Chat: Unable to get user information from token ");
+            throw new NullPointerException("Chat : Unable to read user information");
         }
         return userInfo;
     }

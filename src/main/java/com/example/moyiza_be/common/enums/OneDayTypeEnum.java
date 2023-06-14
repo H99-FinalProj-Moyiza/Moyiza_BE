@@ -19,6 +19,6 @@ public enum OneDayTypeEnum {
                 return oneDayTypeEnum;
             }
         }
-        throw new IllegalArgumentException(String.format("%s에 해당하는 타입을 찾을 수 없습니다",policy));
+        throw new IllegalArgumentException(String.format("No type found for %s", policy));
     }
 }
