@@ -59,11 +59,10 @@ public class UserService {
     }
 
     public ResponseEntity<?> updateSocialInfo(UpdateSocialInfoRequestDto requestDto, User user) {
-        User foundUser = validationUtil.findUser(user.getEmail());
+        User foundUser = validationUtil.findUserBySocialInfo(user.getSocialType(), user.getSocialLoginId());
         validationUtil.checkDuplicatedNick(requestDto.getNickname());
         foundUser.updateSocialInfo(requestDto);
         foundUser.authorizeUser();
-        userRepository.saveAndFlush(foundUser);
         return new ResponseEntity<>("Social signup complete!", HttpStatus.OK);
     }
     public ResponseEntity<?> getSocialInfo(User user) {

@@ -16,7 +16,7 @@ import java.io.IOException;
 public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException, IOException {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.getWriter().write("Social login failed, please check your server logs.");
         log.info("Social login failed. Error message: {}", exception.getMessage());
 

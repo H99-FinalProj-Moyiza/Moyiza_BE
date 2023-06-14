@@ -1,5 +1,6 @@
 package com.example.moyiza_be.user.util;
 
+import com.example.moyiza_be.common.enums.SocialType;
 import com.example.moyiza_be.common.redis.RedisUtil;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
@@ -19,6 +20,10 @@ public class ValidationUtil {
 
     public User findUser(String email){
         return userRepository.findByEmail(email).orElseThrow(()->
+                new NoSuchElementException("사용자가 존재하지 않습니다."));
+    }
+    public User findUserBySocialInfo(SocialType socialType, String socialLoginId){
+        return userRepository.findBySocialTypeAndSocialLoginId(socialType, socialLoginId).orElseThrow(()->
                 new NoSuchElementException("사용자가 존재하지 않습니다."));
     }
     public void checkDuplicatedEmail(String email){
