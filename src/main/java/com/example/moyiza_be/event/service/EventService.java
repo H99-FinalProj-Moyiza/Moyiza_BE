@@ -3,6 +3,7 @@ package com.example.moyiza_be.event.service;
 
 import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.repository.ClubRepository;
+import com.example.moyiza_be.common.enums.LikeTypeEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventDetailResponseDto;
@@ -13,6 +14,9 @@ import com.example.moyiza_be.event.entity.Event;
 import com.example.moyiza_be.event.entity.EventAttendant;
 import com.example.moyiza_be.event.repository.EventAttendantRepository;
 import com.example.moyiza_be.event.repository.EventRepository;
+import com.example.moyiza_be.event.repository.QueryDSL.EventRepositoryCustom;
+import com.example.moyiza_be.like.repository.EventLikeRepository;
+import com.example.moyiza_be.like.service.LikeService;
 import com.example.moyiza_be.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -35,6 +40,8 @@ public class EventService {
     private final ClubRepository clubRepository;
     private final EventAttendantRepository attendantRepository;
     private final AwsS3Uploader s3Uploader;
+    private final LikeService likeService;
+    private final EventRepositoryCustom eventRepositoryCustom;
     public static final String basicImageUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/87f7fcdb-254b-474a-9bf0-86cf3e89adcc_basicProfile.jpg";
 
     // Create Event
@@ -87,24 +94,20 @@ public class EventService {
     }
 
     // Read Event Detail
-    public ResponseEntity<List<EventAttendant>> getEvent(long clubId, long eventId) {
+    public ResponseEntity<List<EventAttendant>> getEvent(long clubId, long eventId, User user) {
+        Long userId = user == null ? null : user.getId();
         Event event = eventRepository.findById(eventId).orElseThrow(()->new IllegalArgumentException("400 Bad Request"));
         // Attending People List
         List<EventAttendant> attendantList = attendantRepository.findByEventId(eventId);
-        EventDetailResponseDto detailResponseDto = new EventDetailResponseDto(event, attendantList, attendantList.size());
+        Boolean isLikedByUser = likeService.checkLikeExists(userId, eventId, LikeTypeEnum.EVENT);
+        EventDetailResponseDto detailResponseDto = new EventDetailResponseDto(
+                event, attendantList, attendantList.size(), isLikedByUser);
         return new ResponseEntity(detailResponseDto, HttpStatus.OK);
     }
 
     // Event ReadAll
-    public List<EventSimpleDetailDto> getEventList(long clubId) { //ResponseEntity GenericType ListEntity
-        List<Event> eventsList = eventRepository.findAllByClubId(clubId);
-        List<EventSimpleDetailDto> eventList = new ArrayList<>();
-        for (Event event: eventsList) {
-            List<EventAttendant> eventAttendantList = attendantRepository.findByEventId(event.getId());
-            EventSimpleDetailDto simpleDetailDto = new EventSimpleDetailDto(event, eventAttendantList.size());
-            eventList.add(simpleDetailDto);
-        }
-        return eventList;
+    public List<EventSimpleDetailDto> getEventList(long clubId, User user) { //ResponseEntity GenericType ListEntity
+        return eventRepositoryCustom.getClubEventList(clubId, user.getId());
     }
 
     // Deleting Event
@@ -145,5 +148,36 @@ public class EventService {
         } else {
             return ResponseEntity.ok("401 Unauthorized.");
         }
+    }
+
+
+    @Transactional
+    public ResponseEntity<Message> likeEvent(User user, Long eventId) {
+        Event event = loadEventById(eventId);
+        ResponseEntity<Message> likeServiceResponse = likeService.eventLike(user.getId(), eventId);
+        if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
+            log.info("Error from Likeservice");
+            throw new InternalError("LikeService Error");
+        }
+        event.addLike();
+        return likeServiceResponse;
+    }
+
+    @Transactional
+    public ResponseEntity<Message> cancelLikeEvent(User user, Long eventId){
+        Event event = loadEventById(eventId);
+        ResponseEntity<Message> likeServiceResponse = likeService.cancelEventLike(user.getId(), eventId);
+        if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
+            log.info("Error from Likeservice");
+            throw new InternalError("LikeService Error");
+        }
+        event.minusLike();
+        return likeServiceResponse;
+    }
+
+
+    private Event loadEventById(Long eventId){
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NullPointerException("Event Not Found"));
     }
 }

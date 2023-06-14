@@ -6,8 +6,6 @@ import com.example.moyiza_be.club.dto.QClubDetailResponse;
 import com.example.moyiza_be.club.dto.QClubListResponse;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
-import com.example.moyiza_be.like.entity.ClubLike;
-import com.example.moyiza_be.like.entity.QClubLike;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -21,9 +19,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.example.moyiza_be.club.entity.QClub.club;
-import static com.example.moyiza_be.user.entity.QUser.user;
 import static com.example.moyiza_be.club.entity.QClubJoinEntry.clubJoinEntry;
 import static com.example.moyiza_be.like.entity.QClubLike.clubLike;
+import static com.example.moyiza_be.user.entity.QUser.user;
 
 
 @Repository

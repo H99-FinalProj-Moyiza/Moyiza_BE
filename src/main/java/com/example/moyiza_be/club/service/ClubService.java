@@ -152,7 +152,7 @@ public class ClubService {
     }
 
     public ResponseEntity<List<EventSimpleDetailDto>> getClubEventList(User user, Long clubId) {
-        List<EventSimpleDetailDto> eventList = eventService.getEventList(clubId);
+        List<EventSimpleDetailDto> eventList = eventService.getEventList(clubId, user);
         return ResponseEntity.ok(eventList);
     }
 

@@ -89,7 +89,8 @@ public class LikeService {
 
 
 
-    private Boolean checkLikeExists(Long userId, Long identifier, LikeTypeEnum likeTypeEnum){
+    public Boolean checkLikeExists(Long userId, Long identifier, LikeTypeEnum likeTypeEnum){
+        if(userId == null){return false;}
         switch(likeTypeEnum){
             case CLUB -> {
                 return clubLikeRepository.existsByUserIdAndClubId(userId, identifier);
