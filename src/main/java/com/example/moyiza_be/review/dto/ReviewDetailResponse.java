@@ -1,13 +1,12 @@
 package com.example.moyiza_be.review.dto;
 
 import com.example.moyiza_be.review.entity.Review;
-import com.example.moyiza_be.review.entity.ReviewImage;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -17,26 +16,45 @@ public class ReviewDetailResponse {
     private final Long writerId;
     private final String writerNickname;
     private final String title;
-    private final String content;
-    private final List<String> imageUrlList;
+    private final String textContent;
+    private List<String> imageList;
+    private final Integer numLikes;
+    private final Boolean isLikedByUser;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
+    @QueryProjection
+    public ReviewDetailResponse(Long reviewId, Long writerId, String writerNickname, String title, String content,
+//                                List<String> imageUrlList,
+                                Integer numLikes, Boolean isLikedByUser,
+                                LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        this.reviewId = reviewId;
+        this.writerId = writerId;
+        this.writerNickname = writerNickname;
+        this.title = title;
+        this.textContent = content;
+        this.imageList = new ArrayList<>();
+        this.numLikes = numLikes;
+        this.isLikedByUser = isLikedByUser;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+    }
 
     public ReviewDetailResponse(Review review, User user, List<String> imageUrlList) {
         this.reviewId = review.getId();
         this.writerId = review.getWriterId();
         this.writerNickname = user.getNickname();
         this.title = review.getTitle();
-        this.content = review.getTextContent();
-        this.imageUrlList = imageUrlList;
+        this.textContent = review.getTextContent();
+        this.imageList = imageUrlList;
+        this.numLikes = 0;
+        this.isLikedByUser = false;
+        this.createdAt = review.getCreatedAt();
+        this.modifiedAt = review.getModifiedAt();
     }
 
-    @QueryProjection
-    public ReviewDetailResponse(Long reviewId, Long writerId, String writerNickname,
-                                String title, String content, List<ReviewImage> imageEntityList) {
-        this.reviewId = reviewId;
-        this.writerId = writerId;
-        this.writerNickname = writerNickname;
-        this.title = title;
-        this.content = content;
-        this.imageUrlList = imageEntityList.stream().map(ReviewImage::getImageUrl).toList();
+    public void setImageList(List<String> imageList){
+        this.imageList = imageList;
     }
+
+
 }
