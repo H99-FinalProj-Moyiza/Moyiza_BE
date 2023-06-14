@@ -30,6 +30,7 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
@@ -44,7 +45,6 @@ public class UserService {
     private final RedisUtil redisUtil;
 
     //Signup
-    @Transactional
     public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
         String password = passwordEncoder.encode(requestDto.getPassword());
         String storedFileUrl = BasicProfileEnum.getRandomImage().getImageUrl();
@@ -59,7 +59,6 @@ public class UserService {
         return new ResponseEntity<>("Sign up successfully", HttpStatus.OK);
     }
 
-    @Transactional
     public ResponseEntity<?> updateSocialInfo(UpdateSocialInfoRequestDto requestDto, User user) {
         User foundUser = findUser(user.getEmail());
         checkDuplicatedNick(requestDto.getNickname());
@@ -87,7 +86,6 @@ public class UserService {
     }
 
     //Logout
-    @Transactional
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, String email) {
         cookieUtil.deleteCookie(request, response, "REFRESH_TOKEN");
         refreshTokenRepository.deleteByEmail(email).orElseThrow(
@@ -96,7 +94,6 @@ public class UserService {
     }
 
     //Modify Profile
-    @Transactional
     public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
         User user = findUser(email);
         checkDuplicatedNick(requestDto.getNickname());
@@ -125,7 +122,6 @@ public class UserService {
     }
   
     //Reissue Token
-    @Transactional
     public ResponseEntity<?> reissueToken(String refreshToken, HttpServletResponse response) {
         jwtUtil.refreshTokenValid(refreshToken);
         String userEmail = jwtUtil.getUserInfoFromToken(refreshToken);
@@ -152,7 +148,6 @@ public class UserService {
     }
 
     //Find email - Send text
-    @Transactional
     public ResponseEntity<?> sendSmsToFindEmail(FindEmailRequestDto requestDto) {
         String name = requestDto.getName();
         String phoneNum = requestDto.getPhone().replaceAll("-","");
@@ -185,7 +180,6 @@ public class UserService {
         return new ResponseEntity<>(storedFileUrl, HttpStatus.OK);
     }
 
-    @Transactional
     public ResponseEntity<?> signupTest(TestSignupRequestDto testRequestDto) {
         String password = passwordEncoder.encode(testRequestDto.getPassword());
         checkDuplicatedEmail(testRequestDto.getEmail());

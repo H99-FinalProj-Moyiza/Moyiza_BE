@@ -26,6 +26,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CreateClubService {
     private final CreateClubRepository createClubRepository;
     private final ClubService clubService;
@@ -37,8 +38,6 @@ public class CreateClubService {
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
-
-    @Transactional
     public ResponseEntity<?> initCreateClubId(Long userId) {
         CreateClub previousCreate = createClubRepository.findByOwnerIdAndFlagConfirmedIsFalse(userId).orElse(null);
         if (previousCreate != null) {
@@ -63,7 +62,6 @@ public class CreateClubService {
         return ResponseEntity.ok(new ResumeCreationDto(createClub));
     }
 
-    @Transactional
     public ResponseEntity<Message> setCategory(Long userId, Long createclub_id, CategoryEnum categoryEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         validateCategory(categoryEnum);
@@ -71,7 +69,6 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("Success"));
     }
 
-    @Transactional
     public ResponseEntity<Message> setTag(Long userId, Long createclub_id, List<String> tagList) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         validateTag(tagList);
@@ -83,7 +80,6 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("Success"));
     }
 
-    @Transactional
     public ResponseEntity<Message> setTitle(Long userId, Long createclub_id, String title) {
         validateTitle(title);
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
@@ -91,7 +87,6 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("Success"));
     }
 
-    @Transactional
     public ResponseEntity<Message> setContent(Long userId, Long createclub_id, String content) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         validateContent(content);
@@ -99,7 +94,6 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("Success"));
     }
 
-    @Transactional
     public ResponseEntity<Message> setPolicy
             (Long userId, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
@@ -110,15 +104,12 @@ public class CreateClubService {
         return ResponseEntity.ok(new Message("Success"));
     }
 
-    @Transactional
     public ResponseEntity<Message> setMaxGroupSize(Long userId, Long createclub_id, Integer requestMaxSize) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         createClub.setMaxGroupSize(requestMaxSize);
         return ResponseEntity.ok(new Message("Success"));
     }
 
-
-    @Transactional
     public ResponseEntity<Message> setImageList(Long userId, Long createclub_id, List<MultipartFile> imageFileList) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
         List<String> imageUrlList;
