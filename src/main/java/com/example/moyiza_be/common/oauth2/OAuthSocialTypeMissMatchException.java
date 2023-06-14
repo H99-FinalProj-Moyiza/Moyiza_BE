@@ -1,6 +1,8 @@
 package com.example.moyiza_be.common.oauth2;
 
-public class OAuthSocialTypeMissMatchException extends RuntimeException {
+import org.springframework.security.core.AuthenticationException;
+
+public class OAuthSocialTypeMissMatchException extends AuthenticationException {
 
     public OAuthSocialTypeMissMatchException(String message) {
         super(message);
