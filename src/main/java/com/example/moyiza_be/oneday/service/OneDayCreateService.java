@@ -177,24 +177,22 @@ public class OneDayCreateService {
     @Transactional
     public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, List<MultipartFile> imageFileList) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
-        List<String> imageUrlList = new ArrayList<>();
+        List<String> imageUrlList = null;
         log.info("Image List Setting");
-        int checkNum =1;
         if (oneDayCreate.getOneDayImage().isEmpty()) {
             if (imageFileList.isEmpty()) {
                 log.info("Image File is Null, Set Image to Default File");
-                checkNum = 0;
-                imageUrlList.add(DEFAULT_IMAGE_URL);
-            } else {
-                log.info("Get Image File Complete");
-                if (checkNum == 1) imageUrlList = s3Uploader.uploadMultipleImg(imageFileList);
+                imageUrlList = List.of(DEFAULT_IMAGE_URL);
             }
+        } else {
+            log.info("Get Image File Complete");
+            imageUrlList = s3Uploader.uploadMultipleImg(imageFileList);
         }
-        log.info("set thumbnail image");
-        oneDayCreate.setOneDayImage(imageUrlList.get(0));
         log.info("image list setting complete");
         List<OneDayImageUrl> imageEntityList = imageUrlList.stream().map(i -> new OneDayImageUrl(createOneDayId, i)).toList();
         imageUrlRepository.saveAll(imageEntityList);
+        log.info("set thumbnail image");
+        oneDayCreate.setOneDayImage(imageUrlList.get(0));
         log.info("set : " + imageEntityList.size() +  "images for id : " + createOneDayId);
 
         return new ResponseEntity<>(new Message("Upload Complete!"), HttpStatus.OK);
