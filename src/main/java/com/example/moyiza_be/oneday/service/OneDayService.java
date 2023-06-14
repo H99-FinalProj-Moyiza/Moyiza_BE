@@ -58,14 +58,22 @@ public class OneDayService {
     @Transactional
     public OneDayDetailResponse createOneDay(User user, OneDayCreateConfirmDto confirmDto) {
         OneDay oneDay = new OneDay(confirmDto);
-        List<String> oneDayImageUrlList = imageUrlRepository.findAllById(Collections.singleton(confirmDto.getCreateOneDayId()))
-                .stream()
-                .peek(image -> image.setOneDayId(oneDay.getId()))
-                .map(OneDayImageUrl::getImageUrl)
-                .toList();
+//        List<String> oneDayImageUrlList = imageUrlRepository.findAllById(Collections.singleton(confirmDto.getCreateOneDayId()))
+//                .stream()
+//                .peek(image -> image.setOneDayId(oneDay.getId()))
+//                .map(OneDayImageUrl::getImageUrl)
+//                .toList();
+//        oneDayImageUrlList.forEach(image -> image.setOneDayId(oneDay.getId()));
+//        imageUrlRepository.saveAll(oneDayImageUrlList);
         oneDay.setDeleted(false);
         oneDay.setAttendantsNum(1);
         oneDayRepository.saveAndFlush(oneDay);
+        List<OneDayImageUrl> oneDayImageUrlList = imageUrlRepository.findAllByOneDayCreateId(confirmDto.getCreateOneDayId());
+        for (OneDayImageUrl image : oneDayImageUrlList) {
+            log.info("Image's OneDayID : " + image.getOneDayId() + ", oneDay.getId() : " + oneDay.getId());
+            image.setOneDayId(oneDay.getId());
+            imageUrlRepository.save(image);
+        }
         chatService.makeChat(oneDay.getId(), ChatTypeEnum.ONEDAY, oneDay.getOneDayTitle());
         // Add Owner
         joinOneDay(oneDay.getId(), user);
