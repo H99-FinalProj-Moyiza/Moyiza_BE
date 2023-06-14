@@ -70,7 +70,6 @@ public class ClubService {
     public ResponseEntity<Page<ClubListResponse>> getClubList(
             Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3, User user
     ) {
-
         Page<ClubListResponse> responseList = clubRepositoryCustom.filteredClubResponseList(
                 pageable, category, q, tag1, tag2, tag3, user);
         return ResponseEntity.ok(responseList);

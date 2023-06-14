@@ -1,9 +1,7 @@
 package com.example.moyiza_be.review.service;
 
 
-import com.example.moyiza_be.club.entity.ClubImageUrl;
 import com.example.moyiza_be.common.enums.ReviewTypeEnum;
-import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.service.EventService;
@@ -14,11 +12,13 @@ import com.example.moyiza_be.review.dto.ReviewListResponse;
 import com.example.moyiza_be.review.dto.ReviewPostRequest;
 import com.example.moyiza_be.review.entity.Review;
 import com.example.moyiza_be.review.entity.ReviewImage;
+import com.example.moyiza_be.review.repository.QueryDSL.ReviewRepositoryCustom;
 import com.example.moyiza_be.review.repository.ReviewImageRepository;
 import com.example.moyiza_be.review.repository.ReviewRepository;
 import com.example.moyiza_be.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
@@ -35,16 +36,24 @@ public class ReviewService {
     private final OneDayService oneDayService;
     private final AwsS3Uploader s3Uploader;
     private final ReviewImageRepository reviewImageRepository;
+    private final ReviewRepositoryCustom reviewRepositoryCustom;
 
     @Transactional
-    public ResponseEntity<ReviewListResponse> getReviewList(User user) {
-        return null;
+    public ResponseEntity<List<ReviewListResponse>> getReviewList(User user)
+    {
+        return ResponseEntity.ok(reviewRepositoryCustom.getReviewList(user));
     }
 
 
     @Transactional
     public ResponseEntity<ReviewDetailResponse> getReviewDetail(User user, Long reviewId) {
-        return null;
+        ReviewDetailResponse response = reviewRepositoryCustom.getReviewDetails(user, reviewId);
+        List<String> imageUrlList = reviewImageRepository.findAllByReviewId(reviewId)
+                .stream()
+                .map(ReviewImage::getImageUrl)
+                .toList();
+        response.setImageList(imageUrlList);
+        return ResponseEntity.ok(response);
     }
 
     @Transactional
@@ -76,17 +85,52 @@ public class ReviewService {
 
 
     @Transactional
-    public ResponseEntity<Message> deleteReview(User user, Long reviewId) {
-        return null;
+    public ResponseEntity<Message> deleteReview(User user, Long reviewId){
+        Review review = loadReviewById(reviewId);
+        if(!isOwner(user, review)){
+            throw new IllegalArgumentException("Not Authorized");
+        }
+        reviewRepository.deleteById(reviewId);
+        return ResponseEntity.ok(new Message("deleted " + review.getTitle()));
     }
 
     @Transactional
     public ResponseEntity<Message> likeReview(User user, Long reviewId) {
-        return null;
+        Review review = loadReviewById(reviewId);
+        ResponseEntity<Message> likeServiceResponse = likeService.reviewLike(user.getId(), reviewId);
+        if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
+            log.info("Error from Likeservice");
+            throw new InternalError("LikeService Error");
+        }
+        review.addLike();
+        return likeServiceResponse;
     }
-
     @Transactional
     public ResponseEntity<Message> cancelLikeReview(User user, Long reviewId) {
-        return null;
+        Review review = loadReviewById(reviewId);
+        ResponseEntity<Message> likeServiceResponse = likeService.cancelReviewLike(user.getId(), reviewId);
+        if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
+            log.info("Error from Likeservice");
+            throw new InternalError("LikeService Error");
+        }
+        review.minusLike();
+        return likeServiceResponse;
+
+    }
+
+
+
+
+
+    ////////////////////////////////
+
+
+    private Review loadReviewById(Long reviewId){
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NullPointerException("Review Not Found"));
+    }
+
+    private Boolean isOwner(User user, Review review){
+        return user.getId().equals(review.getWriterId());
     }
 }

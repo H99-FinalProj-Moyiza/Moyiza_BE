@@ -1,5 +1,6 @@
 package com.example.moyiza_be.config;
 
+import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,9 @@ public class QuerydslConfig {
     @Autowired
     EntityManager entityManager;
     @Bean
-    public JPAQueryFactory jpaQueryFactory() {
-        return new JPAQueryFactory(entityManager);
+    public JPAQueryFactory jpaQueryFactory()
+    {
+        return new JPAQueryFactory(JPQLTemplates.DEFAULT, entityManager);
     }
 
 }

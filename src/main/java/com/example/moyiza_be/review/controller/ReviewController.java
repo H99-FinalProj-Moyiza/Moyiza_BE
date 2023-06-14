@@ -24,7 +24,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping
-    public ResponseEntity<ReviewListResponse> getReviewList(
+    public ResponseEntity<List<ReviewListResponse>> getReviewList(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
         User user = userDetails == null ? null : userDetails.getUser();

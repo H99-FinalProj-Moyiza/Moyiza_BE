@@ -6,9 +6,12 @@ import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.like.entity.ClubLike;
 import com.example.moyiza_be.like.entity.EventLike;
 import com.example.moyiza_be.like.entity.OnedayLike;
+import com.example.moyiza_be.like.entity.ReviewLike;
 import com.example.moyiza_be.like.repository.ClubLikeRepository;
 import com.example.moyiza_be.like.repository.EventLikeRepository;
 import com.example.moyiza_be.like.repository.OnedayLikeRepository;
+import com.example.moyiza_be.like.repository.ReviewLikeRepository;
+import com.example.moyiza_be.review.entity.Review;
 import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ public class LikeService {
     private final ClubLikeRepository clubLikeRepository;
     private final EventLikeRepository eventLikeRepository;
     private final OnedayLikeRepository onedayLikeRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
 
     @Transactional
     public ResponseEntity<Message> clubLike(Long userId,Long clubId){
@@ -83,11 +87,27 @@ public class LikeService {
         return new ResponseEntity<>(new Message("좋아요 취소"), HttpStatus.OK);
     }
 
+    @Transactional
+    public ResponseEntity<Message> reviewLike(Long userId,Long reviewId){
+        if(checkLikeExists(userId, reviewId, LikeTypeEnum.REVIEW)){
+            throw new DuplicateRequestException("중복으로 좋아요 할 수 없습니다");
+        }
+        ReviewLike reviewLike = new ReviewLike(userId, reviewId);
+        reviewLikeRepository.save(reviewLike);
+        return new ResponseEntity<>(new Message("좋아요 성공"), HttpStatus.OK);
+    }
 
+    @Transactional
+    public ResponseEntity<Message> cancelReviewLike(Long userId, Long reviewId){
+        if(!checkLikeExists(userId, reviewId, LikeTypeEnum.REVIEW)){
+            throw new NullPointerException("취소할 좋아요가 없습니다");
+        }
+        reviewLikeRepository.deleteByUserIdAndReviewId(userId, reviewId);
 
+        return new ResponseEntity<>(new Message("좋아요 취소"), HttpStatus.OK);
+    }
 
-
-
+    ////////////////////////////////////////////////////////////
 
     public Boolean checkLikeExists(Long userId, Long identifier, LikeTypeEnum likeTypeEnum){
         if(userId == null){return false;}
@@ -101,6 +121,10 @@ public class LikeService {
             case EVENT -> {
                 return eventLikeRepository.existsByUserIdAndEventId(userId, identifier);
             }
+            case REVIEW -> {
+                return reviewLikeRepository.existsByUserIdAndReviewId(userId, identifier);
+            }
+
             default -> {
                 throw new IllegalArgumentException("Unknown LikeType");
             }
