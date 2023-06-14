@@ -73,11 +73,11 @@ public class CreateClubService {
 
     @Transactional
     public ResponseEntity<Message> setTag(Long userId, Long createclub_id, List<String> tagList) {
-        System.out.println("tagList.toString() = " + tagList.toString());
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
+        validateTag(tagList);
         String newString = TagEnum.tagListToTagString(tagList);
         System.out.println("newString = " + newString);
-        validateTag(newString);
+
         createClub.setTagString(newString);
 
         return ResponseEntity.ok(new Message("Success"));
@@ -103,7 +103,7 @@ public class CreateClubService {
     public ResponseEntity<Message> setPolicy
             (Long userId, Long createclub_id, Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
         CreateClub createClub = loadAndCheckOwnerShip(createclub_id, userId);
-        validatePolicy(agePolicy, genderPolicyEnum);
+        validatePolicy(genderPolicyEnum.getGenderPolicy(), agePolicy);
         createClub.setGenderPolicy(genderPolicyEnum);
         createClub.setAgePolicy(agePolicy);
 
@@ -169,8 +169,8 @@ public class CreateClubService {
         }
     }
 
-    private static void validateTag(String newString) {
-        if (newString == null) {
+    private static void validateTag(List<String> tagList) {
+        if (tagList == null) {
             throw new NullPointerException("Tag can't be null.");
         }
     }
@@ -187,8 +187,8 @@ public class CreateClubService {
         }
     }
 
-    private static void validatePolicy(Integer agePolicy, GenderPolicyEnum genderPolicyEnum) {
-        if (agePolicy == null || genderPolicyEnum == null) {
+    private static void validatePolicy(String genderPolicy, Integer agePolicy) {
+        if (genderPolicy == null || agePolicy == null) {
             throw new NullPointerException("Policy can't be null.");
         }
     }
