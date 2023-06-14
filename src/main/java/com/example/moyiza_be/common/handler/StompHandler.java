@@ -38,7 +38,7 @@ public class StompHandler implements ChannelInterceptor {
             String bearerToken = headerAccessor.getFirstNativeHeader("ACCESS_TOKEN");
             String token = jwtUtil.removePrefix(bearerToken);
             if (!jwtUtil.validateToken(token)) {
-                throw new IllegalArgumentException("토큰이 유효하지 않습니다");
+                throw new IllegalArgumentException("The token is invalid.");
             }
             ChatUserPrincipal userInfo = jwtUtil.tokenToChatUserPrincipal(token);
             redisCacheService.saveUserInfoToCache(sessionId, userInfo);
@@ -163,7 +163,7 @@ public class StompHandler implements ChannelInterceptor {
         redisCacheService.removeSubscriptionFromChatId(chatId.toString(), userId);
     }
 
-    //유저 SUBSCRIBE 시 해당 유저의 마지막 읽은 메시지 ID를 클라이언트에게 전하는 메시지
+    //When a user SUBSCRIBES, this message tells the client the ID of the last message read by that user.
     private Message<byte[]> buildLastReadMessage(String destination, Long lastReadMessageId, String userId) {
         StompHeaderAccessor newHeader = StompHeaderAccessor.create(StompCommand.MESSAGE);
         newHeader.setDestination(destination);

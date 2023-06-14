@@ -1,5 +1,6 @@
 package com.example.moyiza_be.user.entity;
 
+import com.example.moyiza_be.common.enums.BasicProfileEnum;
 import com.example.moyiza_be.common.enums.GenderEnum;
 import com.example.moyiza_be.common.enums.SocialType;
 import com.example.moyiza_be.common.oauth2.OAuthAttributes;
@@ -7,6 +8,7 @@ import com.example.moyiza_be.common.oauth2.Role;
 import com.example.moyiza_be.common.utils.TimeStamped;
 
 import com.example.moyiza_be.user.dto.SignupRequestDto;
+import com.example.moyiza_be.user.dto.TestSignupRequestDto;
 import com.example.moyiza_be.user.dto.UpdateRequestDto;
 import com.example.moyiza_be.user.dto.UpdateSocialInfoRequestDto;
 import jakarta.persistence.*;
@@ -35,11 +37,13 @@ public class User extends TimeStamped {
 
     private String nickname;
 
-    private GenderEnum gender;  // 0 : 남자,  1 : 여자
+    private GenderEnum gender;  // 0 : MALE,  1 : FEMALE
 
     private Calendar birth;
 
     private String phone;
+
+    private String tagString;
 
     @Column(name = "image_url")
     @Lob
@@ -51,7 +55,7 @@ public class User extends TimeStamped {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-    private String socialLoginId; // 로그인한 소셜 타입의 식별자 값 (일반 로그인인 경우 null)
+    private String socialLoginId; // The identifier value of the social type you are logged in as (null for normal login)
 
     public User (String password, SignupRequestDto requestDto, String storedFileUrl){
         this.email = requestDto.getEmail();
@@ -64,23 +68,22 @@ public class User extends TimeStamped {
         this.profileImage = storedFileUrl;
     }
 
-    // 유저 권한 설정 메소드
+    // Methods for setting user permissions
     public void authorizeUser() {
         this.role = Role.USER;
     }
 
-    public void updateProfile(UpdateRequestDto requestDto){
-        this.nickname = requestDto.getNickname();
-        this.password = requestDto.getPassword();
+    public void updateProfile(String nickname, String tagString){
+        this.nickname = nickname;
+        this.tagString = tagString;
+    }
+    public void updateProfileImage(String storedFileName) {
+        this.profileImage = storedFileName;
     }
 
     public User (String nickName, Long id){
         this.nickname = nickName;
         this.id = id;
-    }
-
-    public void updateProfileImage(String storedFileName) {
-        this.profileImage = storedFileName;
     }
 
     public void updateSocialLogin(OAuthAttributes attributes, SocialType socialType){
@@ -94,5 +97,17 @@ public class User extends TimeStamped {
         this.gender = requestDto.getGender();
         this.birth = requestDto.getBirth();
         this.phone = requestDto.getPhone();
+    }
+
+    //테스트
+    public User (String password, TestSignupRequestDto requestDto){
+        this.email = requestDto.getEmail();
+        this.password = password;
+        this.name = requestDto.getName();
+        this.nickname = requestDto.getNickname();
+        this.gender = requestDto.getGender();
+        this.birth = requestDto.getBirth();
+        this.phone = requestDto.getPhone();
+        this.profileImage = (!requestDto.getImageUrl().isEmpty()) ? requestDto.getImageUrl() : BasicProfileEnum.getRandomImage().getImageUrl();
     }
 }

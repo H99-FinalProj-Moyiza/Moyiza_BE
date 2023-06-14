@@ -1,9 +1,12 @@
 package com.example.moyiza_be.user.email;
 
 import com.example.moyiza_be.common.redis.RedisUtil;
-import jakarta.mail.Message.RecipientType;
+import com.example.moyiza_be.user.entity.User;
+import com.example.moyiza_be.user.repository.UserRepository;
+import com.example.moyiza_be.user.util.ValidationUtil;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.Message.RecipientType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,8 @@ import java.util.Random;
 public class EmailService {
     private final JavaMailSender emailSender;
     private final RedisUtil redisUtil;
+    private final ValidationUtil validationUtil;
+
     private MimeMessage createMessage(String receiverEmail, String verificationCode)throws Exception{
         MimeMessage message = emailSender.createMimeMessage();
 
@@ -50,34 +55,24 @@ public class EmailService {
 
     public ResponseEntity<?> sendSimpleMessage(EmailRequestDto requestDto)throws Exception {
         String receiverEmail = requestDto.getEmail();
-        String verificationCode = createCode();
+        String verificationCode = validationUtil.createCode();
         MimeMessage message = createMessage(receiverEmail, verificationCode);
         try{
-            redisUtil.setDataExpire(verificationCode, receiverEmail, 60 * 5L); //유효시간 5분
+            redisUtil.setDataExpire(verificationCode, receiverEmail, 60 * 5L); //Valid for 5 minutes
             emailSender.send(message);
         }catch(MailException es){
             es.printStackTrace();
             throw new IllegalArgumentException();
         }
-        return new ResponseEntity<>("이메일을 성공적으로 보냈습니다.", HttpStatus.OK);
+        return new ResponseEntity<>("The email was sent successfully.", HttpStatus.OK);
     }
 
     public ResponseEntity<?> verifyCode(String code)throws Exception {
         if (redisUtil.getData(code) == null){
-            throw new IllegalArgumentException("옳지 않은 인증번호 입니다.");
+            throw new IllegalArgumentException("Invalid credentials.");
         }
         redisUtil.deleteData(code);
-        return new ResponseEntity<>("이메일 인증 성공!", HttpStatus.OK);
+        return new ResponseEntity<>("Email verification successful!", HttpStatus.OK);
     }
 
-    // 인증코드 만들기
-    public static String createCode() {
-        StringBuffer code = new StringBuffer();
-        Random randomNum = new Random();
-
-        for (int i = 0; i < 6; i++) {
-            code.append((randomNum.nextInt(10)));
-        }
-        return code.toString();
-    }
 }

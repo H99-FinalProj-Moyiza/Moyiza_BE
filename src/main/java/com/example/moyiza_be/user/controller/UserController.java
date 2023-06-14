@@ -10,7 +10,6 @@ import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -75,7 +74,6 @@ public class UserController {
         return mypageService.getMypage(userDetails.getUser());
     }
 
-
     //회원정보 수정
     @PutMapping(value = "/profile",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
@@ -83,6 +81,11 @@ public class UserController {
                                            @RequestPart(value = "data") UpdateRequestDto requestDto,
                                            @AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.updateProfile(image, requestDto, userDetails.getUser().getEmail());
+    }
+    //회원정보 수정 - 관심사 추가 tagList 조회
+    @GetMapping("/profile/tags")
+    public ResponseEntity<?> tagsOfCategory(@RequestParam String category){
+        return userService.tagsOfCategory(category);
     }
 
     //Refresh 토큰으로 Access 토큰 재발급
@@ -101,5 +104,26 @@ public class UserController {
     @PostMapping("/check/nickname")
     public ResponseEntity<?> isDuplicatedNick(@RequestBody CheckNickRequestDto requestDto){
         return userService.isDuplicatedNick(requestDto);
+    }
+
+    //이메일 찾기 - 문자 전송
+    @PostMapping("/find/email")
+    public ResponseEntity<?> findUserEmail(@RequestBody FindEmailRequestDto requestDto){
+        return userService.sendSmsToFindEmail(requestDto);
+    }
+    //이메일 찾기 - 코드 검증
+    @PostMapping("/find/email/verifyCode")
+    public ResponseEntity<?> findUserEmailVerifyCode(@RequestBody Map<String, String> codeMap) throws Exception {
+        return userService.verifyCodeToFindEmail(codeMap.get("code"));
+    }
+
+    //회원가입 테스트
+    @PostMapping("/test/upload")
+    public ResponseEntity<?> uploadTest(@RequestPart(value = "imageFile") MultipartFile image){
+        return userService.uploadTest(image);
+    }
+    @PostMapping("/test/signup")
+    public ResponseEntity<?> signupTest(@RequestBody TestSignupRequestDto testRequestDto){
+        return userService.signupTest(testRequestDto);
     }
 }

@@ -71,15 +71,14 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-    //Redis를 캐시로 사용하기 위한 CacheManager 설정
     @Bean
     public CacheManager cacheManager() {
         RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory());
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())) // Key Serializer 변경
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())) // Value Serializer 변경
-//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())) // Value Serializer 변경
-                .entryTtl(Duration.ofMinutes(30)); // 캐시 수명 30분
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())) // Change Key Serializer
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())) // Change Value Serializer
+//                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())) // Change Value Serializer
+                .entryTtl(Duration.ofMinutes(30));
         builder.cacheDefaults(configuration);
         return builder.build();
     }

@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -37,12 +36,12 @@ public class EventService {
     private final AwsS3Uploader s3Uploader;
     public static final String basicImageUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/87f7fcdb-254b-474a-9bf0-86cf3e89adcc_basicProfile.jpg";
 
-    // 이벤트 생성
+    // Create Event
     @Transactional
     public ResponseEntity<?> createEvent (EventRequestDto eventRequestDto, User user, Long clubId, MultipartFile image) throws IOException {
-        // 클럽이 유효한가
+        // Is Club Valid?
         Club club = clubRepository.findById(clubId).orElseThrow(()-> new IllegalArgumentException("404 Not Found"));
-        // 작성자가 소유자인가
+        // Owner == writer??
         if (!user.getId().equals(club.getOwnerId())) {
             throw new IllegalArgumentException("401 UnAuthorized");
         }
@@ -53,52 +52,51 @@ public class EventService {
         if(!image.isEmpty()) {
             imageUrl = s3Uploader.uploadFile(image);
         }
-        // 생성 + 삭제상태 : false + 참석자수 : 1(방장) | 참석자에 방장이 반드시 포함되어야 하는가 ? attendant 추가 : nothing change
+        // Create + (Delete : false) + (AttendantsNum : 1(Owner)) | (Should Attendants contain owner? attendantsNum++ : nothing change)
         Event event = new Event(eventRequestDto, user.getId(), clubId, imageUrl); // 이미지 넣으면 user, image로 변경
         event.setDeleted(false);
 //        event.setAttendantsNum(1);
         eventRepository.saveAndFlush(event);
-        return new ResponseEntity<>("생성 성공", HttpStatus.OK);
+        return new ResponseEntity<>("Create Success", HttpStatus.OK);
     }
 
-    // 이벤트 수정 : 보류긴 한데...
+    // Update Event : Hold
     @Transactional
     public ResponseEntity<?> updateEvent(long id, EventUpdateRequestDto requestDto, User user) throws IOException {
-        // 이벤트 가져오기
+        // Get Event
         Event event = eventRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("404 Not Found"));
-        // 시간 처리 어떻게 해야 하는가?
-        // 존재하는 글인가? 삭제 처리하는 Entity 값 추가 필요성 논의
+        // Time Process?
+        // Valid Post Check? Deleting Process Entity Value's Necessity Should be discussed
 //        if (event.isDeleted()) {
 //            throw new IllegalArgumentException("404 Not Found");
 //        }
-        // 이미지?
+        // Image Process
 //        String image = null;
 //        if (!Objects.isNull(requestDto.getImage()) && !requestDto.getImage().isEmpty() && !requestDto.getImage().getContentType().isEmpty()) {
 //            image = s3Uploader.upload(requestDto.getImage(), "image");
 //        }
-        // 작성자인가?
+        // Author Check
 //        if (Objects.equals(user.getId(), event.getUser().getId())) {
 //            event.updateAll(requestDto);
 //            removeCache(event);
 //        } else {
 //            throw new IllegalArgumentException("401 UnAuthorized");
 //        }
-        // 작성자이면 수정
-        // 아니면 PASS
-        return new ResponseEntity<>("수정 성공", HttpStatus.OK);
+        // If Author == user
+        // Else Pass
+        return new ResponseEntity<>("Update Success", HttpStatus.OK);
     }
 
-    // 이벤트 조회
-    @Transactional
+    // Read Event Detail
     public ResponseEntity<List<EventAttendant>> getEvent(long clubId, long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(()->new IllegalArgumentException("400 Bad Request"));
-        // 참석한 사람들
+        // Attending People List
         List<EventAttendant> attendantList = attendantRepository.findByEventId(eventId);
         EventDetailResponseDto detailResponseDto = new EventDetailResponseDto(event, attendantList, attendantList.size());
         return new ResponseEntity(detailResponseDto, HttpStatus.OK);
     }
 
-    // 전체 이벤트 조회 : 보류긴 한데
+    // Event ReadAll
     public List<EventSimpleDetailDto> getEventList(long clubId) { //ResponseEntity GenericType ListEntity
         List<Event> eventsList = eventRepository.findAllByClubId(clubId);
         List<EventSimpleDetailDto> eventList = new ArrayList<>();
@@ -110,47 +108,46 @@ public class EventService {
         return eventList;
     }
 
-    // 이벤트 삭제
+    // Deleting Event
     @Transactional
     public ResponseEntity<?> deleteEvent(long clubId, long eventId, User user) {
-//        User user = SecurityUtil.getCurrentUser(); 이방식 말고 일단은 AuthPrincipal로 먼저
         Event event = eventRepository.findById(eventId).orElseThrow(()-> new IllegalArgumentException("404 event Not found"));
-        if (event.isDeleted()) { // 삭제를 T?F로 처리하면 좋을것 같은데...?
+        if (event.isDeleted()) { // Deleting Process Boolean Setting?
             throw new IllegalArgumentException("404 event not found");
         }
-        // 만료처리도 추가해야함.
+        // Expired Should be Added.
         if (user.getId().equals(event.getOwnerId())) {
             event.setDeleted(true);
             eventRepository.deleteById(eventId);
         } else {
             throw new IllegalArgumentException("401 Not Authorized");
         }
-        return new ResponseEntity<>("삭제 성공", HttpStatus.OK);
+        return new ResponseEntity<>("Delete Complete", HttpStatus.OK);
     }
 
-    // 이벤트 참석 / 취소
-
+    // Event Attend/Cancel
+    @Transactional
     public ResponseEntity<?> joinEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 EventNot Found"));
         if(attendantRepository.findByEventIdAndUserId(eventId, user.getId()) != null) {
-            return new ResponseEntity<>(new Message("중복 가입 불가"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new Message("Cannot Attend Twice"), HttpStatus.FORBIDDEN);
         }
         EventAttendant eventAttendant = new EventAttendant(eventId, user.getId(), user);
         attendantRepository.save(eventAttendant);
         event.addAttend();
-        return ResponseEntity.ok("참석되었습니다.");
+        return ResponseEntity.ok("Attending Complete.");
     }
+
+    @Transactional
     public ResponseEntity<?> cancelEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 Event NotFound"));
         EventAttendant eventAttendant = attendantRepository.findByEventIdAndUserId(eventId, user.getId());
         if (eventAttendant != null) {
             attendantRepository.delete(eventAttendant);
             event.cancelAttend();
-            return ResponseEntity.ok("취소되었습니다.");
+            return ResponseEntity.ok("Cancel Complete.");
         } else {
-            return ResponseEntity.ok("참석권한이 없습니다.");
+            return ResponseEntity.ok("401 Unauthorized.");
         }
     }
-
-
 }
