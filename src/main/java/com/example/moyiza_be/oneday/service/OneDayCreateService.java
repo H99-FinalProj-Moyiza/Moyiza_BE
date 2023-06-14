@@ -158,7 +158,8 @@ public class OneDayCreateService {
     }
 
 
-    //revisit
+    // revisit
+    // Image
     public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, List<MultipartFile> imageFileList) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         List<String> imageUrlList;
@@ -190,9 +191,7 @@ public class OneDayCreateService {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, user.getId());
         OneDayCreateConfirmDto confirmDto = new OneDayCreateConfirmDto(oneDayCreate);
         OneDayCreateService.nullCheck(oneDayCreate);
-        System.out.println("confirmDto.getOneDayGroupSize() = " + confirmDto.getOneDayGroupSize());
         OneDayDetailResponse newOneDay = oneDayService.createOneDay(user, confirmDto);
-        System.out.println("newOneDay.getOneDayGroupSize() = " + newOneDay.getOneDayGroupSize());
         oneDayCreate.setConfirmed(true);
         return new ResponseEntity<>(newOneDay, HttpStatus.OK);
     }
