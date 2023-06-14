@@ -49,6 +49,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), findUser.getEmail());
                 refreshTokenRepository.save(newToken);
             }
+            cookieUtil.deleteCookie(request, response, JwtUtil.REFRESH_TOKEN);
             cookieUtil.addCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
 
             String targetUrl = "http://localhost:3000/oauth/redirect";
