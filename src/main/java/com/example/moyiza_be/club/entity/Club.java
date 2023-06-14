@@ -42,6 +42,9 @@ public class Club extends TimeStamped {
     @Column(nullable = false)
     private Boolean isDeleted = false;
 
+    @Column
+    private Integer numLikes = 0;
+
     public Club(ConfirmClubCreationDto creationRequest) {
         this.ownerId = creationRequest.getOwnerId();
         this.title = creationRequest.getTitle();
@@ -65,5 +68,13 @@ public class Club extends TimeStamped {
 
     public void cancelAttend() {
         this.nowMemberCount--;
+    }
+
+    public void addLike(){
+        if(this.numLikes == null){this.numLikes = 0;}
+        this.numLikes++;
+    }
+    public void minusLike(){
+        this.numLikes--;
     }
 }
