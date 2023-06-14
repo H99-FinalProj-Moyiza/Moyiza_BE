@@ -32,12 +32,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             User findUser = userRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(
                     () -> new NoSuchElementException("회원이 존재하지 않습니다."));
             jwtUtil.createAndSetToken(response, findUser);
-            if(oAuth2User.getRole() == Role.GUEST) {
-                // User의 Role이 GUEST일 경우 회원정보가 부족한 회원이므로 회원가입 페이지로 리다이렉트
-                response.sendRedirect("http://localhost:3000/signup/social");
-            } else {
-                response.sendRedirect("http://localhost:3000/");
-            }
+//            if(oAuth2User.getRole() == Role.GUEST) {
+//                // User의 Role이 GUEST일 경우 회원정보가 부족한 회원이므로 회원가입 페이지로 리다이렉트
+//                response.sendRedirect("http://localhost:3000/signup/social");
+//            } else {
+//                response.sendRedirect("http://localhost:3000/");
+//            }
 
         } catch (Exception e) {
             throw e;

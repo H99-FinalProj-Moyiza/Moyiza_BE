@@ -87,6 +87,10 @@ public class UserController {
     public ResponseEntity<?> tagsOfCategory(@RequestParam String category){
         return userService.tagsOfCategory(category);
     }
+    @PutMapping("/test/profile")
+    public ResponseEntity<?> updateProfileTest(@RequestBody TestUpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.updateProfileTest(requestDto, userDetails.getUser().getEmail());
+    }
 
     //Refresh 토큰으로 Access 토큰 재발급
     @GetMapping("/reissue")
