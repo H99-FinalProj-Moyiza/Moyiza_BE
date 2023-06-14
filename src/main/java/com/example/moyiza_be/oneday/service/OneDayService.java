@@ -249,6 +249,12 @@ public class OneDayService {
                 .orElseThrow(() -> new NullPointerException("No Such Attendant"));
     }
 
+    public void checkValidity(User user, Long identifier) {
+        if(!attendantRepository.existsByOneDayIdAndUserId(identifier, user.getId())){
+            throw new NullPointerException("Oneday join entry not found");
+        }
+    }
+
 //      OneDay Approval System
 //    private ResponseEntity<?> approvalOneDay(Long oneDayId, Long userId, Long ownerId) {
 //        User owner = userRepository.findById(ownerId).orElseThrow(() -> new NullPointerException("404 No Such Created OneDay!"));

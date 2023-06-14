@@ -2,6 +2,7 @@ package com.example.moyiza_be.review.dto;
 
 
 import com.example.moyiza_be.common.enums.ReviewTypeEnum;
+import com.example.moyiza_be.review.entity.Review;
 import lombok.Getter;
 
 @Getter
@@ -16,5 +17,16 @@ public class ReviewPostRequest {
         this.identifier = identifier;
         this.title = title;
         this.textContent = textContent;
+    }
+
+    public Review toReviewEntity(Long writerId){
+        return new Review(
+                writerId,
+                this.reviewTypeEnum,
+                this.identifier,
+                this.title,
+                this.textContent
+        );
+
     }
 }

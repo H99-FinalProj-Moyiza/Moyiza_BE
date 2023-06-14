@@ -42,11 +42,12 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<ReviewDetailResponse> postReview(
-            @RequestBody ReviewPostRequest reviewPostRequest,
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestPart @Nullable List<MultipartFile> imageList
+            @RequestPart @Nullable List<MultipartFile> image,
+            @RequestPart ReviewPostRequest reviewPostRequest,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return reviewService.postReview(reviewPostRequest, imageList, userDetails);
+        User user = userDetails.getUser();
+        return reviewService.postReview(reviewPostRequest, image, user);
     }
 
     @DeleteMapping("/{review_id}")

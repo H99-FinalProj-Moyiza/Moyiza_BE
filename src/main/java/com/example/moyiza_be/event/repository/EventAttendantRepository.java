@@ -9,5 +9,7 @@ public interface EventAttendantRepository extends JpaRepository<EventAttendant, 
 
     EventAttendant findByEventIdAndUserId(Long eventId, Long id);
 
+    Boolean existsByUserIdAndEventId(Long userId, Long eventId);
+
     List<EventAttendant> findByEventId(Long eventId);
 }

@@ -42,6 +42,7 @@ public class EventService {
     private final AwsS3Uploader s3Uploader;
     private final LikeService likeService;
     private final EventRepositoryCustom eventRepositoryCustom;
+    private final EventAttendantRepository eventAttendantRepository;
     public static final String basicImageUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/87f7fcdb-254b-474a-9bf0-86cf3e89adcc_basicProfile.jpg";
 
     // Create Event
@@ -154,6 +155,7 @@ public class EventService {
     @Transactional
     public ResponseEntity<Message> likeEvent(User user, Long eventId) {
         Event event = loadEventById(eventId);
+
         ResponseEntity<Message> likeServiceResponse = likeService.eventLike(user.getId(), eventId);
         if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
             log.info("Error from Likeservice");
@@ -175,9 +177,14 @@ public class EventService {
         return likeServiceResponse;
     }
 
-
     private Event loadEventById(Long eventId){
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NullPointerException("Event Not Found"));
+    }
+
+    public void checkValidity(User user, Long identifier) {
+        if (!eventAttendantRepository.existsByUserIdAndEventId(user.getId(), identifier)){
+            throw new NullPointerException("Event join entry not found");
+        }
     }
 }
