@@ -167,33 +167,34 @@ public class OneDayCreateService {
 
     // revisit
     // Image
-    @Transactional
-    public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, MultipartFile imageFile) {
-        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
-        String imageUrl = null;
-        log.info("Image List Setting");
-        if (oneDayCreate.getOneDayImage().isEmpty()) {
-            if (imageUrl == null) {
-                log.info("Image File is Null, Set Image to Default File");
-                imageUrl = DEFAULT_IMAGE_URL;
-            }
-        } else {
-            log.info("Get Image File Complete");
-            imageUrl = s3Uploader.uploadFile(imageFile);
-        }
-        log.info("image list setting complete");
+//    @Transactional
+//    public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, List<MultipartFile> imageFile) {
+//        OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
+//        List<String> imageUrlList;
+//        log.info("Image List Setting");
+//        if (oneDayCreate.getOneDayImage().isEmpty()) {
+//            if (imageUrlList == null) {
+//                log.info("Image File is Null, Set Image to Default File");
+//                imageUrlList = List.of(DEFAULT_IMAGE_URL);
+//            }
+//        } else {
+//            log.info("Get Image File Complete");
+//            imageUrlList = s3Uploader.uploadMultipleImg(imageFile);
+//        }
+//        log.info("set thumbnail image");
+//        oneDayCreate.setOneDayImage(imageEntityList.get(0).getImageUrl());
+//        log.info("set : " + imageEntityList.size() +  "images for id : " + createOneDayId);
+//        log.info("image list setting complete");
 //        List<OneDayImageUrl> imageEntityList = imageUrlList.stream().map(i -> new OneDayImageUrl(createOneDayId, i)).toList();
-        OneDayImageUrl oneDayImageUrl = new OneDayImageUrl(createOneDayId, imageUrl);
-        List<OneDayImageUrl> imageEntityList = new ArrayList<>();
-        imageEntityList.add(oneDayImageUrl);
-//        imageEntityList;
-        imageUrlRepository.saveAll(imageEntityList);
-        log.info("set thumbnail image");
-        oneDayCreate.setOneDayImage(imageEntityList.get(0).getImageUrl());
-        log.info("set : " + imageEntityList.size() +  "images for id : " + createOneDayId);
-
-        return new ResponseEntity<>(new Message("Upload Complete!"), HttpStatus.OK);
-    }
+////        OneDayImageUrl oneDayImageUrl = new OneDayImageUrl(createOneDayId, imageUrl);
+////        List<OneDayImageUrl> imageEntityList = new ArrayList<>();
+////        imageEntityList.add(oneDayImageUrl);
+////        imageEntityList;
+//        imageUrlRepository.saveAll(imageEntityList);
+//
+//
+//        return new ResponseEntity<>(new Message("Upload Complete!"), HttpStatus.OK);
+//    }
 
     public ResponseEntity<Message> setType(Long userId, Long createOneDayId, RequestTypeDto type) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);

@@ -92,12 +92,16 @@ public class OneDayCreateController {
         return oneDayCreateService.setType(user.getId(),oneDayTmpId,type);
     }
     // image
-    private final UserService userService;
     @PutMapping("/{oneDayTmpId}/images")
-    public ResponseEntity<?> setImageList(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart @Nullable MultipartFile image, @PathVariable Long oneDayTmpId){
-        User user = userDetails.getUser();
-        if (image == null) throw new NullPointerException("Image cannot be Null");
-        return oneDayCreateService.setImageList( user.getId(), oneDayTmpId, image );
+    public ResponseEntity<?> setImageList(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestPart @Nullable List<MultipartFile> image,
+            @PathVariable Long oneDayTmpId){
+        System.out.println("image = " + image.get(0));
+        return null;
+//        User user = userDetails.getUser();
+//        if (image == null) throw new NullPointerException("Image cannot be Null");
+//        return oneDayCreateService.setImageList( user.getId(), oneDayTmpId, image );
     }
     // confirm
     @PostMapping("/{oneDayTmpId}/confirm")
