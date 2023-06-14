@@ -63,6 +63,7 @@ public class UserService {
         validationUtil.checkDuplicatedNick(requestDto.getNickname());
         foundUser.updateSocialInfo(requestDto);
         foundUser.authorizeUser();
+        userRepository.saveAndFlush(foundUser);
         return new ResponseEntity<>("Social signup complete!", HttpStatus.OK);
     }
     public ResponseEntity<?> getSocialInfo(User user) {
