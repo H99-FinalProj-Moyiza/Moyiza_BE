@@ -101,4 +101,7 @@ server:
     key-store-password: ENC(BrX+B0Pn+L3sk/TKC53WFSSo2ZBBgjh8hCAXHSuHOMI=)
   port: 8443
 
-
+coolsms:
+  api:
+    key: ENC(uYFfmuxh4hHPJCbWkYa2Ub8PGg5pFERm8jU6qjNpSsg=)
+    secret: ENC(xK/tJOuANOgFBfKz1LvvHME+KhA4Ap4O9IToant9ZrWDtsy5CO9hXnyH4tUBJ/w6)
