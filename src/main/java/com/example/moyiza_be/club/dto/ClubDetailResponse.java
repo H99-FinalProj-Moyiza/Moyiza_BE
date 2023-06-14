@@ -28,7 +28,7 @@ public class ClubDetailResponse {
 
     public ClubDetailResponse(Club club, List<String> clubImageUrlList) {
         this.club_id = club.getId();
-        this.ownerNickname = "추후반영예정";    // 쿼리 수정할 때 닉네임 가져오게하기
+        this.ownerNickname = "추후반영예정";    // Getting nicknames when modifying queries
         this.clubTitle = club.getTitle();
         this.clubCategory = club.getCategory().getCategory();
         this.clubTag = TagEnum.parseTag(club.getTagString());
@@ -38,7 +38,7 @@ public class ClubDetailResponse {
         this.maxGroupSize = club.getMaxGroupSize();
         this.nowMemberCount = club.getNowMemberCount();
         this.thumbnailUrl = club.getThumbnailUrl();
-        this.clubImageUrlList = clubImageUrlList;  //  쿼리한방에 가능한가 ?
+        this.clubImageUrlList = clubImageUrlList;
     }
 
     @QueryProjection
@@ -57,7 +57,7 @@ public class ClubDetailResponse {
         this.maxGroupSize = maxGroupSize;
         this.nowMemberCount = nowMemberCount;
         this.thumbnailUrl = thumbnailUrl;
-//        this.clubImageUrlList = clubImageUrlList; //쿼리에 달아주기 힘든데 ?
+//        this.clubImageUrlList = clubImageUrlList; //Difficult to handle with queries
     }
     public void setClubImageUrlList(List<String> clubImageUrlList) {
         this.clubImageUrlList = clubImageUrlList;

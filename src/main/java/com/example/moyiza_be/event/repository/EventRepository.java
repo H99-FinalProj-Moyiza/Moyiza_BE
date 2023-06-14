@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, User> {
-    // 전체조회
+    // ReadAll
     List<Event> findAllByClubId(long clubId);
 
 //    EventDetailResponseDto findById(long id);

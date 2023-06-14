@@ -14,7 +14,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class MyPageResponseDto {
-    //유저 정보, 운영중 클럽, 참여중 클럽, 운영중 원데이, 참여중 원데이
     private Long user_id;
     private String nickname;
     private String email;

@@ -36,6 +36,6 @@ public enum CategoryEnum {
                 return categoryEnum;
             }
         }
-        throw new IllegalArgumentException(String.format("%s에 해당하는 카테고리를 찾을 수 없습니다",category));
+        throw new IllegalArgumentException(String.format("No category was found for %s",category));
     }
 }
