@@ -179,12 +179,16 @@ public class OneDayCreateService {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         List<String> imageUrlList = new ArrayList<>();
         log.info("Image List Setting");
-        if(imageFileList == null) {
-            log.info("Image File is Null, Set Image to Default File");
-            imageUrlList.add(DEFAULT_IMAGE_URL);
-        } else {
-            log.info("Get Image File Complete");
-            imageUrlList = s3Uploader.uploadMultipleImg(imageFileList);
+        int checkNum =1;
+        if (oneDayCreate.getOneDayImage().isEmpty()) {
+            if (imageFileList.isEmpty()) {
+                log.info("Image File is Null, Set Image to Default File");
+                checkNum = 0;
+                imageUrlList.add(DEFAULT_IMAGE_URL);
+            } else {
+                log.info("Get Image File Complete");
+                if (checkNum == 1) imageUrlList = s3Uploader.uploadMultipleImg(imageFileList);
+            }
         }
         log.info("set thumbnail image");
         oneDayCreate.setOneDayImage(imageUrlList.get(0));
