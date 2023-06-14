@@ -6,6 +6,7 @@ import com.example.moyiza_be.oneday.dto.onedaycreate.*;
 import com.example.moyiza_be.oneday.service.OneDayCreateService;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.service.UserService;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -95,7 +96,7 @@ public class OneDayCreateController {
     @PutMapping("/{oneDayTmpId}/images")
     public ResponseEntity<?> setImageList(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart @Nullable MultipartFile image, @PathVariable Long oneDayTmpId){
         User user = userDetails.getUser();
-//        return userService.uploadTest(image);
+        if (image == null) throw new NullPointerException("Image cannot be Null");
         return oneDayCreateService.setImageList( user.getId(), oneDayTmpId, image );
     }
     // confirm
