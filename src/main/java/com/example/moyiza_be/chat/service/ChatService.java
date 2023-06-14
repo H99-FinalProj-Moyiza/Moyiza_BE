@@ -25,6 +25,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class ChatService {
     private final SimpMessageSendingOperations sendingOperations;
     private final ChatRecordRepository chatRecordRepository;
@@ -33,7 +34,6 @@ public class ChatService {
     private final RedisCacheService cacheService;
     private final ChatRepositoryCustom chatRepositoryCustom;
 
-    @Transactional
     public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
                                    Long chatId,
                                    ChatMessageInput chatMessageInput
@@ -76,7 +76,6 @@ public class ChatService {
         return ResponseEntity.ok(onedayChatRoomInfoList);
     }
 
-    @Transactional
     public void makeChat(Long roomIdentifier, ChatTypeEnum chatType, String roomName) {
         Chat chat = chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatType).orElse(null);
         if (chat != null) {
@@ -112,7 +111,6 @@ public class ChatService {
     }
 
     //클럽 채팅방 join
-    @Transactional
     public void joinChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
         Chat chat = loadChat(roomIdentifier, chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);
@@ -130,7 +128,6 @@ public class ChatService {
 
     }
 
-    @Transactional
     public void leaveChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
         Chat chat = loadChat(roomIdentifier, chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);

@@ -29,6 +29,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class EventService {
     private final EventRepository eventRepository;
     private final ClubRepository clubRepository;
@@ -37,7 +38,6 @@ public class EventService {
     public static final String basicImageUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/87f7fcdb-254b-474a-9bf0-86cf3e89adcc_basicProfile.jpg";
 
     // Create Event
-    @Transactional
     public ResponseEntity<?> createEvent (EventRequestDto eventRequestDto, User user, Long clubId, MultipartFile image) throws IOException {
         // Is Club Valid?
         Club club = clubRepository.findById(clubId).orElseThrow(()-> new IllegalArgumentException("404 Not Found"));
@@ -61,7 +61,6 @@ public class EventService {
     }
 
     // Update Event : Hold
-    @Transactional
     public ResponseEntity<?> updateEvent(long id, EventUpdateRequestDto requestDto, User user) throws IOException {
         // Get Event
         Event event = eventRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("404 Not Found"));
@@ -109,7 +108,6 @@ public class EventService {
     }
 
     // Deleting Event
-    @Transactional
     public ResponseEntity<?> deleteEvent(long clubId, long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(()-> new IllegalArgumentException("404 event Not found"));
         if (event.isDeleted()) { // Deleting Process Boolean Setting?
@@ -126,7 +124,6 @@ public class EventService {
     }
 
     // Event Attend/Cancel
-    @Transactional
     public ResponseEntity<?> joinEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 EventNot Found"));
         if(attendantRepository.findByEventIdAndUserId(eventId, user.getId()) != null) {
@@ -138,7 +135,6 @@ public class EventService {
         return ResponseEntity.ok("Attending Complete.");
     }
 
-    @Transactional
     public ResponseEntity<?> cancelEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 Event NotFound"));
         EventAttendant eventAttendant = attendantRepository.findByEventIdAndUserId(eventId, user.getId());

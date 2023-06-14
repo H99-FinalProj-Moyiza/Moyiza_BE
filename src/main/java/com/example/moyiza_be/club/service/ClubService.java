@@ -20,7 +20,6 @@ import com.example.moyiza_be.like.service.LikeService;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -33,6 +32,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class ClubService {
 
     private final ClubRepository clubRepository;
@@ -47,7 +47,6 @@ public class ClubService {
 
 
     //Join Club
-    @Transactional
     public ResponseEntity<Message> joinClub(Long clubId, User user) {
         Club club = loadClubByClubId(clubId);
 
@@ -79,7 +78,6 @@ public class ClubService {
   
  
     //Get Club Detail
-    @Transactional
     public ResponseEntity<ClubDetailResponse> getClubDetail(Long clubId, User user) {
         ClubDetailResponse clubDetailResponse = clubRepositoryCustom.getClubDetail(clubId, user);
         if(clubDetailResponse == null){
@@ -106,8 +104,6 @@ public class ClubService {
     }
 
     //Leave Club
-
-    @Transactional
     public ResponseEntity<Message> goodbyeClub(Long clubId, User user) {
         //Can't I use the query to get the number of members ? entity has no attend number.
         Club club = loadClubByClubId(clubId);
@@ -122,7 +118,6 @@ public class ClubService {
     }
 
     //Ban Club
-    @Transactional
     public ResponseEntity<Message> banClub(Long clubId, User user, BanRequest banRequest) {
         if (!clubRepository.existsByIdAndIsDeletedFalseAndOwnerIdEquals(clubId, user.getId())) {
             throw new IllegalAccessError("You are not authorized.");
@@ -143,7 +138,6 @@ public class ClubService {
     }
 
     //Create Club
-    @Transactional
     public ClubDetailResponse createClub(ConfirmClubCreationDto creationRequest, User user) {
         Club club = new Club(creationRequest);
         clubRepository.saveAndFlush(club);
@@ -162,7 +156,6 @@ public class ClubService {
         return ResponseEntity.ok(eventList);
     }
 
-    @Transactional
     public ResponseEntity<Message> deleteClub(User user, Long clubId) {
         //Temporary implementation, logic changes may be required (softdelete ? orphanremoval ?)
         Club club = loadClubByClubId(clubId);
@@ -174,7 +167,6 @@ public class ClubService {
         }
     }
 
-    @Transactional
     public ResponseEntity<Message> likeClub(User user, Long clubId) {
         Club club = loadClubByClubId(clubId);
         ResponseEntity<Message> likeServiceResponse = likeService.clubLike(user.getId(), clubId);
@@ -186,7 +178,6 @@ public class ClubService {
         return likeServiceResponse;
     }
 
-    @Transactional
     public ResponseEntity<Message> cancelLikeClub(User user, Long clubId){
         Club club = loadClubByClubId(clubId);
         ResponseEntity<Message> likeServiceResponse = likeService.cancelClubLike(user.getId(), clubId);
