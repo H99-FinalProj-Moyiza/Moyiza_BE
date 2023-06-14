@@ -1,8 +1,10 @@
 package com.example.moyiza_be.event.controller;
 
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
+import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventRequestDto;
 import com.example.moyiza_be.event.service.EventService;
+import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +31,13 @@ public class EventController {
 
     // ReadOne
     @GetMapping("/{club_id}/event/{event_id}")
-    public ResponseEntity<?> getEvent(@PathVariable Long club_id, @PathVariable Long event_id) {
-        return eventService.getEvent(club_id,event_id);
+    public ResponseEntity<?> getEvent(
+            @PathVariable Long club_id,
+            @PathVariable Long event_id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails == null ? null : userDetails.getUser();
+        return eventService.getEvent(club_id,event_id, user);
     }
 
     // Update : 보류
@@ -54,5 +61,23 @@ public class EventController {
     @DeleteMapping("/{club_id}/event/join/{event_id}")
     public ResponseEntity<?> attendEvent(@PathVariable long club_id, @PathVariable long event_id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return eventService.cancelEvent(event_id, userDetails.getUser());
+    }
+
+    @PostMapping("/{club_id}/event/{event_id}/like")
+    public ResponseEntity<Message> likeClub(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long event_id
+    ){
+        User user = userDetails.getUser();
+        return eventService.likeEvent(user, event_id);
+    }
+
+    @DeleteMapping("/{club_id}/event/{event_id}/like")
+    public ResponseEntity<Message> cancelLikeClub(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long event_id
+    ){
+        User user = userDetails.getUser();
+        return eventService.cancelLikeEvent(user, event_id);
     }
 }

@@ -132,6 +132,4 @@ public class ClubController {
         User user = userDetails.getUser();
         return clubService.cancelLikeClub(user, club_id);
     }
-
-
 }

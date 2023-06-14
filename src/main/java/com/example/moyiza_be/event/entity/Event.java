@@ -52,6 +52,10 @@ public class Event extends TimeStamped {
 
     @Column
     private String image;
+
+    @Column
+    private Integer numLikes = 0;
+
     public void addAttend(){
         attendantsNum++;
     }
@@ -78,6 +82,14 @@ public class Event extends TimeStamped {
     }
     public void updateImage(String image) {
         this.image = image;
+    }
+
+    public void addLike(){
+        if (this.numLikes == null){ this. numLikes = 0;}
+        numLikes++;
+    }
+    public void minusLike(){
+        numLikes--;
     }
 
 }
