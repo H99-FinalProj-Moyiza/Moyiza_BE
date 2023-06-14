@@ -57,6 +57,7 @@ public class UserService {
         userRepository.save(user);
         return new ResponseEntity<>("Sign up successfully", HttpStatus.OK);
     }
+
     public ResponseEntity<?> updateSocialInfo(UpdateSocialInfoRequestDto requestDto, User user) {
         User foundUser = validationUtil.findUser(user.getEmail());
         validationUtil.checkDuplicatedNick(requestDto.getNickname());

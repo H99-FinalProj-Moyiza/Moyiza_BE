@@ -39,9 +39,9 @@ public class ChatRepositoryCustom {
 
     public List<ChatRoomInfo> getOnedayChatRoomList(Long userId) {
         return jpaQueryFactory
-                .from(chatJoinEntry)
+                .from(chat)
                 .join(chatJoinEntry).on(chat.id.eq(chatJoinEntry.chatId).and(chatJoinEntry.userId.eq(userId)))
-                .join(oneDay).on(chat.chatType.eq(ChatTypeEnum.ONEDAY).and(chat.roomIdentifier.eq(club.id)))
+                .join(oneDay).on(chat.chatType.eq(ChatTypeEnum.ONEDAY).and(chat.roomIdentifier.eq(oneDay.id)))
                 .select(
                         new QChatRoomInfo(
                                 chat.id,

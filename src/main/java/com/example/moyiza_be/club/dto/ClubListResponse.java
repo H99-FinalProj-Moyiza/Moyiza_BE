@@ -16,27 +16,21 @@ public class ClubListResponse {
     private final Integer maxGroupSize;
     private final Integer nowMemberCount;
     private final String thumbnailUrl;
-    public ClubListResponse(Club club) {
-        this.club_id = club.getId();
-        this.ownerNickname = "추후반영예정";
-        this.clubTitle = club.getTitle();
-        this.clubTag = TagEnum.parseTag(club.getTagString());
-        this.maxGroupSize = club.getMaxGroupSize();
-        this.nowMemberCount = club.getNowMemberCount();   // queryDSL 이후 수정
-        this.thumbnailUrl = club.getThumbnailUrl();
-    }
+    private final Integer numLikes;
+    private final Boolean isLikedByUser;
 
     @QueryProjection
     public ClubListResponse(Long club_id, String ownerNickname, String clubTitle, String tagString, Integer maxGroupSize,
-                            Integer nowMemberCount, String thumbnailUrl) {
+                            Integer nowMemberCount, String thumbnailUrl, Integer numLikes, Boolean isLikedByUser) {
         this.club_id = club_id;
         this.ownerNickname = ownerNickname;
         this.clubTitle = clubTitle;
         this.clubTag = TagEnum.parseTag(tagString);
         this.maxGroupSize = maxGroupSize;
         this.nowMemberCount = nowMemberCount;
-//        this.thumbnailUrl = thumbnailUrl.get(0);
         this.thumbnailUrl = thumbnailUrl;
+        this.numLikes = numLikes;
+        this.isLikedByUser = isLikedByUser;
     }
 
 }
