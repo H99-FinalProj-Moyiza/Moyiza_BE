@@ -93,7 +93,7 @@ public class OneDayCreateController {
     // image
     private final UserService userService;
     @PutMapping("/{oneDayTmpId}/images")
-    public ResponseEntity<?> setImageList(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart @Nullable List<MultipartFile> image, @PathVariable Long oneDayTmpId){
+    public ResponseEntity<?> setImageList(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestPart @Nullable MultipartFile image, @PathVariable Long oneDayTmpId){
         User user = userDetails.getUser();
 //        return userService.uploadTest(image);
         return oneDayCreateService.setImageList( user.getId(), oneDayTmpId, image );
