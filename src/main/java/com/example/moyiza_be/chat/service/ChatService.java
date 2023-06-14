@@ -7,6 +7,7 @@ import com.example.moyiza_be.chat.entity.ChatRecord;
 import com.example.moyiza_be.chat.repository.ChatJoinEntryRepository;
 import com.example.moyiza_be.chat.repository.ChatRecordRepository;
 import com.example.moyiza_be.chat.repository.ChatRepository;
+import com.example.moyiza_be.chat.repository.QueryDSL.ChatRecordRepositoryCustom;
 import com.example.moyiza_be.chat.repository.QueryDSL.ChatRepositoryCustom;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.redis.RedisCacheService;
@@ -14,17 +15,21 @@ import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class ChatService {
     private final SimpMessageSendingOperations sendingOperations;
     private final ChatRecordRepository chatRecordRepository;
@@ -32,8 +37,8 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final RedisCacheService cacheService;
     private final ChatRepositoryCustom chatRepositoryCustom;
+    private final ChatRecordRepositoryCustom chatRecordRepositoryCustom;
 
-    @Transactional
     public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
                                    Long chatId,
                                    ChatMessageInput chatMessageInput
@@ -76,7 +81,6 @@ public class ChatService {
         return ResponseEntity.ok(onedayChatRoomInfoList);
     }
 
-    @Transactional
     public void makeChat(Long roomIdentifier, ChatTypeEnum chatType, String roomName) {
         Chat chat = chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatType).orElse(null);
         if (chat != null) {
@@ -89,30 +93,28 @@ public class ChatService {
 
     // Get Chat Room Record
     public ResponseEntity<Page<ChatMessageOutput>> getChatRoomRecord(User user, Long chatId, Pageable pageable) {
-        //require the query later ==> join senderId and User, also need to get id, nickname, profileUrl
+        ChatJoinEntry chatJoinEntry =
+                chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
+                        .orElseThrow(()-> new NullPointerException("chatRoomEntry not found"));
         Long memberCount = getChatMemberCount(chatId);
         if (pageable.getPageNumber() == 0) {
             return ResponseEntity.ok(cacheService.loadRecentChatList(chatId.toString(), memberCount, pageable));
         }
+        List<ChatMessageOutput> previousChatList = chatRecordRepositoryCustom.getPreviousChat(pageable,chatId);
 
-        ChatJoinEntry chatJoinEntry =
-                chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
-                        .orElse(null);
-        if (chatJoinEntry == null) {
-            throw new NullPointerException("Can't find a chat room.");
+        if (previousChatList == null) {
+            return ResponseEntity.ok(new PageImpl<>(new LinkedList<>(), pageable, 0L));
+        } else {
+            for (ChatMessageOutput chatMessage : previousChatList) {
+                chatMessage.setUnreadCount(
+                        memberCount - cacheService.getTotalReadCount(chatId.toString(), chatMessage.getChatRecordId()));
+            }
         }
-        Page<ChatMessageOutput> chatRecordDtoPage = chatRecordRepository
-                .findAllByChatIdAndCreatedAtAfter(pageable, chatId, chatJoinEntry.getCreatedAt())
-                .map(chatRecord -> new ChatMessageOutput(
-                        chatRecord,
-                        memberCount,
-                        cacheService.getTotalReadCount(chatId.toString(), chatRecord.getId())
-                ));
-        return ResponseEntity.ok(chatRecordDtoPage);
+        Page<ChatMessageOutput> chatRecordPage = new PageImpl<>(previousChatList, pageable, 10000L);
+        return ResponseEntity.ok(chatRecordPage);
     }
 
     //클럽 채팅방 join
-    @Transactional
     public void joinChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
         Chat chat = loadChat(roomIdentifier, chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);
@@ -130,7 +132,6 @@ public class ChatService {
 
     }
 
-    @Transactional
     public void leaveChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
         Chat chat = loadChat(roomIdentifier, chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);

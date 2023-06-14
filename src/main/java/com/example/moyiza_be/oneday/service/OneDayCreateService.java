@@ -23,12 +23,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class OneDayCreateService {
     private final OneDayService oneDayService;
     private final AwsS3Uploader s3Uploader;
@@ -40,7 +43,6 @@ public class OneDayCreateService {
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
     // Temporary OneDay Create
-    @Transactional
     public ResponseEntity<?> initCreateOneDay(Long userId) {
         OneDayCreate bluePrint = createRepository.findByOwnerIdAndConfirmedIsFalse(userId).orElse(null);
         if (bluePrint != null) {
@@ -62,7 +64,6 @@ public class OneDayCreateService {
     }
 
     // title
-    @Transactional
     public ResponseEntity<Message> setTitle(Long userId, Long createOneDayId, RequestTitleDto titleDto) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if(titleDto.getOneDayTitle() == null) {
@@ -72,8 +73,8 @@ public class OneDayCreateService {
         log.info("set oneday title : " + titleDto.getOneDayTitle() +  "for id : " + createOneDayId);
         return new ResponseEntity<>(new Message("Success"), HttpStatus.OK);
     }
+
     // Content
-    @Transactional
     public ResponseEntity<Message> setContent(Long userId, Long createOneDayId, RequestContentDto contentDto) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if(contentDto.getOneDayContent() == null) {
@@ -85,7 +86,6 @@ public class OneDayCreateService {
     }
 
     // category
-    @Transactional
     public ResponseEntity<Message> setCategory(Long userId, Long createOneDayId, RequestCategoryDto categoryEnum) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if(categoryEnum.getCategoryEnum() == null) {
@@ -97,7 +97,6 @@ public class OneDayCreateService {
     }
 
     // tag
-    @Transactional
     public ResponseEntity<?> setTag(Long userId, Long createOneDayId, RequestTagDto tagEnumList) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if(tagEnumList.getTagEnumList() == null) {
@@ -114,7 +113,6 @@ public class OneDayCreateService {
     }
 
     // Policy
-    @Transactional
     public ResponseEntity<Message> setPolicy
     (Long userId, Long createOneDayId, RequestPolicyDto policyRequest) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
@@ -131,7 +129,6 @@ public class OneDayCreateService {
     }
 
     // Size
-    @Transactional
     public ResponseEntity<Message> setMaxGroupSize(Long userId, Long createOneDayId, RequestSizeDto maxSize) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if(maxSize.getSize()==null){
@@ -144,7 +141,6 @@ public class OneDayCreateService {
     }
 
     // Location
-    @Transactional
     public ResponseEntity<Message> setLocation(Long userId, Long createOneDayId, RequestLocationDto requestLocationDto) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if (requestLocationDto.getOneDayLocation() == null || Objects.equals(requestLocationDto.getOneDayLongitude(),null) || Objects.equals(requestLocationDto.getOneDayLatitude(),null)){
@@ -157,7 +153,6 @@ public class OneDayCreateService {
     }
 
     // Date
-    @Transactional
     public ResponseEntity<Message> setDate(Long userId, Long createOneDayId, RequestDateDto dateTime) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         if (dateTime.getOneDayStartTime() == null) {
@@ -170,30 +165,36 @@ public class OneDayCreateService {
         return new ResponseEntity<>(new Message("Success"),HttpStatus.OK);
     }
 
-    //revisit
+    // revisit
+    // Image
     @Transactional
-    public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, List<MultipartFile> imageFileList) {
+    public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, MultipartFile imageFile) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
-        List<String> imageUrlList;
+        String imageUrl = null;
         log.info("Image List Setting");
-        if(imageFileList == null) {
-            log.info("Image File is Null, Set Image to Default File");
-            imageUrlList = List.of(DEFAULT_IMAGE_URL);
+        if (oneDayCreate.getOneDayImage().isEmpty()) {
+            if (imageUrl == null) {
+                log.info("Image File is Null, Set Image to Default File");
+                imageUrl = DEFAULT_IMAGE_URL;
+            }
         } else {
             log.info("Get Image File Complete");
-            imageUrlList = s3Uploader.uploadMultipleImg(imageFileList);
+            imageUrl = s3Uploader.uploadFile(imageFile);
         }
-        log.info("set thumbnail image");
-        oneDayCreate.setOneDayImage(imageUrlList.get(0));
         log.info("image list setting complete");
-        List<OneDayImageUrl> imageEntityList = imageUrlList.stream().map(i -> new OneDayImageUrl(createOneDayId, i)).toList();
+//        List<OneDayImageUrl> imageEntityList = imageUrlList.stream().map(i -> new OneDayImageUrl(createOneDayId, i)).toList();
+        OneDayImageUrl oneDayImageUrl = new OneDayImageUrl(createOneDayId, imageUrl);
+        List<OneDayImageUrl> imageEntityList = new ArrayList<>();
+        imageEntityList.add(oneDayImageUrl);
+//        imageEntityList;
         imageUrlRepository.saveAll(imageEntityList);
+        log.info("set thumbnail image");
+        oneDayCreate.setOneDayImage(imageEntityList.get(0).getImageUrl());
         log.info("set : " + imageEntityList.size() +  "images for id : " + createOneDayId);
 
         return new ResponseEntity<>(new Message("Upload Complete!"), HttpStatus.OK);
     }
 
-    @Transactional
     public ResponseEntity<Message> setType(Long userId, Long createOneDayId, RequestTypeDto type) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         oneDayCreate.setOneDayType(type.getOneDayTypeEnum());
@@ -205,9 +206,7 @@ public class OneDayCreateService {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, user.getId());
         OneDayCreateConfirmDto confirmDto = new OneDayCreateConfirmDto(oneDayCreate);
         OneDayCreateService.nullCheck(oneDayCreate);
-        System.out.println("confirmDto.getOneDayGroupSize() = " + confirmDto.getOneDayGroupSize());
         OneDayDetailResponse newOneDay = oneDayService.createOneDay(user, confirmDto);
-        System.out.println("newOneDay.getOneDayGroupSize() = " + newOneDay.getOneDayGroupSize());
         oneDayCreate.setConfirmed(true);
         return new ResponseEntity<>(newOneDay, HttpStatus.OK);
     }

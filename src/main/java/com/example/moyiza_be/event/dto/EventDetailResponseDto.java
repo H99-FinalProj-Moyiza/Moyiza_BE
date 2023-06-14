@@ -9,20 +9,24 @@ import java.util.List;
 
 @Getter
 public class EventDetailResponseDto {
-    private long id;
-    private String eventTitle;
-    private String eventContent;
-    private String eventLocation;
-    private String eventLatitude;
-    private String eventLongitude;
+    private final long id;
+    private final String eventTitle;
+    private final String eventContent;
+    private final String eventLocation;
+    private final String eventLatitude;
+    private final String eventLongitude;
 //    private Tag tag;
-    private LocalDateTime eventStartTime;
-    private int eventGroupSize;
-    private boolean deleted;
+    private final LocalDateTime eventStartTime;
+    private final int eventGroupSize;
+    private final boolean deleted;
 //    private String image;
-    private List<EventAttendant> eventAttendantList;
-    private int eventAttendantListSize;
-    public EventDetailResponseDto(Event event, List<EventAttendant> attendantList, int people) {
+    private final List<EventAttendant> eventAttendantList;
+    private final int eventAttendantListSize;
+    private final Integer numLikes;
+    private final Boolean isLikedByUser;
+    public EventDetailResponseDto(
+            Event event, List<EventAttendant> attendantList, int people, Boolean isLikedByUser
+    ) {
         this.id = event.getId();
         this.eventTitle = event.getEventTitle();
         this.eventContent = event.getEventContent();
@@ -34,5 +38,7 @@ public class EventDetailResponseDto {
         this.deleted = event.isDeleted();
         this.eventAttendantList = attendantList;
         this.eventAttendantListSize = people;
+        this.numLikes = event.getNumLikes();
+        this.isLikedByUser = isLikedByUser;
     }
 }

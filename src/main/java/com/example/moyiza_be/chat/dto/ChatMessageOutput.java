@@ -1,9 +1,13 @@
 package com.example.moyiza_be.chat.dto;
 
 import com.example.moyiza_be.chat.entity.ChatRecord;
+import com.querydsl.core.annotations.QueryInit;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Data
@@ -32,16 +36,17 @@ public class ChatMessageOutput {
         this.unreadCount = unreadCount;
     }
 
-    public ChatMessageOutput(ChatRecord chatRecord, Long memberCount, Long readCount){
-        this.chatId = chatRecord.getChatId();
-        this.senderId = chatRecord.getSenderId();
-        this.senderProfileUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/20fa6d6a-09ba-4cf1-800b-6f225703c85c_shawn_raboutou2.jpg";
-        this.senderNickname = chatRecord.getSenderId().toString();
-        this.chatRecordId = chatRecord.getId();
-        this.content = chatRecord.getContent();
-        this.sentAt = chatRecord.getCreatedAt().toString();
-        this.modifiedAt = chatRecord.getModifiedAt().toString();
-        this.unreadCount = memberCount - readCount;
+    @QueryProjection
+    public ChatMessageOutput(Long chatId, Long chatRecordId, Long senderId, String senderNickname,
+                             String senderProfileUrl, String content, LocalDateTime sentAt, LocalDateTime modifiedAt) {
+        this.chatId = chatId;
+        this.chatRecordId = chatRecordId;
+        this.senderId = senderId;
+        this.senderNickname = senderNickname;
+        this.senderProfileUrl = senderProfileUrl;
+        this.content = content;
+        this.sentAt = sentAt.toString();
+        this.modifiedAt = modifiedAt.toString();
     }
 
     public void setUnreadCount(Long unreadCount) {
