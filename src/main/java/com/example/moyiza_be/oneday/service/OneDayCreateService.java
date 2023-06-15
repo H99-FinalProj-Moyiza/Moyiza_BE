@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -168,29 +169,47 @@ public class OneDayCreateService {
     // revisit
     // Image
     @Transactional
-    public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, MultipartFile imageFile) {
+    public ResponseEntity<Message> setImageList(Long userId, Long createOneDayId, List<MultipartFile> imageFile) {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
-        String imageUrl = null;
+        List<String> imageUrlList;
         log.info("Image List Setting");
-        if (oneDayCreate.getOneDayImage().isEmpty()) {
-            if (imageUrl == null) {
-                log.info("Image File is Null, Set Image to Default File");
-                imageUrl = DEFAULT_IMAGE_URL;
+        // if oneDayCreate already got image.
+        if (oneDayCreate.getOneDayImage() != null) {
+            if (imageFile != null){
+                log.info("if user try to set another image.");
+                imageUrlRepository.deleteAllByOneDayCreateId(createOneDayId);
+                log.info("You've Got New Image");
+                imageUrlList = s3Uploader.uploadMultipleImg((imageFile));
+            }
+            else {
+                // user wants to get images.
+                // Get ImageUrlList that Already saved.
+                List<OneDayImageUrl> imageLists = imageUrlRepository.findAllByOneDayCreateId(createOneDayId);
+                imageUrlList = imageLists.stream()
+                        .map(OneDayImageUrl::getImageUrl)
+                        .collect(Collectors.toList());
             }
         } else {
-            log.info("Get Image File Complete");
-            imageUrl = s3Uploader.uploadFile(imageFile);
+            // oneDayCreate did not have image.
+            if (imageFile == null) {
+                log.info("Image File is Null, Set Image to Default File");
+                imageUrlList = List.of(DEFAULT_IMAGE_URL);
+            } else {
+                log.info("Get Image File Complete");
+                imageUrlList = s3Uploader.uploadMultipleImg(imageFile);
+            }
         }
+        log.info("set thumbnail image");
+        oneDayCreate.setOneDayImage(imageUrlList.get(0));
+        log.info("set : " + imageUrlList.size() +  "images for id : " + createOneDayId);
         log.info("image list setting complete");
-//        List<OneDayImageUrl> imageEntityList = imageUrlList.stream().map(i -> new OneDayImageUrl(createOneDayId, i)).toList();
-        OneDayImageUrl oneDayImageUrl = new OneDayImageUrl(createOneDayId, imageUrl);
-        List<OneDayImageUrl> imageEntityList = new ArrayList<>();
-        imageEntityList.add(oneDayImageUrl);
+        List<OneDayImageUrl> imageEntityList = imageUrlList.stream().map(i -> new OneDayImageUrl(createOneDayId, i)).toList();
+//        OneDayImageUrl oneDayImageUrl = new OneDayImageUrl(createOneDayId, imageUrl);
+//        List<OneDayImageUrl> imageEntityList = new ArrayList<>();
+//        imageEntityList.add(oneDayImageUrl);
 //        imageEntityList;
         imageUrlRepository.saveAll(imageEntityList);
-        log.info("set thumbnail image");
-        oneDayCreate.setOneDayImage(imageEntityList.get(0).getImageUrl());
-        log.info("set : " + imageEntityList.size() +  "images for id : " + createOneDayId);
+
 
         return new ResponseEntity<>(new Message("Upload Complete!"), HttpStatus.OK);
     }
