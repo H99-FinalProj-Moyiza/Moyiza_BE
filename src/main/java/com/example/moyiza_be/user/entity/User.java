@@ -25,7 +25,7 @@ public class User extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false)
     private String email;
 
     private String password;
@@ -53,35 +53,22 @@ public class User extends TimeStamped {
     private SocialType socialType;
 
     private String socialLoginId; // The identifier value of the social type you are logged in as (null for normal login)
-
-    public User (String password, SignupRequestDto requestDto, String storedFileUrl){
-        this.email = requestDto.getEmail();
-        this.password = password;
-        this.name = requestDto.getName();
-        this.nickname = requestDto.getNickname();
-        this.gender = requestDto.getGender();
-        this.birth = requestDto.getBirth();
-        this.phone = requestDto.getPhone();
-        this.profileImage = storedFileUrl;
-    }
+    private String content;
 
     // Methods for setting user permissions
     public void authorizeUser() {
         this.role = Role.USER;
     }
 
-    public void updateProfile(String nickname, String tagString){
-        this.nickname = nickname;
-        this.tagString = tagString;
-    }
     public void updateProfileImage(String storedFileName) {
         this.profileImage = storedFileName;
     }
 
-    public void updateProfileTest(TestUpdateRequestDto requestDto, String tagString){
+    public void updateProfile(UpdateRequestDto requestDto, String tagString){
         this.nickname = requestDto.getNickname();
         this.tagString = tagString;
         this.profileImage = requestDto.getImageUrl();
+        this.content = requestDto.getContent();
     }
 
     public User (String nickName, Long id){
@@ -103,7 +90,7 @@ public class User extends TimeStamped {
     }
 
     //테스트
-    public User (String password, TestSignupRequestDto requestDto){
+    public User (String password, SignupRequestDto requestDto){
         this.email = requestDto.getEmail();
         this.password = password;
         this.name = requestDto.getName();

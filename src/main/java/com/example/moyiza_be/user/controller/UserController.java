@@ -6,11 +6,10 @@ import com.example.moyiza_be.user.email.EmailRequestDto;
 import com.example.moyiza_be.user.email.EmailService;
 import com.example.moyiza_be.user.service.MypageService;
 import com.example.moyiza_be.user.service.UserService;
-import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,19 +19,21 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
     private final EmailService emailService;
     private final MypageService mypageService;
 
-    //회원가입
-    @PostMapping ("/signup")
-    public ResponseEntity<?> signup(@RequestPart(value = "data") SignupRequestDto requestDto,
-                                    @RequestPart(value = "imageFile")@Nullable MultipartFile image){
-        return userService.signup(requestDto, image);
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody @Valid SignupRequestDto testRequestDto){
+        return userService.signup(testRequestDto);
     }
+    @PostMapping("/uploadImg")
+    public ResponseEntity<?> uploadImg(@RequestPart(value = "imageFile") MultipartFile image){
+        return userService.uploadImg(image);
+    }
+
     /*OAuth2 Provider에서 받아오지 못하는 사용자 정보를 저장하기 위한 임시 api
       필요한 정보를 전부 받아오기 위해선 사업자 등록, 전환이 필요하다
      */
@@ -75,22 +76,14 @@ public class UserController {
         return mypageService.getMypage(userDetails.getUser(), profileId);
     }
 
-    //회원정보 수정
-    @PutMapping(value = "/profile",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> updateProfile(@RequestPart(value = "imageFile") MultipartFile image,
-                                           @RequestPart(value = "data") UpdateRequestDto requestDto,
-                                           @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return userService.updateProfile(image, requestDto, userDetails.getUser().getEmail());
-    }
     //회원정보 수정 - 관심사 추가 tagList 조회
     @GetMapping("/profile/tags")
     public ResponseEntity<?> tagsOfCategory(@RequestParam String category){
         return userService.tagsOfCategory(category);
     }
-    @PutMapping("/test/profile")
-    public ResponseEntity<?> updateProfileTest(@RequestBody TestUpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return userService.updateProfileTest(requestDto, userDetails.getUser().getEmail());
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfileTest(@RequestBody UpdateRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.updateProfile(requestDto, userDetails.getUser().getEmail());
     }
 
     //Refresh 토큰으로 Access 토큰 재발급
@@ -122,13 +115,12 @@ public class UserController {
         return userService.verifyCodeToFindEmail(codeMap.get("code"));
     }
 
-    //회원가입 테스트
-    @PostMapping("/test/upload")
-    public ResponseEntity<?> uploadTest(@RequestPart(value = "imageFile") MultipartFile image){
-        return userService.uploadTest(image);
-    }
-    @PostMapping("/test/signup")
-    public ResponseEntity<?> signupTest(@RequestBody TestSignupRequestDto testRequestDto){
-        return userService.signupTest(testRequestDto);
-    }
+    //profile test
+//    @PutMapping(value = "/profile",
+//            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})
+//    public ResponseEntity<?> updateProfile(@RequestPart(value = "imageFile") MultipartFile image,
+//                                           @RequestPart(value = "data") UpdateRequestDto requestDto,
+//                                           @AuthenticationPrincipal UserDetailsImpl userDetails){
+//        return userService.updateProfile(image, requestDto, userDetails.getUser().getEmail());
+//    }
 }
