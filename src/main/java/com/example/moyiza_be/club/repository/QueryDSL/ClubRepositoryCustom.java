@@ -11,6 +11,7 @@ import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -37,21 +38,22 @@ public class ClubRepositoryCustom {
     public Page<ClubListResponse> filteredClubResponseList(
             Pageable pageable, CategoryEnum categoryEnum, String q, String tag1, String tag2, String tag3, User nowUser
     ) {
+        Long userId = nowUser == null ? -1 : nowUser.getId();
         List<ClubListResponse> clubListResponseList =
                 jpaQueryFactory
                         .from(club)
                         .join(user).on(club.ownerId.eq(user.id))
                         .join(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
                         .where(
-                                club.isDeleted.eq(Boolean.FALSE),
+                                club.isDeleted.isFalse(),
                                 eqCategory(categoryEnum),
                                 titleContainOrContentContain(q),
                                 eqTag1(tag1),
                                 eqTag2(tag2),
                                 eqTag3(tag3)
                         )
-//                        .offset(pageable.getOffset())
-//                        .limit(pageable.getPageSize())
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
                         .orderBy(club.id.desc())
                         .transform(
                                 groupBy(club.id)
@@ -69,17 +71,19 @@ public class ClubRepositoryCustom {
                                                 JPAExpressions
                                                         .selectFrom(clubLike)
                                                         .where(clubLike.clubId.eq(club.id)
-                                                                .and(clubLike.userId.eq(nowUser.getId()))
+                                                                .and(clubLike.userId.eq(userId))
                                                         )
                                                         .exists()
                                                 )
 
                                         )
                         )
+
                 ;
 //        Long count = jpaQueryFactory
 //                .select(club.count())
 //                .fetchOne();
+
         System.out.println("clubListResponseList = " + clubListResponseList);
 
         return new PageImpl<>(clubListResponseList, pageable, 5000L);
@@ -238,6 +242,10 @@ public class ClubRepositoryCustom {
 //        }
 //        return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
 //    }
+    private BooleanExpression isDeletedFalse(){
+        return club.isDeleted.eq(false);
+    }
+
 
     private BooleanExpression titleContainOrContentContain(String q) {
         return q == null ? null : titleContain(q).or(contentContain(q));

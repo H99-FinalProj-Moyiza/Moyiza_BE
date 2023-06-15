@@ -4,10 +4,13 @@ import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Getter
+@Setter
 public class ClubListResponse {
     private final Long club_id;
     private final String ownerNickname;

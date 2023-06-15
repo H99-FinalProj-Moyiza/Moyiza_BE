@@ -4,7 +4,12 @@ import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.dto.OneDayListResponseDto;
 import com.example.moyiza_be.oneday.dto.QOneDayListResponseDto;
+
+import static com.example.moyiza_be.club.entity.QClubImageUrl.clubImageUrl;
+import static com.example.moyiza_be.oneday.entity.QOneDayImageUrl.oneDayImageUrl;
 import com.example.moyiza_be.user.entity.User;
+import com.querydsl.core.group.GroupBy;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -25,6 +30,7 @@ import static com.example.moyiza_be.like.entity.QReviewLike.reviewLike;
 import static com.example.moyiza_be.oneday.entity.QOneDay.oneDay;
 import static com.example.moyiza_be.review.entity.QReview.review;
 import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.types.dsl.MathExpressions.power;
 
 
@@ -39,33 +45,9 @@ public class OneDayRepositoryCustom {
     ) {
         List<OneDayListResponseDto> onedayList =
                 jpaQueryFactory
-                        .select(
-                                new QOneDayListResponseDto(
-                                        oneDay.id,
-                                        user.nickname,
-                                        user.profileImage,
-                                        oneDay.oneDayTitle,
-                                        oneDay.oneDayContent,
-                                        oneDay.tagString,
-                                        oneDay.oneDayGroupSize,
-                                        oneDay.attendantsNum,
-                                        oneDay.oneDayImage,
-                                        oneDay.oneDayLongitude,
-                                        oneDay.oneDayLatitude,
-                                        oneDay.oneDayLocation,
-                                        oneDay.numLikes,
-                                        JPAExpressions
-                                                .selectFrom(onedayLike)
-                                                .where(onedayLike.onedayId.eq(oneDay.id)
-                                                        .and(onedayLike.userId.eq(nowUser.getId()))
-                                                )
-                                                .exists()
-                                )
-                        )
                         .from(oneDay)
-                        .offset(pageable.getOffset())
-                        .limit(pageable.getPageSize())
                         .join(user).on(oneDay.ownerId.eq(user.id))
+                        .join(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
                         .where(
                                 oneDay.deleted.isFalse(),
                                 eqTag1(tag1),
@@ -75,10 +57,39 @@ public class OneDayRepositoryCustom {
                                 titleContainOrContentContain(q),
                                 nearby(radius, nowLongitude, nowLatitude),
                                 startTimeAfter(timeCondition)
-
                         )
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
                         .orderBy(oneDay.id.desc())
-                        .fetch();
+                        .transform(
+                                groupBy(oneDay.id)
+                                        .list(
+                                                Projections.constructor(OneDayListResponseDto.class,
+                                                        oneDay.id,
+                                                        user.nickname,
+                                                        user.profileImage,
+                                                        oneDay.oneDayTitle,
+                                                        oneDay.oneDayContent,
+                                                        oneDay.tagString,
+                                                        oneDay.oneDayGroupSize,
+                                                        oneDay.attendantsNum,
+                                                        oneDay.oneDayImage,
+                                                        GroupBy.list(oneDayImageUrl.imageUrl),
+                                                        oneDay.oneDayLongitude,
+                                                        oneDay.oneDayLatitude,
+                                                        oneDay.oneDayLocation,
+                                                        oneDay.numLikes,
+                                                        JPAExpressions
+                                                                .selectFrom(onedayLike)
+                                                                .where(onedayLike.onedayId.eq(oneDay.id)
+                                                                        .and(onedayLike.userId.eq(nowUser.getId()))
+                                                                )
+                                                                .exists()
+
+                                                )
+                                        )
+
+                        );
 
         return new PageImpl<>(onedayList, pageable, 1000L);
     }
