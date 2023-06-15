@@ -12,7 +12,7 @@ public enum TagEnum {
     RUNNING("런닝", CategoryEnum.WORKOUT),
     HIKING("등산", CategoryEnum.WORKOUT),
     SURFING("서핑", CategoryEnum.WORKOUT),
-    OUTCLIMBING("암벽등방", CategoryEnum.WORKOUT),
+    OUTCLIMBING("암벽등반", CategoryEnum.WORKOUT),
     CROSSFIT("크로스핏", CategoryEnum.WORKOUT),
     JUMPROPE("줄넘기", CategoryEnum.WORKOUT),
 
