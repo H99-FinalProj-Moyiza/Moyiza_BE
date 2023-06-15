@@ -177,6 +177,11 @@ public class OneDayCreateService {
         if (oneDayCreate.getOneDayImage() != null) {
             if (imageFile != null){
                 log.info("if user try to set another image.");
+                List<OneDayImageUrl> imageUrls = imageUrlRepository.findAllByOneDayCreateId(createOneDayId);
+                for (OneDayImageUrl image : imageUrls) {
+                    String imageUrl = image.getImageUrl();
+                    s3Uploader.delete(imageUrl);
+                }
                 imageUrlRepository.deleteAllByOneDayCreateId(createOneDayId);
                 log.info("You've Got New Image");
                 imageUrlList = s3Uploader.uploadMultipleImg((imageFile));
