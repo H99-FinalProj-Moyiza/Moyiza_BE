@@ -84,8 +84,6 @@ public class ClubRepositoryCustom {
 //                .select(club.count())
 //                .fetchOne();
 
-        System.out.println("clubListResponseList = " + clubListResponseList);
-
         return new PageImpl<>(clubListResponseList, pageable, 5000L);
     }
 

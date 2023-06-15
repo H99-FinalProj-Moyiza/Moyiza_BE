@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import retrofit2.http.Path;
 
 import java.util.List;
 
@@ -76,6 +75,4 @@ public class ReviewController {
         User user = userDetails.getUser();
         return reviewService.cancelLikeReview(user, review_id);
     }
-
-
 }
