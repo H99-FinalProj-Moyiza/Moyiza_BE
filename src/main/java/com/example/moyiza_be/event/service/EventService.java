@@ -19,8 +19,10 @@ import com.example.moyiza_be.like.repository.EventLikeRepository;
 import com.example.moyiza_be.like.service.LikeService;
 import com.example.moyiza_be.user.entity.User;
 import jakarta.transaction.Transactional;
+import jdk.jshell.spi.ExecutionControl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.NotImplementedYetException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -91,7 +93,8 @@ public class EventService {
 //        }
         // If Author == user
         // Else Pass
-        return new ResponseEntity<>("Update Success", HttpStatus.OK);
+        throw new NullPointerException("Not Implemented");
+//        return new ResponseEntity<>("Update Success", HttpStatus.OK);
     }
 
     // Read Event Detail

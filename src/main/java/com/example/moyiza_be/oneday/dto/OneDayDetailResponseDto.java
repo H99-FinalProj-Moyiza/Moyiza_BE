@@ -2,7 +2,7 @@ package com.example.moyiza_be.oneday.dto;
 
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.entity.OneDay;
-import com.example.moyiza_be.oneday.entity.OneDayAttendant;
+import com.example.moyiza_be.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 public class OneDayDetailResponseDto {
     private final long id;
+    private final Long ownerId;
+    private final String ownerNickname;
+    private final String ownerProfileUrl;
     private final String oneDayTitle;
     private final String oneDayContent;
     private final String oneDayLocation;
@@ -28,12 +31,20 @@ public class OneDayDetailResponseDto {
     private final LocalDateTime oneDayStartTime;
     private final int oneDayGroupSize;
     private final List<String> imageList;
-    private final List<OneDayMemberResponse> oneDayMemberResponseList;
+    private final List<MemberResponse> memberResponseList;
     private final int oneDayAttendantListSize;
     private final String type;
+    private final Integer numLikes;
+    private final Boolean isLikedByUser;
 
-    public OneDayDetailResponseDto(OneDay oneDay,List<String> oneDayImageUrlList, List<OneDayMemberResponse> oneDayMemberResponseList) {
+    public OneDayDetailResponseDto(
+            User owner, OneDay oneDay, List<String> oneDayImageUrlList,
+            List<MemberResponse> memberResponseList, Boolean isLikedByUser
+    ) {
         this.id = oneDay.getId();
+        this.ownerId = owner.getId();
+        this.ownerNickname = owner.getNickname();
+        this.ownerProfileUrl = owner.getProfileImage();
         this.oneDayTitle = oneDay.getOneDayTitle();
         this.oneDayContent = oneDay.getOneDayContent();
         this.category = oneDay.getCategory().getCategory();
@@ -47,7 +58,9 @@ public class OneDayDetailResponseDto {
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
         this.type = oneDay.getType().getOneDayType();
         this.imageList = oneDayImageUrlList;
-        this.oneDayMemberResponseList = oneDayMemberResponseList;
-        this.oneDayAttendantListSize = oneDayMemberResponseList.size();
+        this.memberResponseList = memberResponseList;
+        this.oneDayAttendantListSize = memberResponseList.size();
+        this.numLikes = oneDay.getNumLikes();
+        this.isLikedByUser = isLikedByUser;
     }
 }

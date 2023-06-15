@@ -2,6 +2,7 @@ package com.example.moyiza_be.oneday.controller;
 
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
+import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.oneday.dto.OneDayListResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import retrofit2.http.Path;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -47,10 +49,12 @@ public class OneDayController {
             @RequestParam(required = false) Double longitude,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double radius,
-            @RequestParam(required = false) LocalDateTime startafter
+            @RequestParam(required = false) LocalDateTime startafter,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
+        User user = userDetails.getUser();
         return oneDayService.getFilteredOneDayList(
-                pageable, null, null, null, null, null, null, null, null,
+                user, pageable, null, null, null, null, null, null, null, null,
                 null
         );
     }
@@ -66,18 +70,23 @@ public class OneDayController {
             @RequestParam(required = false) Double longitude,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double radius,
-            @RequestParam(required = false) LocalDateTime startafter
+            @RequestParam(required = false) LocalDateTime startafter,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
             ){
+        User user = userDetails.getUser();
         return oneDayService.getFilteredOneDayList(
-                pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius,
+                user, pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius,
                 startafter
         );
     }
 
     // ReadOne
     @GetMapping("/{oneDayId}")
-    public ResponseEntity<?> getOneDay(@PathVariable Long oneDayId) {
-        return oneDayService.getOneDayDetail(oneDayId);
+    public ResponseEntity<?> getOneDay(
+            @PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        return oneDayService.getOneDayDetail(oneDayId, user);
     }
     // Update
     @PutMapping(value = "/{oneDayId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -100,6 +109,24 @@ public class OneDayController {
     @DeleteMapping("/{oneDayId}/join")
     public ResponseEntity<?> cancelOneDay(@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return oneDayService.cancelOneDay(oneDayId, userDetails.getUser());
+    }
+
+    @PostMapping("/{onedayId}/like")
+    public ResponseEntity<Message> likeOneday(
+            @PathVariable Long onedayId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+        User user = userDetails.getUser();
+        return oneDayService.likeOneday(onedayId, user);
+    }
+
+    @DeleteMapping("/{onedayId}/like")
+    public ResponseEntity<Message> cancelLikeOneday(
+            @PathVariable Long onedayId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+        User user = userDetails.getUser();
+        return oneDayService.cancelLikeOneday(onedayId, user);
     }
 
     // Recommendation Based On Distance

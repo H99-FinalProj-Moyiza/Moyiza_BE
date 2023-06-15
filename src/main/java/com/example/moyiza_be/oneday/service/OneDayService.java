@@ -1,12 +1,10 @@
 package com.example.moyiza_be.oneday.service;
 
 import com.example.moyiza_be.chat.service.ChatService;
-import com.example.moyiza_be.common.enums.CategoryEnum;
-import com.example.moyiza_be.common.enums.ChatTypeEnum;
-import com.example.moyiza_be.common.enums.OneDayTypeEnum;
-import com.example.moyiza_be.common.enums.TagEnum;
+import com.example.moyiza_be.common.enums.*;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
+import com.example.moyiza_be.like.service.LikeService;
 import com.example.moyiza_be.oneday.dto.*;
 import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
 import com.example.moyiza_be.oneday.entity.BanOneDay;
@@ -49,6 +47,7 @@ public class OneDayService {
     private final OneDayImageUrlRepository imageUrlRepository;
     private final OneDayRepositoryCustom oneDayRepositoryCustom;
     private final OneDayAttendantRepositoryCustom oneDayAttendantRepositoryCustom;
+    private final LikeService likeService;
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
@@ -80,22 +79,25 @@ public class OneDayService {
     }
 
     // Read Detail OneDay
-    public ResponseEntity<OneDayDetailResponseDto> getOneDayDetail(Long oneDayId) {
+    public ResponseEntity<OneDayDetailResponseDto> getOneDayDetail(Long oneDayId, User user) {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         // Image Process Issue at here...
         List<String> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDayId).stream().map(OneDayImageUrl::getImageUrl).toList();
-        List<OneDayMemberResponse> oneDayMemberResponseList = oneDayAttendantRepositoryCustom.getOneDayMemberList(oneDayId);
-        OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(oneDay, oneDayImageUrlList, oneDayMemberResponseList);
+        List<MemberResponse> memberResponseList = oneDayAttendantRepositoryCustom.getOneDayMemberList(oneDayId);
+        Boolean isLikedByUser = likeService.checkLikeExists(user.getId(), oneDayId, LikeTypeEnum.ONEDAY);
+        User owner = userService.loadUserById(oneDay.getOwnerId());
+        OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(
+                owner, oneDay, oneDayImageUrlList, memberResponseList, isLikedByUser);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     // Read OneDay List
     public ResponseEntity<Page<OneDayListResponseDto>> getFilteredOneDayList(
-            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
+            User user, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
             Double longitude, Double latitude, Double radius, LocalDateTime startafter
     ) {
         Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
-                pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
+                user, pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
         );
         return ResponseEntity.ok(filteredOnedayList);
     }
@@ -230,6 +232,31 @@ public class OneDayService {
             oneDays.add(dto);
         }
         return new ResponseEntity<>(oneDays, HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<Message> likeOneday(Long onedayId, User user) {
+        OneDay oneday = loadExistingOnedayById(onedayId);
+        ResponseEntity<Message> likeServiceResponse = likeService.onedayLike(user.getId(), onedayId);
+        if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
+            log.info("Error from Likeservice");
+            throw new InternalError("LikeService Error");
+        }
+        oneday.addLike();
+        return likeServiceResponse;
+    }
+
+    @Transactional
+    public ResponseEntity<Message> cancelLikeOneday(Long onedayId, User user) {
+        OneDay oneday = loadExistingOnedayById(onedayId);
+        ResponseEntity<Message> likeServiceResponse = likeService.cancelOnedayLike(user.getId(), onedayId);
+        if (!likeServiceResponse.getStatusCode().is2xxSuccessful()){
+            log.info("Error from Likeservice");
+            throw new InternalError("LikeService Error");
+        }
+        oneday.minusLike();
+        return likeServiceResponse;
+
     }
 
     /////////////////////////////////////////
