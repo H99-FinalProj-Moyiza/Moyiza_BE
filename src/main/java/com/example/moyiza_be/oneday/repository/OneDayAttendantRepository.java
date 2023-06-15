@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface OneDayAttendantRepository extends JpaRepository<OneDayAttendant, Long> {
 
-//    List<OneDayAttendant> findByOneDayId(long oneDayId);
+    List<OneDayAttendant> findAllByOneDayId(Long oneDayId);
 
     @Query("SELECT a.oneDayId AS oneDayId, u.name AS userName, u.nickname AS userNickName, u.profileImage AS userImage FROM OneDayAttendant a JOIN users u ON a.userId = u.id  WHERE a.oneDayId = :oneDayId")
     List<OneDayAttendant> findAttendantsByOneDayId(@Param("oneDayId") Long oneDayId);
