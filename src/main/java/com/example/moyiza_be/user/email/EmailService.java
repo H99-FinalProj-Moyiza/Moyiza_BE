@@ -55,6 +55,7 @@ public class EmailService {
 
     public ResponseEntity<?> sendSimpleMessage(EmailRequestDto requestDto)throws Exception {
         String receiverEmail = requestDto.getEmail();
+        validationUtil.checkDuplicatedEmail(receiverEmail);
         String verificationCode = validationUtil.createCode();
         MimeMessage message = createMessage(receiverEmail, verificationCode);
         try{
