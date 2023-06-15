@@ -1,8 +1,11 @@
 package com.example.moyiza_be.common.enums;
 
 public enum CategoryEnum {
+
+    WORKOUT("운동"),
+
     SPORTS("스포츠"),
-    FITNESS("운동"),
+
     TRAVEL("여행"),
 
     CULTURE("문화"),
@@ -11,13 +14,13 @@ public enum CategoryEnum {
 
     ACTIVITY("액티비티"),
 
-    FOOD("음식"),
+    LOVE("연애"),
 
     SELFDEV("자기계발"),
 
-    HOBBY("취미"),
+    HOBBY("취미");
 
-    DATE("연애");
+
 
 
 
