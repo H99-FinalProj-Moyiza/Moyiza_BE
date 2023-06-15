@@ -31,7 +31,7 @@ public enum TagEnum {
     // Travel
     OVERSEAS("해외여행", CategoryEnum.TRAVEL),
     DOMESTIC("국내여행", CategoryEnum.TRAVEL),
-    ONEDAY("국내여행", CategoryEnum.TRAVEL),
+    ONEDAY("당일여행", CategoryEnum.TRAVEL),
     GAMSUNG("감성여행", CategoryEnum.TRAVEL),
     THEME("테마여행", CategoryEnum.TRAVEL),
     CARTRIP("차박", CategoryEnum.TRAVEL),

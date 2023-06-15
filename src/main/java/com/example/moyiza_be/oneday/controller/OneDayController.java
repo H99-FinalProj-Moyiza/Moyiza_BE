@@ -135,4 +135,19 @@ public class OneDayController {
         return oneDayService.recommendByDistance(nowLatitude, nowLongitude);
     }
 
+    // JoinWishList
+    @GetMapping("/{oneDayId}/joinList")
+    public ResponseEntity<?> joinWishList(@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return oneDayService.joinWishList(oneDayId, userDetails.getUser());
+    }
+    // Join Approve
+    @PostMapping("/{oneDayId}/joinList/{userId}")
+    public ResponseEntity<?> approveJoin(@PathVariable Long oneDayId, @PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails)  {
+        return oneDayService.approveJoin(oneDayId, userId, userDetails.getUser());
+    }
+    // reject Approve
+    @DeleteMapping("/{oneDayId}/joinList/{userId}")
+    public ResponseEntity<?> rejectJoin(@PathVariable Long oneDayId, @PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return oneDayService.rejectJoin(oneDayId, userId, userDetails.getUser());
+    }
 }

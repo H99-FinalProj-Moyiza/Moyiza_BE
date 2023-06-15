@@ -1,5 +1,7 @@
 package com.example.moyiza_be.oneday.service;
 
+//import com.example.moyiza_be.alarm.repository.AlarmRepository;
+//import com.example.moyiza_be.alarm.service.AlarmService;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.enums.*;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
@@ -8,16 +10,15 @@ import com.example.moyiza_be.like.repository.OnedayLikeRepository;
 import com.example.moyiza_be.like.service.LikeService;
 import com.example.moyiza_be.oneday.dto.*;
 import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
-import com.example.moyiza_be.oneday.entity.BanOneDay;
-import com.example.moyiza_be.oneday.entity.OneDay;
-import com.example.moyiza_be.oneday.entity.OneDayAttendant;
-import com.example.moyiza_be.oneday.entity.OneDayImageUrl;
+import com.example.moyiza_be.oneday.entity.*;
+import com.example.moyiza_be.oneday.repository.OneDayApprovalRepository;
 import com.example.moyiza_be.oneday.repository.OneDayAttendantRepository;
 import com.example.moyiza_be.oneday.repository.OneDayImageUrlRepository;
 import com.example.moyiza_be.oneday.repository.OneDayRepository;
 import com.example.moyiza_be.oneday.repository.QueryDSL.OneDayAttendantRepositoryCustom;
 import com.example.moyiza_be.oneday.repository.QueryDSL.OneDayRepositoryCustom;
 import com.example.moyiza_be.user.entity.User;
+import com.example.moyiza_be.user.repository.UserRepository;
 import com.example.moyiza_be.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -42,10 +43,14 @@ import java.util.stream.Collectors;
 public class OneDayService {
     private final OneDayRepository oneDayRepository;
     private final OneDayAttendantRepository attendantRepository;
+    private final UserRepository userRepository;
+//    private final AlarmRepository alarmRepository;
+//    private final AlarmService alarmService;
     private final AwsS3Uploader awsS3Uploader;
     private final ChatService chatService;
     private final UserService userService;
     private final OneDayImageUrlRepository imageUrlRepository;
+    private final OneDayApprovalRepository approvalRepository;
     private final OneDayRepositoryCustom oneDayRepositoryCustom;
     private final OneDayAttendantRepositoryCustom oneDayAttendantRepositoryCustom;
     private final LikeService likeService;
@@ -66,7 +71,6 @@ public class OneDayService {
 //        oneDayImageUrlList.forEach(image -> image.setOneDayId(oneDay.getId()));
 //        imageUrlRepository.saveAll(oneDayImageUrlList);
         oneDay.setDeleted(false);
-        oneDay.setAttendantsNum(1);
         oneDayRepository.saveAndFlush(oneDay);
         List<OneDayImageUrl> oneDayImageUrlList = imageUrlRepository.findAllByOneDayCreateId(confirmDto.getCreateOneDayId());
         for (OneDayImageUrl image : oneDayImageUrlList) {
@@ -191,8 +195,29 @@ public class OneDayService {
             return new ResponseEntity<>(new Message("Cannot Attend Twice"), HttpStatus.BAD_REQUEST);
         }
         OneDay oneDay = loadExistingOnedayById(oneDayId);
+        User owner = userRepository.findById(oneDay.getOwnerId()).orElseThrow(()->new NullPointerException("Owner Not Found"));
+        if (user.getId() == oneDay.getOwnerId()) {
+            OneDayAttendant attendant = new OneDayAttendant(oneDay, user.getId());
+            attendantRepository.save(attendant);
+            chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+            oneDay.addAttendantNum();
+            return new ResponseEntity<>("Attending Success", HttpStatus.OK);
+        }
         if (oneDay.getType() == OneDayTypeEnum.APPROVAL) { // Logic should be added if user is owner
-            return new ResponseEntity<>("Approval System Under Constructing", HttpStatus.FORBIDDEN);
+//            // user is not owner
+//            Alarm alarm = Alarm.builder()
+//                    .sender(user.getName())
+////                    .imgUrl(user.getProfileImage())
+//                    .message(user.getNickname() + " 님이 " +oneDay.getOneDayTitle()+ "에 참여를 신청하였습니다.")
+//                    .receiver(owner.getNickname())
+//                    .check(false)
+//                    .build();
+//            alarmRepository.save(alarm);
+//            alarmService.alarmEvent(user.getNickname());
+            // OneDayApproval Add Process
+            OneDayApproval oneDayApproval = new OneDayApproval(oneDay, user.getId());
+            approvalRepository.save(oneDayApproval);
+            return new ResponseEntity<>("Approval System Testing", HttpStatus.OK);
         } else {
             // FCGSB -> Is it Fully occupied?
             if (oneDay.getAttendantsNum() < oneDay.getOneDayGroupSize()) {
@@ -229,6 +254,41 @@ public class OneDayService {
         User banUser = userService.loadUserById(banRequest.getBanUserId());
         chatService.leaveChat(oneDayId, ChatTypeEnum.ONEDAY, banUser);
         return new ResponseEntity<>(String.format("user %d has been banned", banRequest.getBanUserId()), HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<?> joinWishList(Long oneDayId, User user) {
+        OneDay oneDay = loadExistingOnedayById(oneDayId);
+        // valid Check
+        if (oneDay.getOwnerId() != user.getId()) return new ResponseEntity<>("You are Not owner", HttpStatus.FORBIDDEN);
+        List<OneDayApproval> approvalList = approvalRepository.findAllByOneDayId(oneDayId);
+        return new ResponseEntity<>(approvalList, HttpStatus.OK);
+    }
+    public ResponseEntity<?> approveJoin(Long oneDayId, Long userId, User user) {
+        OneDayApproval oneDayApproval = approvalRepository.findByOneDayId(oneDayId);
+        OneDay oneDay = loadExistingOnedayById(oneDayId);
+        // Are You Owner?
+        if (user.getId() != oneDay.getOwnerId()) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
+        // Join Process
+        Integer groupSize = oneDay.getOneDayGroupSize();
+        Integer currentSize = attendantRepository.findAllByOneDayId(oneDayId).size();
+        // Vacant Room for attend?
+        if (groupSize < currentSize) return new ResponseEntity<>("Fully Occupied", HttpStatus.FORBIDDEN);
+        OneDayAttendant attendant = new OneDayAttendant(oneDay, userId);
+        attendantRepository.save(attendant);
+        chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+        oneDay.addAttendantNum();
+        // After Join, Delete waitingList
+        approvalRepository.delete(oneDayApproval);
+        return new ResponseEntity<>("Attending Success", HttpStatus.OK);
+    }
+    public ResponseEntity<?> rejectJoin(Long oneDayId, Long userId, User user) {
+        OneDayApproval oneDayApproval = approvalRepository.findByOneDayIdAndUserId(oneDayId, userId);
+        OneDay oneDay = loadExistingOnedayById(oneDayId);
+        // Are You Owner?
+        if (user.getId() != oneDay.getOwnerId()) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
+        // Reject Process
+        approvalRepository.delete(oneDayApproval);
+        return new ResponseEntity<>("Reject Success", HttpStatus.OK);
     }
 
     // Recommendation Based on Distance

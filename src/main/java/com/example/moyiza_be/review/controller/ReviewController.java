@@ -40,14 +40,14 @@ public class ReviewController {
         return reviewService.getReviewDetail(user,review_id);
     }
 
-    @PostMapping
-    public ResponseEntity<ReviewDetailResponse> postReview(
-            @RequestPart @Nullable List<MultipartFile> image,
-            @RequestPart ReviewPostRequest reviewPostRequest,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+        @PostMapping
+        public ResponseEntity<ReviewDetailResponse> postReview(
+                @RequestPart @Nullable List<MultipartFile> image,
+                @RequestPart ReviewPostRequest reviewPostRequest,
+                @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        User user = userDetails.getUser();
-        return reviewService.postReview(reviewPostRequest, image, user);
+            User user = userDetails.getUser();
+            return reviewService.postReview(reviewPostRequest, image, user);
     }
 
     @DeleteMapping("/{review_id}")

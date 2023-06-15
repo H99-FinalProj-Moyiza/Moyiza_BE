@@ -19,6 +19,7 @@ public class OneDayListResponseDto {
     private final Integer onedayGroupSize;
     private final Integer onedayAttendantsNum;
     private final String thumbnailUrl;
+    private final List<String> imageUrlList;
     private final Double longitude;
     private final Double latitude;
     private final String onedayLocation;
@@ -29,7 +30,8 @@ public class OneDayListResponseDto {
     public OneDayListResponseDto(
             Long onedayId, String ownerNickname, String ownerProfileUrl, String onedayTitle, String onedayContent,
             String tagString, Integer onedayGroupSize, Integer onedayAttendantsNum, String thumbnailUrl,
-            Double longitude, Double latitude, String onedayLocation, Integer numLikes, Boolean isLikedByUser
+            List<String> imageUrlList, Double longitude, Double latitude, String onedayLocation, Integer numLikes,
+            Boolean isLikedByUser
     ) {
         this.onedayId = onedayId;
         this.ownerNickname = ownerNickname;
@@ -40,6 +42,7 @@ public class OneDayListResponseDto {
         this.onedayGroupSize = onedayGroupSize;
         this.onedayAttendantsNum = onedayAttendantsNum;
         this.thumbnailUrl = thumbnailUrl;
+        this.imageUrlList = imageUrlList;
         this.longitude = longitude;
         this.latitude = latitude;
         this.onedayLocation = onedayLocation;

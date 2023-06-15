@@ -1,15 +1,15 @@
 package com.example.moyiza_be.club.controller;
 
-import com.example.moyiza_be.club.dto.BanRequest;
-import com.example.moyiza_be.club.dto.ClubDetailResponse;
-import com.example.moyiza_be.club.dto.ClubListResponse;
-import com.example.moyiza_be.club.dto.ClubMemberResponse;
+import com.example.moyiza_be.club.dto.*;
+import com.example.moyiza_be.club.dto.createclub.*;
 import com.example.moyiza_be.club.service.ClubService;
+import com.example.moyiza_be.club.service.ClubUpdateService;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.user.entity.User;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ import java.util.List;
 public class ClubController {
 
     private final ClubService clubService;
+    private final ClubUpdateService clubUpdateService;
 
     //Join Club
     @PostMapping("/{club_id}/join")
@@ -117,7 +119,7 @@ public class ClubController {
     public ResponseEntity<Message> likeClub(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id
-    ){
+    ) {
         User user = userDetails.getUser();
         return clubService.likeClub(user, club_id);
     }
@@ -126,8 +128,100 @@ public class ClubController {
     public ResponseEntity<Message> cancelLikeClub(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id
-    ){
+    ) {
         User user = userDetails.getUser();
         return clubService.cancelLikeClub(user, club_id);
     }
+
+    ///////////////////updateservice//////////////////////
+    @PutMapping("{club_id}/title")
+    public ResponseEntity<Message> updateClubTitle(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id,
+            @RequestBody CreateRequestTitleDto titleDto
+
+
+    ) {
+        User user = userDetails.getUser();
+        return clubUpdateService.updateClubTitle(user, club_id, titleDto);
+    }
+
+    @PutMapping("{club_id}/category")
+    public ResponseEntity<Message> updateClubCategory(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id,
+            @RequestBody CreateRequestCategoryDto categoryDto
+
+
+    ) {
+        User user = userDetails.getUser();
+        return clubUpdateService.updateClubCategory(user, club_id, categoryDto);
+    }
+
+    @PutMapping("{club_id}/tag")
+    public ResponseEntity<Message> updateClubTag(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id,
+            @RequestBody CreateRequestTagDto tagDto
+
+
+    ) {
+        User user = userDetails.getUser();
+        return clubUpdateService.updateClubTag(user, club_id, tagDto);
+    }
+
+    @PutMapping("{club_id}/content")
+    public ResponseEntity<Message> updateClubContent(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id,
+            @RequestBody CreateRequestContentDto contentDto
+    ) {
+        User user = userDetails.getUser();
+        return clubUpdateService.updateClubContent(user, club_id, contentDto);
+    }
+
+    @PutMapping("{club_id}/agePolicy")
+    public ResponseEntity<Message> updateClubAgePolicy(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id,
+            @RequestBody AgePolicyUpdateRequest agePolicyRequest
+    ) {
+        User user = userDetails.getUser();
+        return clubUpdateService.updateClubAgePolicy(user, club_id, agePolicyRequest);
+    }
+
+    @PutMapping("{club_id}/genderPolicy")
+    public ResponseEntity<Message> updateClubGenderPolicy(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id,
+            @RequestBody GenderPolicyUpdateRequest genderPolicyRequest
+    ) {
+        User user = userDetails.getUser();
+        return clubUpdateService.updateClubGenderPolicy(user, club_id, genderPolicyRequest);
+    }
+
+    @PutMapping("{club_id}/maxGroupSize")
+    public ResponseEntity<Message> updateClubMaxGroupSize(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id,
+            @RequestBody CreateRequestMaxSizeDto maxSizeDto
+
+
+    ) {
+        User user = userDetails.getUser();
+        return clubUpdateService.updateClubMaxGroupSize(user, club_id, maxSizeDto);
+    }
+
+    @PutMapping("{club_id}/image")
+    public ResponseEntity<Message> updateClubImage(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestPart @Nullable List<MultipartFile> image,
+            @RequestPart RemoveImageRequest removeImageRequest,
+            @PathVariable Long club_id
+    ) {
+        User user = userDetails.getUser();
+        return clubUpdateService.updateClubImage(user, club_id, image, removeImageRequest);
+    }
+
+
 }

@@ -15,11 +15,17 @@ public class ClubImageUrl {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long createClubId;
-    private Long clubId;
+    private Long clubId = -1L;
     private String imageUrl;
 
     public ClubImageUrl(Long createClubId, String imageUrl) {
         this.createClubId = createClubId;
+        this.imageUrl = imageUrl;
+    }
+
+    public ClubImageUrl(Long createClubId,Long clubId, String imageUrl){
+        this.createClubId = createClubId;
+        this.clubId = clubId;
         this.imageUrl = imageUrl;
     }
 
