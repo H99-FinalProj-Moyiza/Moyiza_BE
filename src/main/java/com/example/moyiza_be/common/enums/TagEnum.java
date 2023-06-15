@@ -4,59 +4,115 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum TagEnum {
-    //Sports
+
+    // Work Out
+    FITNESS("헬스", CategoryEnum.WORKOUT),
+    PILATES("필라테스", CategoryEnum.WORKOUT),
+    YOGA("요가", CategoryEnum.WORKOUT),
+    RUNNING("런닝", CategoryEnum.WORKOUT),
+    HIKING("등산", CategoryEnum.WORKOUT),
+    SURFING("서핑", CategoryEnum.WORKOUT),
+    OUTCLIMBING("암벽등방", CategoryEnum.WORKOUT),
+    CROSSFIT("크로스핏", CategoryEnum.WORKOUT),
+    JUMPROPE("줄넘기", CategoryEnum.WORKOUT),
+
+    // Sports
     SOCCER("축구", CategoryEnum.SPORTS),
+    BASKETBALL("농구", CategoryEnum.SPORTS),
     BASEBALL("야구", CategoryEnum.SPORTS),
+    SWIM("수영", CategoryEnum.SPORTS),
+    MARATHON("마라톤", CategoryEnum.SPORTS),
+    PINGPONG("탁구", CategoryEnum.SPORTS),
+    WATERSPORTS("수상스포츠", CategoryEnum.SPORTS),
     BADMINTON("배드민턴", CategoryEnum.SPORTS),
     CLIMBING("클라이밍", CategoryEnum.SPORTS),
+    CYCLING("사이클링", CategoryEnum.SPORTS),
 
-    //Exercise
-    WALKING("산책", CategoryEnum.FITNESS),
-    GYM("헬스", CategoryEnum.FITNESS),
-    YOGA("요가", CategoryEnum.FITNESS),
-    PILATES("필라테스", CategoryEnum.FITNESS),
-
-    //Activity
-    CAMPING("캠핑", CategoryEnum.ACTIVITY),
-    HIKING("등산", CategoryEnum.ACTIVITY),
-    FISHING("낚시", CategoryEnum.ACTIVITY),
-    SNOWBOARDING("스노우보드", CategoryEnum.ACTIVITY),
-
-
-    //Travel
-    DOMESTIC("국내여행", CategoryEnum.TRAVEL),
+    // Travel
     OVERSEAS("해외여행", CategoryEnum.TRAVEL),
-    ADVENTURE("탐험", CategoryEnum.TRAVEL),
+    DOMESTIC("국내여행", CategoryEnum.TRAVEL),
+    ONEDAY("국내여행", CategoryEnum.TRAVEL),
+    GAMSUNG("감성여행", CategoryEnum.TRAVEL),
+    THEME("테마여행", CategoryEnum.TRAVEL),
+    CARTRIP("차박", CategoryEnum.TRAVEL),
+    CAMPING("캠핑", CategoryEnum.TRAVEL),
+    ADVENTURE("오지여행", CategoryEnum.TRAVEL),
+    JEJU("제주여행", CategoryEnum.TRAVEL),
 
-    //Culture
-    MUSIC("음악", CategoryEnum.CULTURE),
+    // Culture
     MOVIE("영화", CategoryEnum.CULTURE),
-    BOOK("독서", CategoryEnum.CULTURE),
+    CONCERT("공연", CategoryEnum.CULTURE),
+    PHOTO("사진", CategoryEnum.CULTURE),
+    LITERATURE("문학", CategoryEnum.CULTURE),
+    BROADCAST("방송", CategoryEnum.CULTURE),
+    DESIGN("디자인", CategoryEnum.CULTURE),
+    RELIGION("종교", CategoryEnum.CULTURE),
+    FESTIVAL("축제", CategoryEnum.CULTURE),
+    HISTORY("역사", CategoryEnum.CULTURE),
 
     //Arts
-    ARTS("공연예술", CategoryEnum.ART),
-    VISUALARTS("시각예술", CategoryEnum.ART),
+    DRAWING("그림", CategoryEnum.ART),
+    MUSIC("음악", CategoryEnum.ART),
+    EXHIBIT("전시", CategoryEnum.ART),
+    CALLIGRAPHY("캘리그라피", CategoryEnum.ART),
+    HANDCRAFT("공예", CategoryEnum.ART),
+    THEATER("연극", CategoryEnum.ART),
+    MUSICAL("뮤지컬", CategoryEnum.ART),
+    DANCE("댄스", CategoryEnum.ART),
+    WRITING("서예", CategoryEnum.ART),
 
-    //FOOD - ?
-    CAFE("카페투어", CategoryEnum.FOOD),
-    MICHELIN("맛집투어", CategoryEnum.FOOD),
+    // Activity
+    TRACKING("트래킹", CategoryEnum.ACTIVITY),
+    FISHING("낚시", CategoryEnum.ACTIVITY),
+    BOARD("보드", CategoryEnum.ACTIVITY),
+    DIVING("스쿠버다이빙", CategoryEnum.ACTIVITY),
+    DRIVE("드라이브", CategoryEnum.ACTIVITY),
+    THEMEPARK("테마파크", CategoryEnum.ACTIVITY),
+    PARAGLIDING("페러글라이딩", CategoryEnum.ACTIVITY),
+    PICNIC("피크닉", CategoryEnum.ACTIVITY),
+    OUTDOOR("아웃도어", CategoryEnum.ACTIVITY),
 
-    //SELFDEV
+    // Love
+    DATE("데이트", CategoryEnum.LOVE),
+    COUPLE("커플", CategoryEnum.LOVE),
+    MIND("심리", CategoryEnum.LOVE),
+    MARRIAGE("결혼", CategoryEnum.LOVE),
+    BROKEUP("이별", CategoryEnum.LOVE),
+    SOMETHING("썸", CategoryEnum.LOVE),
+    LOVESTYLE("러브스타일", CategoryEnum.LOVE),
+    COUNSEL("연애상담", CategoryEnum.LOVE),
+    BLINDDATE("소개팅", CategoryEnum.LOVE),
+
+    // SelfDev
     STUDY("스터디", CategoryEnum.SELFDEV),
-    PROJECT("프로젝트", CategoryEnum.SELFDEV),
-    SEMINAR("세미나", CategoryEnum.SELFDEV),
+    BOOK("독서", CategoryEnum.SELFDEV),
+    BRANDING("브랜딩", CategoryEnum.SELFDEV),
+    LANGUAGE("외국어", CategoryEnum.SELFDEV),
+    DISCUSS("토론", CategoryEnum.SELFDEV),
+    STOCK("주식", CategoryEnum.SELFDEV),
+    ESTATE("부동산", CategoryEnum.SELFDEV),
+    CAREER("커리어", CategoryEnum.SELFDEV),
     CHALLENGE("챌린지", CategoryEnum.SELFDEV),
 
     //HOBBY
     MAGIC("마술", CategoryEnum.HOBBY),
     STANDUP("스탠드업", CategoryEnum.HOBBY),
-    ONLINEGAME("온라인게임", CategoryEnum.HOBBY),
-    CONSOLEGAME("콘솔게임", CategoryEnum.HOBBY),
-    PROGRAMMING("개발", CategoryEnum.HOBBY),
+    COOK("요리", CategoryEnum.HOBBY),
+    GARDENING("식물가꾸기", CategoryEnum.HOBBY),
+    DIY("DIY", CategoryEnum.HOBBY),
 
-
-    //DATE - ??
-    LOVERELATED("연애관련?", CategoryEnum.DATE);
+    GAME("게임", CategoryEnum.HOBBY),
+    ESCAPE("방탈출", CategoryEnum.HOBBY),
+    BOARDGAME("보드게임", CategoryEnum.HOBBY),
+    MUSICINST("악기", CategoryEnum.HOBBY),
+    CAR("자동차", CategoryEnum.HOBBY),
+    MOTORCYCLE("오토바이", CategoryEnum.HOBBY),
+    BAKING("베이킹", CategoryEnum.HOBBY),
+    WINE("와인", CategoryEnum.HOBBY),
+    PLACE("맛집탐방", CategoryEnum.HOBBY),
+    CAFE("카페탐방", CategoryEnum.HOBBY),
+    PET("반려동물", CategoryEnum.HOBBY),
+    PROGRAMMING("개발", CategoryEnum.HOBBY);
 
 
     private final String tag;
