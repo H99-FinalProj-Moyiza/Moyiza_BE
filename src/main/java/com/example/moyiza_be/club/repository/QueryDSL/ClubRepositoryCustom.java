@@ -106,7 +106,7 @@ public class ClubRepositoryCustom {
     }
 
 //운영중인 마이페이지 클럽 리스트 조회
-    public List<ClubDetailResponse> getManagedClubDetail(Long userId) {
+    public List<ClubDetailResponse> getManagedClubDetail(Long userId, Long profileId) {
         return jpaQueryFactory
                 .select(
                         new QClubDetailResponse(
@@ -132,12 +132,12 @@ public class ClubRepositoryCustom {
                 )
                 .from(club)
                 .join(user).on(club.ownerId.eq(userId))
-                .where(user.id.eq(userId))
+                .where(user.id.eq(profileId))
                 .orderBy(club.id.desc())
                 .fetch();
     }
 
-    public List<ClubDetailResponse> getJoinedClubDetail(Long userId) {
+    public List<ClubDetailResponse> getJoinedClubDetail(Long userId, Long profileId) {
         return jpaQueryFactory
                 .select(
                         new QClubDetailResponse(
@@ -164,7 +164,7 @@ public class ClubRepositoryCustom {
                 .from(club)
                 .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
                 .join(user).on(clubJoinEntry.userId.eq(userId))
-                .where(user.id.eq(userId))
+                .where(user.id.eq(profileId))
                 .orderBy(club.id.desc())
                 .fetch();
     }

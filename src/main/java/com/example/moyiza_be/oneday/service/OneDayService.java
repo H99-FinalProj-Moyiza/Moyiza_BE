@@ -4,6 +4,7 @@ import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.enums.*;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
+import com.example.moyiza_be.like.repository.OnedayLikeRepository;
 import com.example.moyiza_be.like.service.LikeService;
 import com.example.moyiza_be.oneday.dto.*;
 import com.example.moyiza_be.oneday.dto.onedaycreate.OneDayCreateConfirmDto;
@@ -48,6 +49,7 @@ public class OneDayService {
     private final OneDayRepositoryCustom oneDayRepositoryCustom;
     private final OneDayAttendantRepositoryCustom oneDayAttendantRepositoryCustom;
     private final LikeService likeService;
+    private final OnedayLikeRepository onedayLikeRepository;
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
 
@@ -103,42 +105,52 @@ public class OneDayService {
     }
 
     // List For MyPage OneDay
-    public OneDayListOnMyPage getOneDayListOnMyPage(Long userId) {
+    public OneDayListOnMyPage getOneDayListOnMyPage(Long userId, Long profileId) {
         // List For Operating OneDay
-        List<OneDay> oneDaysInOperation = oneDayRepository.findAllByOwnerId(userId);
+        List<OneDay> oneDaysInOperation = oneDayRepository.findAllByOwnerId(profileId);
         List<OneDayDetailOnMyPage> oneDaysInOperationInfo = oneDaysInOperation.stream()
-                .map(oneDay -> new OneDayDetailOnMyPage(oneDay).builder()
-                        .oneDayId(oneDay.getId())
-                        .oneDayTitle(oneDay.getOneDayTitle())
-                        .oneDayContent(oneDay.getOneDayContent())
-                        .oneDayLocation(oneDay.getOneDayLocation())
-                        .category(oneDay.getCategory().getCategory())
-                        .tagString(TagEnum.parseTag(oneDay.getTagString()))
-                        .oneDayGroupSize(oneDay.getOneDayGroupSize())
-                        .oneDayImage(oneDay.getOneDayImage())
-                        .oneDayAttendantListSize(oneDaysInOperation.size())
-                        .build())
+                .map(oneDay -> {
+                    boolean isLikedByUser = onedayLikeRepository.existsByUserIdAndOnedayId(userId, oneDay.getId());
+                    return OneDayDetailOnMyPage.builder()
+                            .oneDayId(oneDay.getId())
+                            .oneDayTitle(oneDay.getOneDayTitle())
+                            .oneDayContent(oneDay.getOneDayContent())
+                            .oneDayLocation(oneDay.getOneDayLocation())
+                            .category(oneDay.getCategory().getCategory())
+                            .tagString(TagEnum.parseTag(oneDay.getTagString()))
+                            .oneDayGroupSize(oneDay.getOneDayGroupSize())
+                            .oneDayImage(oneDay.getOneDayImage())
+                            .oneDayAttendantListSize(oneDaysInOperation.size())
+                            .oneDayNumLikes(oneDay.getNumLikes())
+                            .oneDayIsLikedByUser(isLikedByUser)
+                            .build();
+                })
                 .sorted(Comparator.comparing(OneDayDetailOnMyPage::getOneDayId).reversed())
                 .collect(Collectors.toList());
 
         // List For Attending OneDay
-        List<OneDayAttendant> oneDaysInParticipatingEntry = attendantRepository.findByUserId(userId);
+        List<OneDayAttendant> oneDaysInParticipatingEntry = attendantRepository.findByUserId(profileId);
         List<Long> oneDaysInParticipatingIds = oneDaysInParticipatingEntry.stream()
                 .map(OneDayAttendant::getOneDayId)
                 .collect(Collectors.toList());
         List<OneDay> oneDaysInParticipating = oneDayRepository.findAllByIdIn(oneDaysInParticipatingIds);
         List<OneDayDetailOnMyPage> oneDaysInParticipatingInfo = oneDaysInParticipating.stream()
-                .map(oneDay -> new OneDayDetailOnMyPage(oneDay).builder()
-                        .oneDayId(oneDay.getId())
-                        .oneDayTitle(oneDay.getOneDayTitle())
-                        .oneDayContent(oneDay.getOneDayContent())
-                        .oneDayLocation(oneDay.getOneDayLocation())
-                        .category(oneDay.getCategory().getCategory())
-                        .tagString(TagEnum.parseTag(oneDay.getTagString()))
-                        .oneDayGroupSize(oneDay.getOneDayGroupSize())
-                        .oneDayImage(oneDay.getOneDayImage())
-                        .oneDayAttendantListSize(oneDaysInParticipating.size())
-                        .build())
+                .map(oneDay -> {
+                    boolean isLikedByUser = onedayLikeRepository.existsByUserIdAndOnedayId(userId, oneDay.getId());
+                    return OneDayDetailOnMyPage.builder()
+                            .oneDayId(oneDay.getId())
+                            .oneDayTitle(oneDay.getOneDayTitle())
+                            .oneDayContent(oneDay.getOneDayContent())
+                            .oneDayLocation(oneDay.getOneDayLocation())
+                            .category(oneDay.getCategory().getCategory())
+                            .tagString(TagEnum.parseTag(oneDay.getTagString()))
+                            .oneDayGroupSize(oneDay.getOneDayGroupSize())
+                            .oneDayImage(oneDay.getOneDayImage())
+                            .oneDayAttendantListSize(oneDaysInParticipating.size())
+                            .oneDayNumLikes(oneDay.getNumLikes())
+                            .oneDayIsLikedByUser(isLikedByUser)
+                            .build();
+                })
                 .sorted(Comparator.comparing(OneDayDetailOnMyPage::getOneDayId).reversed())
                 .collect(Collectors.toList());
 

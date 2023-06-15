@@ -92,9 +92,9 @@ public class ClubService {
     }
 
     //Get Club List on Mypage
-    public ClubListOnMyPage getClubListOnMyPage(Long userId) {
-        List<ClubDetailResponse> clubsInOperationInfo = clubRepositoryCustom.getManagedClubDetail(userId);
-        List<ClubDetailResponse> clubsInParticipatingInfo = clubRepositoryCustom.getJoinedClubDetail(userId);
+    public ClubListOnMyPage getClubListOnMyPage(Long userId, Long profileId) {
+        List<ClubDetailResponse> clubsInOperationInfo = clubRepositoryCustom.getManagedClubDetail(userId, profileId);
+        List<ClubDetailResponse> clubsInParticipatingInfo = clubRepositoryCustom.getJoinedClubDetail(userId, profileId);
         return new ClubListOnMyPage(clubsInOperationInfo, clubsInParticipatingInfo);
     }
 
