@@ -48,6 +48,10 @@ public class AwsS3Uploader {
     public List<String> uploadMultipleImg(List<MultipartFile> fileList){
         List<String> imgUrlList = new ArrayList<>();
         for(MultipartFile multipartFile : fileList){
+            if(multipartFile.isEmpty()){
+                log.info("MultipartFile is empty");
+                throw new NullPointerException("MultipartFile is Empty");
+            }
             String fileName = UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
             ObjectMetadata objMeta = new ObjectMetadata();
             objMeta.setContentType(multipartFile.getContentType());
