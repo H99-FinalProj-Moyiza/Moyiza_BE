@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -172,12 +173,31 @@ public class OneDayCreateService {
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
         List<String> imageUrlList;
         log.info("Image List Setting");
-        if (imageFile == null) {
-            log.info("Image File is Null, Set Image to Default File");
-            imageUrlList = List.of(DEFAULT_IMAGE_URL);
+        // if oneDayCreate already got image.
+        if (oneDayCreate.getOneDayImage() != null) {
+            if (imageFile != null){
+                log.info("if user try to set another image.");
+                imageUrlRepository.deleteAllByOneDayCreateId(createOneDayId);
+                log.info("You've Got New Image");
+                imageUrlList = s3Uploader.uploadMultipleImg((imageFile));
+            }
+            else {
+                // user wants to get images.
+                // Get ImageUrlList that Already saved.
+                List<OneDayImageUrl> imageLists = imageUrlRepository.findAllByOneDayCreateId(createOneDayId);
+                imageUrlList = imageLists.stream()
+                        .map(OneDayImageUrl::getImageUrl)
+                        .collect(Collectors.toList());
+            }
         } else {
-            log.info("Get Image File Complete");
-            imageUrlList = s3Uploader.uploadMultipleImg(imageFile);
+            // oneDayCreate did not have image.
+            if (imageFile == null) {
+                log.info("Image File is Null, Set Image to Default File");
+                imageUrlList = List.of(DEFAULT_IMAGE_URL);
+            } else {
+                log.info("Get Image File Complete");
+                imageUrlList = s3Uploader.uploadMultipleImg(imageFile);
+            }
         }
         log.info("set thumbnail image");
         oneDayCreate.setOneDayImage(imageUrlList.get(0));
