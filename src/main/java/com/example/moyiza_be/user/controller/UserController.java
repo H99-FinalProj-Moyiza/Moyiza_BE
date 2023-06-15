@@ -69,9 +69,10 @@ public class UserController {
     }
 
     //마이페이지
-    @GetMapping("/mypage")
-    public ResponseEntity<?> getMypage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return mypageService.getMypage(userDetails.getUser());
+    @GetMapping("/mypage/{profileId}")
+    public ResponseEntity<?> getMypage(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                       @PathVariable Long profileId) {
+        return mypageService.getMypage(userDetails.getUser(), profileId);
     }
 
     //회원정보 수정
