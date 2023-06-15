@@ -12,7 +12,9 @@ import java.util.List;
 public class OneDayListResponseDto {
     private final Long onedayId;
     private final String ownerNickname;
+    private final String ownerProfileUrl;
     private final String onedayTitle;
+    private final String onedayContent;
     private final List<String> onedayTag;
     private final Integer onedayGroupSize;
     private final Integer onedayAttendantsNum;
@@ -20,15 +22,20 @@ public class OneDayListResponseDto {
     private final Double longitude;
     private final Double latitude;
     private final String onedayLocation;
+    private final Integer numLikes;
+    private final Boolean isLikedByUser;
 
     @QueryProjection
     public OneDayListResponseDto(
-            Long onedayId, String ownerNickname, String onedayTitle, String tagString, Integer onedayGroupSize,
-            Integer onedayAttendantsNum, String thumbnailUrl, Double longitude, Double latitude, String onedayLocation
+            Long onedayId, String ownerNickname, String ownerProfileUrl, String onedayTitle, String onedayContent,
+            String tagString, Integer onedayGroupSize, Integer onedayAttendantsNum, String thumbnailUrl,
+            Double longitude, Double latitude, String onedayLocation, Integer numLikes, Boolean isLikedByUser
     ) {
         this.onedayId = onedayId;
         this.ownerNickname = ownerNickname;
+        this.ownerProfileUrl = ownerProfileUrl;
         this.onedayTitle = onedayTitle;
+        this.onedayContent = onedayContent;
         this.onedayTag = TagEnum.parseTag(tagString);
         this.onedayGroupSize = onedayGroupSize;
         this.onedayAttendantsNum = onedayAttendantsNum;
@@ -36,5 +43,7 @@ public class OneDayListResponseDto {
         this.longitude = longitude;
         this.latitude = latitude;
         this.onedayLocation = onedayLocation;
+        this.numLikes = numLikes;
+        this.isLikedByUser = isLikedByUser;
     }
 }

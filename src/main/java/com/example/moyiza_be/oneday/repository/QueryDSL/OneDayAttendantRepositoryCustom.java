@@ -1,7 +1,7 @@
 package com.example.moyiza_be.oneday.repository.QueryDSL;
 
-import com.example.moyiza_be.oneday.dto.OneDayMemberResponse;
-import com.example.moyiza_be.oneday.dto.QOneDayMemberResponse;
+import com.example.moyiza_be.oneday.dto.MemberResponse;
+import com.example.moyiza_be.oneday.dto.QMemberResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -16,10 +16,10 @@ import static com.example.moyiza_be.user.entity.QUser.user;
 public class OneDayAttendantRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<OneDayMemberResponse> getOneDayMemberList(Long oneDayId) {
+    public List<MemberResponse> getOneDayMemberList(Long oneDayId) {
         return jpaQueryFactory
                 .select(
-                        new QOneDayMemberResponse(
+                        new QMemberResponse(
                         user.id,
                         user.nickname,
                         user.profileImage

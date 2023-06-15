@@ -17,6 +17,7 @@ import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.event.service.EventService;
 import com.example.moyiza_be.like.service.LikeService;
+import com.example.moyiza_be.oneday.dto.MemberResponse;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,6 +85,9 @@ public class ClubService {
         }
         List<String> clubImageUrlList = clubImageUrlRepositoryCustom.getAllImageUrlByClubId(clubId);
         clubDetailResponse.setClubImageUrlList(clubImageUrlList);
+        List<ClubMemberResponse> memberList = clubJoinEntryRepositoryCustom.getClubMemberList(clubId);
+        clubDetailResponse.setMemberList(memberList);
+
         return ResponseEntity.ok(clubDetailResponse);
     }
 

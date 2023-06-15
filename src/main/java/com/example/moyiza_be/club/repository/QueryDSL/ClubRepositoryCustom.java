@@ -39,6 +39,7 @@ public class ClubRepositoryCustom {
                                         club.id,
                                         user.nickname,
                                         club.title,
+                                        club.content,
                                         club.tagString,
                                         club.maxGroupSize,
                                         club.nowMemberCount,

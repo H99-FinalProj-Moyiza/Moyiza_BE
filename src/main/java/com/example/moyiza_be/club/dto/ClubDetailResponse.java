@@ -4,11 +4,13 @@ import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
+import com.example.moyiza_be.oneday.dto.MemberResponse;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Member;
 import java.util.List;
 
 @Getter
@@ -28,6 +30,8 @@ public class ClubDetailResponse {
     private List<String> clubImageUrlList;
     private Integer numLikes;
     private Boolean isLikedByUser;
+    private List<ClubMemberResponse> memberList;
+
 
     public ClubDetailResponse(Club club, List<String> clubImageUrlList, User user) {
         this.club_id = club.getId();
@@ -69,4 +73,5 @@ public class ClubDetailResponse {
     public void setClubImageUrlList(List<String> clubImageUrlList) {
         this.clubImageUrlList = clubImageUrlList;
     }
+    public void setMemberList(List<ClubMemberResponse> memberList) { this.memberList = memberList;}
 }
