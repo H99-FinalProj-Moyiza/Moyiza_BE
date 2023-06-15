@@ -17,13 +17,14 @@ public class ClubListResponse {
     private final Integer maxGroupSize;
     private final Integer nowMemberCount;
     private final String thumbnailUrl;
+    private final List<String> imageUrlList;
     private final Integer numLikes;
     private final Boolean isLikedByUser;
 
     @QueryProjection
     public ClubListResponse(Long club_id, String ownerNickname, String clubTitle,String clubContent, String tagString,
-                            Integer maxGroupSize, Integer nowMemberCount, String thumbnailUrl, Integer numLikes,
-                            Boolean isLikedByUser) {
+                            Integer maxGroupSize, Integer nowMemberCount, String thumbnailUrl,List<String> imageUrlList,
+                            Integer numLikes, Boolean isLikedByUser) {
         this.club_id = club_id;
         this.ownerNickname = ownerNickname;
         this.clubTitle = clubTitle;
@@ -32,6 +33,7 @@ public class ClubListResponse {
         this.maxGroupSize = maxGroupSize;
         this.nowMemberCount = nowMemberCount;
         this.thumbnailUrl = thumbnailUrl;
+        this.imageUrlList = imageUrlList;
         this.numLikes = numLikes;
         this.isLikedByUser = isLikedByUser;
     }
