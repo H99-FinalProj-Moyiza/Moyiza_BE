@@ -37,15 +37,11 @@ public class WebSecurityConfig {
     private static final String[] PERMIT_URL_ARRAY = {
             "/*",
             "/chat/**",
-            "/user/login",
-            "/user/signup/**",
-            "/user/check/**",
-            "/user/test/**",
-            "/user/find/email/**",
-            "/oauth2/authorization/**",
             "/login",
-            "/login/**",
-            "/signup/social",
+            "/signup/**",
+            "/check/**",
+            "/find/email/**",
+            "/oauth2/authorization/**",
             "/enums",
             "/.well-known/acme-challenge/**" //Verify domain ownership for Certbot
     };
