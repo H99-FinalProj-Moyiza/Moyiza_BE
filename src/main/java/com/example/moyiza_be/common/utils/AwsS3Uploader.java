@@ -93,6 +93,7 @@ public class AwsS3Uploader {
             amazonS3.deleteObject(bucket, fileKey);
             return true;
         } catch (Exception e) {
+            log.info("delete Image failed for URL : " + fileUrl);
             return false;
         }
     }

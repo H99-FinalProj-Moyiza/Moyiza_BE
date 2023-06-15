@@ -23,6 +23,12 @@ public class ClubImageUrl {
         this.imageUrl = imageUrl;
     }
 
+    public ClubImageUrl(Long createClubId,Long clubId, String imageUrl){
+        this.createClubId = createClubId;
+        this.clubId = clubId;
+        this.imageUrl = imageUrl;
+    }
+
     public void setClubId(Long clubId) {
         this.clubId = clubId;
     }
