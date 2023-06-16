@@ -39,9 +39,11 @@ public class ReviewService {
     private final ReviewRepositoryCustom reviewRepositoryCustom;
 
     @Transactional
-    public ResponseEntity<List<ReviewListResponse>> getReviewList(User user)
+    public ResponseEntity<List<ReviewListResponse>> getReviewList(
+            User user, ReviewTypeEnum reviewTypeEnum, Long identifier
+    )
     {
-        return ResponseEntity.ok(reviewRepositoryCustom.getReviewList(user));
+        return ResponseEntity.ok(reviewRepositoryCustom.getReviewList(user, reviewTypeEnum, identifier));
     }
 
 

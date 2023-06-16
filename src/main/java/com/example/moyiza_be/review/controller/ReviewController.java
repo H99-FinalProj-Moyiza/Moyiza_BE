@@ -1,5 +1,6 @@
 package com.example.moyiza_be.review.controller;
 
+import com.example.moyiza_be.common.enums.ReviewTypeEnum;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.review.dto.ReviewDetailResponse;
@@ -24,10 +25,13 @@ public class ReviewController {
 
     @GetMapping
     public ResponseEntity<List<ReviewListResponse>> getReviewList(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam @Nullable String reviewType,
+            @RequestParam @Nullable Long identifier
     ){
+        ReviewTypeEnum reviewTypeEnum = reviewType == null ? null : ReviewTypeEnum.valueOf(reviewType);
         User user = userDetails == null ? null : userDetails.getUser();
-        return reviewService.getReviewList(user);
+        return reviewService.getReviewList(user, reviewTypeEnum, identifier);
     }
 
     @GetMapping("/{review_id}")
@@ -36,7 +40,7 @@ public class ReviewController {
             @PathVariable Long review_id
     ){
         User user = userDetails == null ? null : userDetails.getUser();
-        return reviewService.getReviewDetail(user,review_id);
+        return reviewService.getReviewDetail(user, review_id);
     }
 
         @PostMapping
