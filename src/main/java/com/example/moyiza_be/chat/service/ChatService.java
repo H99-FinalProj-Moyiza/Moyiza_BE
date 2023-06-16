@@ -139,7 +139,7 @@ public class ChatService {
         if (chatJoinEntry == null) {
             throw new NullPointerException("채팅 참여정보를 찾을 수 없습니다");
         } else {
-            chatJoinEntry.setCurrentlyJoined(false);
+            chatJoinEntryRepository.delete(chatJoinEntry);
         }
         cacheService.removeUnsubscribedUser(chat.getId().toString(), user.getId().toString());
         cacheService.removeSubscriptionFromChatId(chat.getId().toString(), user.getId().toString());

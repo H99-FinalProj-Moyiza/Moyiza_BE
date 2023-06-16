@@ -11,5 +11,4 @@ import lombok.Setter;
 public class RequestPolicyDto {
     private String genderPolicy;
     private Integer agePolicy;
-
 }

@@ -47,7 +47,7 @@ public class OneDayRepositoryCustom {
                 jpaQueryFactory
                         .from(oneDay)
                         .join(user).on(oneDay.ownerId.eq(user.id))
-                        .join(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
+                        .leftJoin(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
                         .where(
                                 oneDay.deleted.isFalse(),
                                 eqTag1(tag1),
