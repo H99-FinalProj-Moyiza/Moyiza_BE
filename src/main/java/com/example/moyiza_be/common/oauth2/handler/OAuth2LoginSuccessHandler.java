@@ -54,7 +54,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
             String tokenName = (findUser.getRole() == Role.GUEST) ? "token" : "confirm";
 
-            String targetUrl = "http://moyiza.s3-website.ap-northeast-2.amazonaws.com/oauth/redirect";
+            String targetUrl = "https://mo2za.com/oauth/redirect";
             String redirectUrl = UriComponentsBuilder.fromUriString(targetUrl)
                     .queryParam(tokenName, tokenDto.getAccessToken().substring(7))
                     .build().toUriString();
