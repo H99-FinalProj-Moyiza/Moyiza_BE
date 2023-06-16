@@ -44,6 +44,8 @@ public class Club extends TimeStamped {
 
     @Column
     private Integer numLikes = 0;
+    @Column
+    private String clubRule = "";
 
     public Club(ConfirmClubCreationDto creationRequest) {
         this.ownerId = creationRequest.getOwnerId();
@@ -92,6 +94,8 @@ public class Club extends TimeStamped {
     public void setNowMemberCount(Integer nowMemberCount) {
         this.nowMemberCount = nowMemberCount;
     }
+
+    public void setClubRule(String clubRule){this.clubRule = clubRule;}
 
     public void flagDeleted(Boolean deleted) {
         this.isDeleted = deleted;
