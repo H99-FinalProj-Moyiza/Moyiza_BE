@@ -38,6 +38,7 @@ public class WebSecurityConfig {
             "/*",
             "/chat/**",
             "/login",
+            "/uploadImg",
             "/signup/**",
             "/check/**",
             "/find/email/**",
@@ -88,6 +89,7 @@ public class WebSecurityConfig {
         config.addAllowedOrigin(MOYIZADOMAIN);
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("http://moyiza.dev.s3-website.ap-northeast-2.amazonaws.com/");
+        config.addAllowedOrigin("https://hohomii.shop");
 
         config.addExposedHeader(JwtUtil.ACCESS_TOKEN);
 
