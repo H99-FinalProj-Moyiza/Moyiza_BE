@@ -2,47 +2,38 @@ package com.example.moyiza_be.review.repository.QueryDSL;
 
 
 import com.example.moyiza_be.common.enums.ReviewTypeEnum;
-import com.example.moyiza_be.review.dto.QReviewDetailResponse;
-import com.example.moyiza_be.review.dto.QReviewListResponse;
 import com.example.moyiza_be.review.dto.ReviewDetailResponse;
 import com.example.moyiza_be.review.dto.ReviewListResponse;
-import com.example.moyiza_be.review.entity.QReview;
-import com.example.moyiza_be.review.entity.QReviewImage;
-import com.example.moyiza_be.review.entity.Review;
-import com.example.moyiza_be.user.entity.QUser;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLTemplates;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.example.moyiza_be.club.entity.QClub.club;
-import static com.example.moyiza_be.like.entity.QClubLike.clubLike;
+import static com.example.moyiza_be.like.entity.QReviewLike.reviewLike;
 import static com.example.moyiza_be.review.entity.QReview.review;
 import static com.example.moyiza_be.review.entity.QReviewImage.reviewImage;
 import static com.example.moyiza_be.user.entity.QUser.user;
-import static com.example.moyiza_be.like.entity.QReviewLike.reviewLike;
-import static com.example.moyiza_be.review.entity.QReviewImage.reviewImage;
 import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
 
 @Repository
 @RequiredArgsConstructor
 public class ReviewRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<ReviewListResponse> getReviewList(User nowUser, ReviewTypeEnum reviewTypeEnum, Long identifier) {
-        return jpaQueryFactory
+    public Page<ReviewListResponse> getReviewList(
+            User nowUser, ReviewTypeEnum reviewTypeEnum, Long identifier, Pageable pageable
+    ) {
+        List<ReviewListResponse> reviewListResponse =
+                jpaQueryFactory
                 .from(review)
                 .join(user).on(review.writerId.eq(user.id))
                 .leftJoin(reviewImage).on(reviewImage.reviewId.eq(review.id))
@@ -69,6 +60,7 @@ public class ReviewRepositoryCustom {
                                         )
                                 )
                 );
+        return new PageImpl<>(reviewListResponse, pageable, 1000L);
     }
 
     public ReviewDetailResponse getReviewDetails(User nowUser, Long reviewId){

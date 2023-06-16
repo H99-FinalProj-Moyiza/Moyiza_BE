@@ -19,6 +19,8 @@ import com.example.moyiza_be.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,11 +41,11 @@ public class ReviewService {
     private final ReviewRepositoryCustom reviewRepositoryCustom;
 
     @Transactional
-    public ResponseEntity<List<ReviewListResponse>> getReviewList(
-            User user, ReviewTypeEnum reviewTypeEnum, Long identifier
+    public ResponseEntity<Page<ReviewListResponse>> getReviewList(
+            User user, ReviewTypeEnum reviewTypeEnum, Long identifier, Pageable pageable
     )
     {
-        return ResponseEntity.ok(reviewRepositoryCustom.getReviewList(user, reviewTypeEnum, identifier));
+        return ResponseEntity.ok(reviewRepositoryCustom.getReviewList(user, reviewTypeEnum, identifier, pageable));
     }
 
 
