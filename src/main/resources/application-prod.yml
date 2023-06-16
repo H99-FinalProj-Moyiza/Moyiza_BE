@@ -1,0 +1,38 @@
+#production server config
+server:
+  ssl:
+    key-store: keystore.p12
+    key-store-type: PKCS12
+    key-store-password: ENC(BrX+B0Pn+L3sk/TKC53WFSSo2ZBBgjh8hCAXHSuHOMI=)
+  port: 8443
+
+spring:
+  config:
+    activate:
+      on-profile: prod # profile name
+
+  #dev JPA config
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: 'true'
+    #        show-sql: 'true'
+    hibernate:
+      ddl-auto: none
+  datasource:
+    password: ENC(MpLqczeZ9JMeSsYgIRaQJuYGnVx3KW31)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ENC(1RC2fLhE3xF2E+OyJP7gdA==)
+    url: ENC(FLABZ3U84RdLp+5UmSAEmbYmkafqBM20nx/9yLQEvdw9qSxsMn9gx4Js5XbNvnAvWqzNYlj0Dyzly1XTyiR5YlYIDZufFamFRXBQOI6U54iR1UH3u84bY+bbBDli0OzN)
+
+  #Redis 설정
+  data:
+    redis:
+      pool:
+        min-idle: 0
+        max-idle: 8
+        max-active: 8
+      port: 6379
+      host: 43.200.169.48
+      password: ENC(V8HByRExsO7bDwqCirBLQw==)
