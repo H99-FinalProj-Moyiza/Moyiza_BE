@@ -85,12 +85,9 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin(MOYIZADOMAIN);
-        config.addAllowedOrigin("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/");
+        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("http://moyiza.dev.s3-website.ap-northeast-2.amazonaws.com/");
-        config.addAllowedOrigin("https://hohomii.shop");
-        config.addAllowedOrigin("http://hohomii.shop");
 
         config.addExposedHeader(JwtUtil.ACCESS_TOKEN);
 
