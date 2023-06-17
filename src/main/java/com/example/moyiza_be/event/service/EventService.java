@@ -182,12 +182,12 @@ public class EventService {
 
     private Event loadEventById(Long eventId){
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new NullPointerException("Event Not Found"));
+                .orElseThrow(() -> new NullPointerException("Event Not Found for eventId : " + eventId));
     }
 
     public void checkValidity(User user, Long identifier) {
         if (!eventAttendantRepository.existsByUserIdAndEventId(user.getId(), identifier)){
-            throw new NullPointerException("Event join entry not found");
+            throw new NullPointerException("Event join entry not found for userId " + user.getId() + "eventId : " + identifier);
         }
     }
 }
