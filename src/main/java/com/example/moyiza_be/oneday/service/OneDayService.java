@@ -257,38 +257,54 @@ public class OneDayService {
         chatService.leaveChat(oneDayId, ChatTypeEnum.ONEDAY, banUser);
         return new ResponseEntity<>(String.format("user %d has been banned", banRequest.getBanUserId()), HttpStatus.BAD_REQUEST);
     }
-
+    // Approval WaitingList
     public ResponseEntity<?> joinWishList(Long oneDayId, User user) {
+        log.info("Get OneDay");
         OneDay oneDay = loadExistingOnedayById(oneDayId);
+        ArrayList<User> approvalUsers = new ArrayList<>();
         // valid Check
+        log.info("Valid Check : Are You Owner?");
         if (oneDay.getOwnerId() != user.getId()) return new ResponseEntity<>("You are Not owner", HttpStatus.FORBIDDEN);
+        log.info("Get All Attendant Wish list");
         List<OneDayApproval> approvalList = approvalRepository.findAllByOneDayId(oneDayId);
-        return new ResponseEntity<>(approvalList, HttpStatus.OK);
+        log.info("Transform userId to User");
+        for (OneDayApproval approval : approvalList) {
+            User attendant = userRepository.findById(approval.getUserId()).orElseThrow(()-> new NullPointerException("No Such User Want To Attend"));
+            approvalUsers.add(attendant);
+        }
+        return new ResponseEntity<>(approvalUsers, HttpStatus.OK);
     }
     public ResponseEntity<?> approveJoin(Long oneDayId, Long userId, User user) {
+        log.info("Get Approval And OneDay");
         OneDayApproval oneDayApproval = approvalRepository.findByOneDayId(oneDayId);
         OneDay oneDay = loadExistingOnedayById(oneDayId);
-        // Are You Owner?
+        log.info("Valid Check : Are You Owner");
         if (user.getId() != oneDay.getOwnerId()) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
         // Join Process
+        log.info("Valid Check : Is It Fully Occupied?");
         Integer groupSize = oneDay.getOneDayGroupSize();
         Integer currentSize = attendantRepository.findAllByOneDayId(oneDayId).size();
         // Vacant Room for attend?
+        log.info("Yes, Fully Occupied");
         if (groupSize < currentSize) return new ResponseEntity<>("Fully Occupied", HttpStatus.FORBIDDEN);
+        log.info("No, Vacant Area Exists");
         OneDayAttendant attendant = new OneDayAttendant(oneDay, userId);
+        log.info("Add Attendant");
         attendantRepository.save(attendant);
+        log.info("Invite to ChatRoom");
         chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+        log.info("AttendantsNum++");
         oneDay.addAttendantNum();
-        // After Join, Delete waitingList
+        log.info("After Join, Delete waitingList");
         approvalRepository.delete(oneDayApproval);
         return new ResponseEntity<>("Attending Success", HttpStatus.OK);
     }
     public ResponseEntity<?> rejectJoin(Long oneDayId, Long userId, User user) {
         OneDayApproval oneDayApproval = approvalRepository.findByOneDayIdAndUserId(oneDayId, userId);
         OneDay oneDay = loadExistingOnedayById(oneDayId);
-        // Are You Owner?
+        log.info("Valid Check : Are You Owner");
         if (user.getId() != oneDay.getOwnerId()) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
-        // Reject Process
+        log.info("RejectProcess : delete from wishList");
         approvalRepository.delete(oneDayApproval);
         return new ResponseEntity<>("Reject Success", HttpStatus.OK);
     }

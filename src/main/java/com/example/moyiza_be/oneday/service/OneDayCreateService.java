@@ -155,12 +155,17 @@ public class OneDayCreateService {
 
     // Date
     public ResponseEntity<Message> setDate(Long userId, Long createOneDayId, RequestDateDto dateTime) {
+        log.info("find current oneday");
         OneDayCreate oneDayCreate = loadOnedayCreate(createOneDayId, userId);
+        log.info("get oneDayDateTime : " + dateTime.getOneDayStartTime());
         if (dateTime.getOneDayStartTime() == null) {
+            log.info("Invalid Time Value");
             throw new RuntimeException("Enter The Start Time");
         } else if (timeNow.isAfter(dateTime.getOneDayStartTime())) {
+            log.info("Expired Time Value");
             throw new RuntimeException("Invalid Date And Time");
         } else {
+            log.info("Get Date Time : " + dateTime.getOneDayStartTime() + " , set dateTime");
             oneDayCreate.setOneDayStartTime(dateTime.getOneDayStartTime());
         }
         return new ResponseEntity<>(new Message("Success"),HttpStatus.OK);
