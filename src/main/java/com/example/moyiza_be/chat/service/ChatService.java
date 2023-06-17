@@ -45,6 +45,7 @@ public class ChatService {
     private final ChatRecordRepositoryCustom chatRecordRepositoryCustom;
     private final ClubImageUrlRepository clubImageUrlRepository;
     private final OneDayImageUrlRepository oneDayImageUrlRepository;
+    private final String DEFAULT_CHATROOM_IMAGE = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/e048a389-8488-4ab5-a973-c8e5bae99d2e_pngaaa.com-293633.png";
 
     public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
                                    Long chatId,
@@ -178,12 +179,12 @@ public class ChatService {
     public String findClubThumbnailUrl(Long clubId) {
         ClubImageUrl clubImageEntity = clubImageUrlRepository.findFirstByClubId(clubId)
                 .orElse(null);
-        return clubImageEntity == null ? null : clubImageEntity.getImageUrl();
+        return clubImageEntity == null ? DEFAULT_CHATROOM_IMAGE : clubImageEntity.getImageUrl();
     }
 
     public String findOnedayThumbnailUrl(Long onedayId) {
         OneDayImageUrl onedayImageEntity = oneDayImageUrlRepository.findFirstByOneDayId(onedayId)
                 .orElse(null);
-        return onedayImageEntity == null ? null : onedayImageEntity.getImageUrl();
+        return onedayImageEntity == null ? DEFAULT_CHATROOM_IMAGE : onedayImageEntity.getImageUrl();
     }
 }
