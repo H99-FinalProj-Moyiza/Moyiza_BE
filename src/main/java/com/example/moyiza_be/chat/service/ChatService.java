@@ -75,7 +75,7 @@ public class ChatService {
                                 cacheService.loadRecentChat(chatRoomInfo.getChatId().toString())))
                 .peek(chatRoomInfo ->
                         chatRoomInfo.setChatThumbnail(
-                                findClubThumbnailUrl(chatRoomInfo.getChatId())
+                                findClubThumbnailUrl(chatRoomInfo.getRoomIdentifier())
                         )
                 )
                 .toList();
@@ -92,7 +92,7 @@ public class ChatService {
                                 cacheService.loadRecentChat(chatRoomInfo.getChatId().toString())))
                 .peek(chatRoomInfo ->
                         chatRoomInfo.setChatThumbnail(
-                                findOnedayThumbnailUrl(chatRoomInfo.getChatId())
+                                findOnedayThumbnailUrl(chatRoomInfo.getRoomIdentifier())
                         )
                 )
                 .toList();
