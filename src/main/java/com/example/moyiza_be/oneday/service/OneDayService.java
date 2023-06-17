@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -352,6 +353,25 @@ public class OneDayService {
         if(!attendantRepository.existsByOneDayIdAndUserId(identifier, user.getId())){
             throw new NullPointerException("Oneday join entry not found");
         }
+    }
+
+    public ResponseEntity<List<OneDayImminentResponseDto>> getImminentOneDays() {
+        LocalDateTime now = LocalDateTime.now();
+        List<OneDay> imminentOneDays = oneDayRepository.findAllByOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
+        List<OneDayImminentResponseDto> oneDays = imminentOneDays.stream()
+                .map(oneDay -> {
+                    Duration duration = Duration.between(now, oneDay.getOneDayStartTime());
+                    long dDay = duration.toDays();
+                    return new OneDayImminentResponseDto(oneDay, dDay);
+                })
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(oneDays, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getMostLikedOneDays() {
+        List<OneDaySimpleResponseDto> oneDays = oneDayRepository.findAllByOrderByNumLikesDesc()
+                .stream().map(OneDaySimpleResponseDto::new).collect(Collectors.toList());
+        return new ResponseEntity<>(oneDays, HttpStatus.OK);
     }
 
 //      OneDay Approval System

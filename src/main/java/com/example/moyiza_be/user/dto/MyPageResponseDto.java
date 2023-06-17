@@ -19,6 +19,7 @@ public class MyPageResponseDto {
     private String email;
     private String profileImage;
     private List<String> tags;
+    private String content;
     private Integer clubsInOperationCount;
     private Integer clubsInParticipatingCount;
     private Integer oneDaysInOperationCount;
@@ -35,6 +36,7 @@ public class MyPageResponseDto {
         this.email = user.getEmail();
         this.profileImage = user.getProfileImage();
         this.tags = TagEnum.parseTag(user.getTagString());
+        this.content = user.getContent();
         this.clubsInOperationCount = clubListOnMyPage.getClubsInOperationInfo().size();
         this.clubsInParticipatingCount = clubListOnMyPage.getClubsInParticipatingInfo().size();
         this.oneDaysInOperationCount = oneDayListOnMyPage.getOneDaysInOperationInfo().size();

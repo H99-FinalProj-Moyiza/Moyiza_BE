@@ -223,6 +223,11 @@ public class ClubController {
         return clubUpdateService.updateClubImage(user, club_id, image, removeImageRequest);
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<?> getMostLikedClub(){
+        return clubService.getMostLikedClub();
+    }
+
     @PutMapping("/{club_id}/rule")
     public ResponseEntity<Message> updateClubRule(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -232,6 +237,5 @@ public class ClubController {
         User user = userDetails.getUser();
         return clubUpdateService.updateClubRule(user, club_id, clubRuleUpdateRequest);
     }
-
 
 }

@@ -190,4 +190,18 @@ public enum TagEnum {
         }
         return tagEnumList;
     }
+    public static int calculateSimilarity(String oTagString, String pTagString) {
+        List<String> oTags = TagEnum.parseTag(oTagString);
+        List<String> pTags = TagEnum.parseTag(pTagString);
+        int count = 0;
+        for (String oTag : oTags) {
+            for (String pTag : pTags) {
+                if (oTag.equals(pTag)) {
+                    count++;
+                    break;
+                }
+            }
+        }
+        return count;
+    }
 }
