@@ -73,6 +73,7 @@ public class ReviewService {
         }
         Review newReview = reviewPostRequest.toReviewEntity(user.getId());
         reviewRepository.saveAndFlush(newReview);
+        log.info("review Text saved for review : "+ newReview.getTitle());
         //image upload bit
         //needs uploadable checking logic to ensure that review contents and image are Transactional
         List<String> imageUrlList = new ArrayList<>();
@@ -82,6 +83,7 @@ public class ReviewService {
                     .stream()
                     .map(i -> new ReviewImage(newReview.getId(), i)).toList();
             reviewImageRepository.saveAll(imageEntityList);
+            log.info("review image saved for review : "+ newReview.getTitle());
         }
 
         return ResponseEntity.ok(new ReviewDetailResponse(newReview, user, imageUrlList));
@@ -95,6 +97,7 @@ public class ReviewService {
             throw new IllegalArgumentException("Not Authorized");
         }
         reviewRepository.deleteById(reviewId);
+        log.info("deleting review : "+ review.getTitle());
         return ResponseEntity.ok(new Message("deleted " + review.getTitle()));
     }
 
