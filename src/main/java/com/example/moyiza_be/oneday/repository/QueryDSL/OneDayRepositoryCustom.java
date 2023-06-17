@@ -43,6 +43,7 @@ public class OneDayRepositoryCustom {
             User nowUser, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
             Double nowLongitude, Double nowLatitude, Double radius, LocalDateTime timeCondition
     ) {
+        Long userId = nowUser == null ? -1 : nowUser.getId();
         List<OneDayListResponseDto> onedayList =
                 jpaQueryFactory
                         .from(oneDay)
@@ -82,7 +83,7 @@ public class OneDayRepositoryCustom {
                                                         JPAExpressions
                                                                 .selectFrom(onedayLike)
                                                                 .where(onedayLike.onedayId.eq(oneDay.id)
-                                                                        .and(onedayLike.userId.eq(nowUser.getId()))
+                                                                        .and(onedayLike.userId.eq(userId))
                                                                 )
                                                                 .exists()
 
