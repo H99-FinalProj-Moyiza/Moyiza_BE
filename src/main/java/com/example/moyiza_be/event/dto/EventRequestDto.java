@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class EventRequestDto {
-    private  String eventTitle;
+    private String eventTitle;
     private String eventContent;
     private String eventLocation;
     private String eventLatitude;

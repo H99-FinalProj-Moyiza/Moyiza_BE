@@ -87,51 +87,6 @@ public class ClubRepositoryCustom {
         return new PageImpl<>(clubListResponseList, pageable, 5000L);
     }
 
-//    public Page<ClubListResponse> filteredClubResponseList(
-//            Pageable pageable, CategoryEnum categoryEnum, String q, String tag1, String tag2, String tag3, User nowUser
-//    ) {
-//        List<ClubListResponse> clubListResponseList =
-//                jpaQueryFactory
-//                        .select(
-//                                new QClubListResponse(
-//                                        club.id,
-//                                        user.nickname,
-//                                        club.title,
-//                                        club.content,
-//                                        club.tagString,
-//                                        club.maxGroupSize,
-//                                        club.nowMemberCount,
-//                                        club.thumbnailUrl,
-//                                        club.numLikes,
-//                                        JPAExpressions
-//                                                .selectFrom(clubLike)
-//                                                .where(clubLike.clubId.eq(club.id)
-//                                                        .and(clubLike.userId.eq(nowUser.getId()))
-//                                                )
-//                                                .exists()
-//                                )
-//                        )
-//                        .from(club)
-//                        .offset(pageable.getOffset())
-//                        .limit(pageable.getPageSize())
-//                        .join(user).on(club.ownerId.eq(user.id))
-//                        .where(
-//                                club.isDeleted.eq(Boolean.FALSE),
-//                                eqCategory(categoryEnum),
-//                                titleContainOrContentContain(q),
-//                                eqTag1(tag1),
-//                                eqTag2(tag2),
-//                                eqTag3(tag3)
-//                        )
-//                        .orderBy(club.id.desc())
-//                        .fetch();
-////        Long count = jpaQueryFactory
-////                .select(club.count())
-////                .fetchOne();
-//
-//        return new PageImpl<>(clubListResponseList, pageable, 5000L);
-//    }
-
     public ClubDetailResponse getClubDetail(Long clubId, User nowUser){
         Long userId = nowUser == null ? -1 : nowUser.getId();
         return jpaQueryFactory
@@ -154,7 +109,8 @@ public class ClubRepositoryCustom {
                                         .where(clubLike.clubId.eq(club.id)
                                                 .and(clubLike.userId.eq(userId))
                                         )
-                                        .exists()
+                                        .exists(),
+                                club.clubRule
                         )
                 )
                 .from(club)
@@ -185,7 +141,8 @@ public class ClubRepositoryCustom {
                                         .where(clubLike.clubId.eq(club.id)
                                                 .and(clubLike.userId.eq(userId))
                                         )
-                                        .exists()
+                                        .exists(),
+                                club.clubRule
                         )
                 )
                 .from(club)
@@ -216,7 +173,8 @@ public class ClubRepositoryCustom {
                                         .where(clubLike.clubId.eq(club.id)
                                                 .and(clubLike.userId.eq(userId))
                                         )
-                                        .exists()
+                                        .exists(),
+                                club.clubRule
                         )
                 )
                 .from(club)

@@ -1,5 +1,6 @@
 package com.example.moyiza_be.review.dto;
 
+import com.example.moyiza_be.common.enums.ReviewTypeEnum;
 import com.example.moyiza_be.review.entity.Review;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
@@ -13,6 +14,8 @@ import java.util.List;
 @Getter
 public class ReviewDetailResponse {
     private final Long reviewId;
+    private final String reviewType;
+    private final Long identifier;
     private final Long writerId;
     private final String writerNickname;
     private final String writerProfileUrl;
@@ -24,12 +27,14 @@ public class ReviewDetailResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
     @QueryProjection
-    public ReviewDetailResponse(Long reviewId, Long writerId, String writerNickname, String writerProfileUrl,
-                                String title, String content,
+    public ReviewDetailResponse(Long reviewId, ReviewTypeEnum reviewTypeEnum, Long identifier, Long writerId,
+                                String writerNickname, String writerProfileUrl, String title, String content,
 //                               List<String> imageUrlList,
                                 Integer numLikes, Boolean isLikedByUser,
                                 LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.reviewId = reviewId;
+        this.reviewType = reviewTypeEnum.toString();
+        this.identifier = identifier;
         this.writerId = writerId;
         this.writerNickname = writerNickname;
         this.writerProfileUrl = writerProfileUrl;
@@ -44,6 +49,8 @@ public class ReviewDetailResponse {
 
     public ReviewDetailResponse(Review review, User user, List<String> imageUrlList) {
         this.reviewId = review.getId();
+        this.reviewType = review.getReviewType().toString();
+        this.identifier = review.getIdentifier();
         this.writerId = review.getWriterId();
         this.writerNickname = user.getNickname();
         this.writerProfileUrl = user.getProfileImage();

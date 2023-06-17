@@ -1,5 +1,6 @@
 package com.example.moyiza_be.review.controller;
 
+import com.example.moyiza_be.common.enums.ReviewTypeEnum;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.review.dto.ReviewDetailResponse;
@@ -9,6 +10,10 @@ import com.example.moyiza_be.review.service.ReviewService;
 import com.example.moyiza_be.user.entity.User;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +28,15 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping
-    public ResponseEntity<List<ReviewListResponse>> getReviewList(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ResponseEntity<Page<ReviewListResponse>> getReviewList(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam @Nullable String reviewType,
+            @RequestParam @Nullable Long identifier,
+            @PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ){
+        ReviewTypeEnum reviewTypeEnum = reviewType == null ? null : ReviewTypeEnum.valueOf(reviewType);
         User user = userDetails == null ? null : userDetails.getUser();
-        return reviewService.getReviewList(user);
+        return reviewService.getReviewList(user, reviewTypeEnum, identifier, pageable);
     }
 
     @GetMapping("/{review_id}")
@@ -36,7 +45,7 @@ public class ReviewController {
             @PathVariable Long review_id
     ){
         User user = userDetails == null ? null : userDetails.getUser();
-        return reviewService.getReviewDetail(user,review_id);
+        return reviewService.getReviewDetail(user, review_id);
     }
 
         @PostMapping
