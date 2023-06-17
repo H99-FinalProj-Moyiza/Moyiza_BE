@@ -3,6 +3,8 @@ package com.example.moyiza_be.oneday.service;
 //import com.example.moyiza_be.alarm.repository.AlarmRepository;
 //import com.example.moyiza_be.alarm.service.AlarmService;
 import com.example.moyiza_be.chat.service.ChatService;
+import com.example.moyiza_be.club.dto.ClubSimpleResponseDto;
+import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.enums.*;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
@@ -370,8 +372,13 @@ public class OneDayService {
     }
 
     public ResponseEntity<?> getMostLikedOneDays() {
-        List<OneDaySimpleResponseDto> oneDays = oneDayRepository.findAllByOrderByNumLikesDesc()
-                .stream().map(OneDaySimpleResponseDto::new).collect(Collectors.toList());
+        List<OneDay> oneDayList = oneDayRepository.findAllByOrderByNumLikesDesc();
+        List<OneDaySimpleResponseDto> oneDays = new ArrayList<>();
+        for (OneDay oneDay : oneDayList) {
+            List<OneDayImageUrl> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDay.getId());
+            OneDaySimpleResponseDto oneDayDto = new OneDaySimpleResponseDto(oneDay, oneDayImageUrlList);
+            oneDays.add(oneDayDto);
+        }
         return new ResponseEntity<>(oneDays, HttpStatus.OK);
     }
 
