@@ -22,11 +22,11 @@ public class ClubSimpleResponseDto {
     private String clubContent;
     private Integer maxGroupSize;
     private Integer nowMemberCount;
-    private String thumbnailUrl;
+    private List<String> clubImageUrlList;
     private Integer numLikes;
 
 
-    public ClubSimpleResponseDto(Club club) {
+    public ClubSimpleResponseDto(Club club, List<String> clubImageUrlList) {
         this.club_id = club.getId();
         this.clubTitle = club.getTitle();
         this.clubCategory = club.getCategory().getCategory();
@@ -34,7 +34,7 @@ public class ClubSimpleResponseDto {
         this.clubContent = club.getContent();
         this.maxGroupSize = club.getMaxGroupSize();
         this.nowMemberCount = club.getNowMemberCount();
-        this.thumbnailUrl = club.getThumbnailUrl();
+        this.clubImageUrlList = clubImageUrlList;
         this.numLikes = club.getNumLikes();
     }
 

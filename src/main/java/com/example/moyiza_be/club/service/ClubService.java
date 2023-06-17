@@ -27,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -220,7 +221,13 @@ public class ClubService {
     }
 
     public ResponseEntity<?> getMostLikedClub() {
-        List<ClubSimpleResponseDto> clubs = clubRepository.findAllByOrderByNumLikesDesc().stream().map(ClubSimpleResponseDto::new).collect(Collectors.toList());
+        List<Club> clubList = clubRepository.findAllByOrderByNumLikesDesc();
+        List<ClubSimpleResponseDto> clubs = new ArrayList<>();
+        for (Club club : clubList) {
+            List<String> clubImageUrlList = clubImageUrlRepositoryCustom.getAllImageUrlByClubId(club.getId());
+            ClubSimpleResponseDto clubDto = new ClubSimpleResponseDto(club, clubImageUrlList);
+            clubs.add(clubDto);
+        }
         return new ResponseEntity<>(clubs, HttpStatus.OK);
     }
 
