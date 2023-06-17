@@ -101,7 +101,7 @@ public class ClubController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id
     ) {
-        User user = userDetails.getUser();
+        User user = userDetails == null ? null : userDetails.getUser();
         return clubService.getClubEventList(user, club_id);
     }
 

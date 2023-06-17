@@ -111,7 +111,7 @@ public class EventService {
 
     // Event ReadAll
     public List<EventSimpleDetailDto> getEventList(long clubId, User user) { //ResponseEntity GenericType ListEntity
-        return eventRepositoryCustom.getClubEventList(clubId, user.getId());
+        return eventRepositoryCustom.getClubEventList(clubId, user);
     }
 
     // Deleting Event

@@ -2,6 +2,7 @@ package com.example.moyiza_be.event.repository.QueryDSL;
 
 import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.event.dto.QEventSimpleDetailDto;
+import com.example.moyiza_be.user.entity.User;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,8 @@ import static com.example.moyiza_be.user.entity.QUser.user;
 public class EventRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<EventSimpleDetailDto> getClubEventList(Long clubId, Long userId){
+    public List<EventSimpleDetailDto> getClubEventList(Long clubId, User nowUser){
+        Long userId = nowUser == null ? -1 : nowUser.getId();
         return jpaQueryFactory
                 .from(event)
                 .join(user).on(event.ownerId.eq(user.id))

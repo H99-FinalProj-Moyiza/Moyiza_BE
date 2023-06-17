@@ -88,10 +88,11 @@ public class OneDayService {
     // Read Detail OneDay
     public ResponseEntity<OneDayDetailResponseDto> getOneDayDetail(Long oneDayId, User user) {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
+        Long userId = user == null ? -1 : user.getId();
         // Image Process Issue at here...
         List<String> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDayId).stream().map(OneDayImageUrl::getImageUrl).toList();
         List<MemberResponse> memberResponseList = oneDayAttendantRepositoryCustom.getOneDayMemberList(oneDayId);
-        Boolean isLikedByUser = likeService.checkLikeExists(user.getId(), oneDayId, LikeTypeEnum.ONEDAY);
+        Boolean isLikedByUser = likeService.checkLikeExists(userId, oneDayId, LikeTypeEnum.ONEDAY);
         User owner = userService.loadUserById(oneDay.getOwnerId());
         OneDayDetailResponseDto responseDto = new OneDayDetailResponseDto(
                 owner, oneDay, oneDayImageUrlList, memberResponseList, isLikedByUser);

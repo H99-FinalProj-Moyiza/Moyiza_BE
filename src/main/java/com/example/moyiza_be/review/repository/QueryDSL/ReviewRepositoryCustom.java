@@ -32,6 +32,7 @@ public class ReviewRepositoryCustom {
     public Page<ReviewListResponse> getReviewList(
             User nowUser, ReviewTypeEnum reviewTypeEnum, Long identifier, Pageable pageable
     ) {
+        Long userId = nowUser == null ? -1 : nowUser.getId();
         List<ReviewListResponse> reviewListResponse =
                 jpaQueryFactory
                 .from(review)
@@ -53,7 +54,7 @@ public class ReviewRepositoryCustom {
                                                 JPAExpressions
                                                         .selectFrom(reviewLike)
                                                         .where(reviewLike.reviewId.eq(review.id)
-                                                                .and(reviewLike.userId.eq(nowUser.getId()))
+                                                                .and(reviewLike.userId.eq(userId))
                                                         )
                                                         .exists(),
                                                 review.createdAt
@@ -64,6 +65,7 @@ public class ReviewRepositoryCustom {
     }
 
     public ReviewDetailResponse getReviewDetails(User nowUser, Long reviewId){
+        Long userId = nowUser == null ? -1 : nowUser.getId();
 
         ReviewDetailResponse result = jpaQueryFactory
                 .from(review)
@@ -85,7 +87,7 @@ public class ReviewRepositoryCustom {
                                 JPAExpressions
                                         .selectFrom(reviewLike)
                                         .where(reviewLike.reviewId.eq(review.id)
-                                                .and(reviewLike.userId.eq(nowUser.getId()))
+                                                .and(reviewLike.userId.eq(userId))
                                         )
                                         .exists(),
                                 review.createdAt,
