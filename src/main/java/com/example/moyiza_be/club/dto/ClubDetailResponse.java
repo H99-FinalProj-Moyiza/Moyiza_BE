@@ -4,13 +4,11 @@ import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
-import com.example.moyiza_be.oneday.dto.MemberResponse;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.lang.reflect.Member;
 import java.util.List;
 
 @Getter

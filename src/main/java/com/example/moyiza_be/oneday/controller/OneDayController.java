@@ -3,6 +3,7 @@ package com.example.moyiza_be.oneday.controller;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
+import com.example.moyiza_be.oneday.dto.OneDayImminentResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayListResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import retrofit2.http.Path;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -150,4 +150,14 @@ public class OneDayController {
     public ResponseEntity<?> rejectJoin(@PathVariable Long oneDayId, @PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return oneDayService.rejectJoin(oneDayId, userId, userDetails.getUser());
     }
+
+    @GetMapping("/imminent")
+    public ResponseEntity<List<OneDayImminentResponseDto>> imminentOneDays(){
+        return oneDayService.getImminentOneDays();
+    }
+    @GetMapping("/popular")
+    public ResponseEntity<?> mostLikedOneDays(){
+        return oneDayService.getMostLikedOneDays();
+    }
+
 }

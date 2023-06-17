@@ -17,7 +17,6 @@ import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.event.service.EventService;
 import com.example.moyiza_be.like.service.LikeService;
-import com.example.moyiza_be.oneday.dto.MemberResponse;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -92,9 +93,9 @@ public class ClubService {
     }
 
     //Get Club List on Mypage
-    public ClubListOnMyPage getClubListOnMyPage(Long userId) {
-        List<ClubDetailResponse> clubsInOperationInfo = clubRepositoryCustom.getManagedClubDetail(userId);
-        List<ClubDetailResponse> clubsInParticipatingInfo = clubRepositoryCustom.getJoinedClubDetail(userId);
+    public ClubListOnMyPage getClubListOnMyPage(Long userId, Long profileId) {
+        List<ClubDetailResponse> clubsInOperationInfo = clubRepositoryCustom.getManagedClubDetail(userId, profileId);
+        List<ClubDetailResponse> clubsInParticipatingInfo = clubRepositoryCustom.getJoinedClubDetail(userId, profileId);
         return new ClubListOnMyPage(clubsInOperationInfo, clubsInParticipatingInfo);
     }
 
@@ -218,4 +219,17 @@ public class ClubService {
     public Integer userOwnedClubCount(Long userId) {
         return clubRepository.countByOwnerIdAndIsDeletedFalse(userId);
     }
+
+    public ResponseEntity<?> getMostLikedClub() {
+        List<Club> clubList = clubRepository.findAllByOrderByNumLikesDesc();
+        List<ClubSimpleResponseDto> clubs = new ArrayList<>();
+        for (Club club : clubList) {
+            List<String> clubImageUrlList = clubImageUrlRepositoryCustom.getAllImageUrlByClubId(club.getId());
+            ClubSimpleResponseDto clubDto = new ClubSimpleResponseDto(club, clubImageUrlList);
+            clubs.add(clubDto);
+        }
+        return new ResponseEntity<>(clubs, HttpStatus.OK);
+    }
+
+
 }

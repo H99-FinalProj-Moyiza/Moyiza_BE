@@ -37,15 +37,12 @@ public class WebSecurityConfig {
     private static final String[] PERMIT_URL_ARRAY = {
             "/*",
             "/chat/**",
-            "/user/login",
-            "/user/signup/**",
-            "/user/check/**",
-            "/user/test/**",
-            "/user/find/email/**",
-            "/oauth2/authorization/**",
             "/login",
-            "/login/**",
-            "/signup/social",
+            "/uploadImg",
+            "/signup/**",
+            "/check/**",
+            "/find/email/**",
+            "/oauth2/authorization/**",
             "/enums",
             "/.well-known/acme-challenge/**" //Verify domain ownership for Certbot
     };
@@ -89,12 +86,10 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration config = new CorsConfiguration();
 
-        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin(MOYIZADOMAIN);
-        config.addAllowedOrigin("http://moyiza.s3-website.ap-northeast-2.amazonaws.com/");
+        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("http://moyiza.dev.s3-website.ap-northeast-2.amazonaws.com/");
         config.addAllowedOrigin("https://hohomii.shop");
-        config.addAllowedOrigin("http://hohomii.shop");
 
         config.addExposedHeader(JwtUtil.ACCESS_TOKEN);
 

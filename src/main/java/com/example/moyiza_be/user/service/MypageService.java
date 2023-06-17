@@ -13,13 +13,15 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MypageService {
+    private final UserService userService;
     private final OneDayService oneDayService;
     private final ClubService clubService;
 
-    public ResponseEntity<?> getMypage(User user) {
-        ClubListOnMyPage clubListOnMyPage = clubService.getClubListOnMyPage(user.getId());
-        OneDayListOnMyPage oneDayListOnMyPage = oneDayService.getOneDayListOnMyPage(user.getId());
-        MyPageResponseDto myPageResponseDto = new MyPageResponseDto(user, clubListOnMyPage, oneDayListOnMyPage);
+    public ResponseEntity<?> getMypage(User user, Long profileId) {
+        User profileUser = userService.loadUserById(profileId);
+        ClubListOnMyPage clubListOnMyPage = clubService.getClubListOnMyPage(user.getId(), profileId);
+        OneDayListOnMyPage oneDayListOnMyPage = oneDayService.getOneDayListOnMyPage(user.getId(), profileId);
+        MyPageResponseDto myPageResponseDto = new MyPageResponseDto(profileUser, clubListOnMyPage, oneDayListOnMyPage);
         return ResponseEntity.ok(myPageResponseDto);
     }
 }
