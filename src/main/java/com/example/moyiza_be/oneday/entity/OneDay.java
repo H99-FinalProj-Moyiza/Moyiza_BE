@@ -62,6 +62,10 @@ public class OneDay extends TimeStamped {
     @Column
     @Enumerated(EnumType.STRING)
     private OneDayTypeEnum type = OneDayTypeEnum.FCFSB;
+
+    @Column
+    private Integer numLikes = 0;
+
 //    @Column
 //    private boolean expired = false;
 
@@ -85,9 +89,16 @@ public class OneDay extends TimeStamped {
     public void addAttendantNum(){
         attendantsNum++;
     }
-
     public void minusAttendantNum(){
         attendantsNum--;
+    }
+
+    public void addLike(){
+        if(this.numLikes == null){this.numLikes = 0;}
+        this.numLikes++;
+    }
+    public void minusLike(){
+        this.numLikes--;
     }
 
     public void updateAll(OneDayUpdateRequestDto requestDto) {

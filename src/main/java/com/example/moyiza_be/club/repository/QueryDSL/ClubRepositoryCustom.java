@@ -4,10 +4,14 @@ import com.example.moyiza_be.club.dto.ClubDetailResponse;
 import com.example.moyiza_be.club.dto.ClubListResponse;
 import com.example.moyiza_be.club.dto.QClubDetailResponse;
 import com.example.moyiza_be.club.dto.QClubListResponse;
+import com.example.moyiza_be.club.entity.QClubImageUrl;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.user.entity.User;
+import com.querydsl.core.group.GroupBy;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +23,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.example.moyiza_be.club.entity.QClub.club;
+import static com.example.moyiza_be.club.entity.QClubImageUrl.clubImageUrl;
 import static com.example.moyiza_be.club.entity.QClubJoinEntry.clubJoinEntry;
 import static com.example.moyiza_be.like.entity.QClubLike.clubLike;
 import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.querydsl.core.group.GroupBy.groupBy;
 
 
 @Repository
@@ -32,40 +38,48 @@ public class ClubRepositoryCustom {
     public Page<ClubListResponse> filteredClubResponseList(
             Pageable pageable, CategoryEnum categoryEnum, String q, String tag1, String tag2, String tag3, User nowUser
     ) {
+        Long userId = nowUser == null ? -1 : nowUser.getId();
         List<ClubListResponse> clubListResponseList =
                 jpaQueryFactory
-                        .select(
-                                new QClubListResponse(
-                                        club.id,
-                                        user.nickname,
-                                        club.title,
-                                        club.tagString,
-                                        club.maxGroupSize,
-                                        club.nowMemberCount,
-                                        club.thumbnailUrl,
-                                        club.numLikes,
-                                        JPAExpressions
-                                                .selectFrom(clubLike)
-                                                .where(clubLike.clubId.eq(club.id)
-                                                        .and(clubLike.userId.eq(nowUser.getId()))
-                                                )
-                                                .exists()
-                                )
-                        )
                         .from(club)
-                        .offset(pageable.getOffset())
-                        .limit(pageable.getPageSize())
                         .join(user).on(club.ownerId.eq(user.id))
+                        .join(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
                         .where(
-                                club.isDeleted.eq(Boolean.FALSE),
+                                club.isDeleted.isFalse(),
                                 eqCategory(categoryEnum),
                                 titleContainOrContentContain(q),
                                 eqTag1(tag1),
                                 eqTag2(tag2),
                                 eqTag3(tag3)
                         )
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
                         .orderBy(club.id.desc())
-                        .fetch();
+                        .transform(
+                                groupBy(club.id)
+                                        .list(Projections.constructor(ClubListResponse.class,
+                                                club.id,
+                                                user.nickname,
+                                                club.title,
+                                                club.content,
+                                                club.tagString,
+                                                club.maxGroupSize,
+                                                club.nowMemberCount,
+                                                club.thumbnailUrl,
+                                                GroupBy.list(clubImageUrl.imageUrl),
+                                                club.numLikes,
+                                                JPAExpressions
+                                                        .selectFrom(clubLike)
+                                                        .where(clubLike.clubId.eq(club.id)
+                                                                .and(clubLike.userId.eq(userId))
+                                                        )
+                                                        .exists()
+                                                )
+
+                                        )
+                        )
+
+                ;
 //        Long count = jpaQueryFactory
 //                .select(club.count())
 //                .fetchOne();
@@ -95,7 +109,8 @@ public class ClubRepositoryCustom {
                                         .where(clubLike.clubId.eq(club.id)
                                                 .and(clubLike.userId.eq(userId))
                                         )
-                                        .exists()
+                                        .exists(),
+                                club.clubRule
                         )
                 )
                 .from(club)
@@ -105,7 +120,7 @@ public class ClubRepositoryCustom {
     }
 
 //운영중인 마이페이지 클럽 리스트 조회
-    public List<ClubDetailResponse> getManagedClubDetail(Long userId) {
+    public List<ClubDetailResponse> getManagedClubDetail(Long userId, Long profileId) {
         return jpaQueryFactory
                 .select(
                         new QClubDetailResponse(
@@ -126,17 +141,18 @@ public class ClubRepositoryCustom {
                                         .where(clubLike.clubId.eq(club.id)
                                                 .and(clubLike.userId.eq(userId))
                                         )
-                                        .exists()
+                                        .exists(),
+                                club.clubRule
                         )
                 )
                 .from(club)
                 .join(user).on(club.ownerId.eq(userId))
-                .where(user.id.eq(userId))
+                .where(user.id.eq(profileId))
                 .orderBy(club.id.desc())
                 .fetch();
     }
 
-    public List<ClubDetailResponse> getJoinedClubDetail(Long userId) {
+    public List<ClubDetailResponse> getJoinedClubDetail(Long userId, Long profileId) {
         return jpaQueryFactory
                 .select(
                         new QClubDetailResponse(
@@ -157,13 +173,14 @@ public class ClubRepositoryCustom {
                                         .where(clubLike.clubId.eq(club.id)
                                                 .and(clubLike.userId.eq(userId))
                                         )
-                                        .exists()
+                                        .exists(),
+                                club.clubRule
                         )
                 )
                 .from(club)
                 .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
                 .join(user).on(clubJoinEntry.userId.eq(userId))
-                .where(user.id.eq(userId))
+                .where(user.id.eq(profileId))
                 .orderBy(club.id.desc())
                 .fetch();
     }
@@ -181,6 +198,10 @@ public class ClubRepositoryCustom {
 //        }
 //        return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
 //    }
+    private BooleanExpression isDeletedFalse(){
+        return club.isDeleted.eq(false);
+    }
+
 
     private BooleanExpression titleContainOrContentContain(String q) {
         return q == null ? null : titleContain(q).or(contentContain(q));

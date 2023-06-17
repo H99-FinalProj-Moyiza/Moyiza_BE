@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -84,13 +85,16 @@ public class ClubService {
         }
         List<String> clubImageUrlList = clubImageUrlRepositoryCustom.getAllImageUrlByClubId(clubId);
         clubDetailResponse.setClubImageUrlList(clubImageUrlList);
+        List<ClubMemberResponse> memberList = clubJoinEntryRepositoryCustom.getClubMemberList(clubId);
+        clubDetailResponse.setMemberList(memberList);
+
         return ResponseEntity.ok(clubDetailResponse);
     }
 
     //Get Club List on Mypage
-    public ClubListOnMyPage getClubListOnMyPage(Long userId) {
-        List<ClubDetailResponse> clubsInOperationInfo = clubRepositoryCustom.getManagedClubDetail(userId);
-        List<ClubDetailResponse> clubsInParticipatingInfo = clubRepositoryCustom.getJoinedClubDetail(userId);
+    public ClubListOnMyPage getClubListOnMyPage(Long userId, Long profileId) {
+        List<ClubDetailResponse> clubsInOperationInfo = clubRepositoryCustom.getManagedClubDetail(userId, profileId);
+        List<ClubDetailResponse> clubsInParticipatingInfo = clubRepositoryCustom.getJoinedClubDetail(userId, profileId);
         return new ClubListOnMyPage(clubsInOperationInfo, clubsInParticipatingInfo);
     }
 
@@ -214,4 +218,11 @@ public class ClubService {
     public Integer userOwnedClubCount(Long userId) {
         return clubRepository.countByOwnerIdAndIsDeletedFalse(userId);
     }
+
+    public ResponseEntity<?> getMostLikedClub() {
+        List<ClubSimpleResponseDto> clubs = clubRepository.findAllByOrderByNumLikesDesc().stream().map(ClubSimpleResponseDto::new).collect(Collectors.toList());
+        return new ResponseEntity<>(clubs, HttpStatus.OK);
+    }
+
+
 }

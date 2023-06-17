@@ -1,33 +1,6 @@
-cloud:
-  aws:
-    credentials:
-      secret-key: ENC(i/B1gm7Wm9tUXLu55Z5mjsAbh9BqzYMkfoCtcvU798LQoccIK3cicxsDCDdpRUeXgmVtGktF1yQ=)
-      access-key: ENC(3wFDB1exmRXoiPVPi/lgKq+zesHQOY3aBuIdChbpq5U=)
-    s3:
-      bucket: ENC(yByVJRg3SqpPSDTLT+xD8RBRTSexMecj)
-    region:
-      static: ap-northeast-2
-    stack:
-      auto: 'false'
 spring:
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: 'true'
-#    show-sql: 'true'
-    hibernate:
-      ddl-auto: update
-  datasource:
-    password: ENC(MpLqczeZ9JMeSsYgIRaQJuYGnVx3KW31)
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ENC(1RC2fLhE3xF2E+OyJP7gdA==)
-    url: ENC(FLABZ3U84RdLp+5UmSAEmbYmkafqBM20nx/9yLQEvdw9qSxsMn9gx4Js5XbNvnAvWqzNYlj0Dyzly1XTyiR5YlYIDZufFamFRXBQOI6U54iR1UH3u84bY+bbBDli0OzN)
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/test?serverTimezone=Asia/Seoul
-#    username: root
-#    password: root
+  profiles:
+    default: dev # 기본 환경을 dev로
 
   security:
     oauth2.client:
@@ -35,15 +8,14 @@ spring:
         google:
           clientId: ENC(bseqy4nx4e6dIS1VFu7v6Oi/oXUfM4APJDrIPkFQj12TfNiL4ube/AifsQswaVwxMpPsOEDFVRGBbclKIdyGG+fGRi+2gfeNeCPiv9detPMult5Ysc+uZw==)
           clientSecret: ENC(VJZZH16JKtnkdK6WHQknM4xr2QnnBQMMDwpc4acrdGy/Gp+FCqI99Reqr/9TjiY2)
-#          redirect-uri: http://moyiza.s3-website.ap-northeast-2.amazonaws.com/login/oauth2/code/google
-          redirect-uri: http://ec2-13-125-51-14.ap-northeast-2.compute.amazonaws.com/login/oauth2/code/google
+          redirect-uri: https://hohomii.shop:8443/login/oauth2/code/google
           scope: email, profile
         naver:
           clientId: ENC(+AuHYY52/PGsDzg07Choe/xfMYEDoENtoi/s9ecgfEI=)
           clientSecret: ENC(0ugqjzOjV4QWXbn8hV7Gpd6JHDOjMchB)
 #          clientAuthenticationMethod: post
           authorizationGrantType: authorization_code
-          redirect-uri: http://ec2-13-125-51-14.ap-northeast-2.compute.amazonaws.com/login/oauth2/code/naver
+          redirect-uri: https://hohomii.shop:8443/login/oauth2/code/naver
           scope: name, nickname, email, profile_image
           clientName: Naver
         kakao:
@@ -51,7 +23,7 @@ spring:
           client-secret: ENC(f/EoiRbGMepGr4d9w2+dhrgRheoEgAkHzfRmwuOXWfFz08TPuV8j51i1W5a+AuJo)
           client-authentication-method: POST
           authorization-grant-type: authorization_code
-          redirect-uri: http://13.125.51.14/login/oauth2/code/kakao
+          redirect-uri: https://hohomii.shop:8443/login/oauth2/code/kakao
           scope:
             - account_email
             - profile_nickname
@@ -70,16 +42,6 @@ spring:
           tokenUri: https://kauth.kakao.com/oauth/token
           userInfoUri: https://kapi.kakao.com/v2/user/me
           userNameAttribute: id
-  #Redis 설정
-  data:
-    redis:
-      pool:
-        min-idle: 0
-        max-idle: 8
-        max-active: 8
-      port: 6379
-      host: 43.200.169.48
-      password: ENC(V8HByRExsO7bDwqCirBLQw==)
 
   # WebSocket 관련 설정
   mvc:
@@ -90,16 +52,21 @@ spring:
     stomp:
       enabled: true
 
+cloud:
+  aws:
+    credentials:
+      secret-key: ENC(i/B1gm7Wm9tUXLu55Z5mjsAbh9BqzYMkfoCtcvU798LQoccIK3cicxsDCDdpRUeXgmVtGktF1yQ=)
+      access-key: ENC(3wFDB1exmRXoiPVPi/lgKq+zesHQOY3aBuIdChbpq5U=)
+    s3:
+      bucket: ENC(yByVJRg3SqpPSDTLT+xD8RBRTSexMecj)
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: 'false'
+
 jwt:
   secret:
     key: ENC(rjg+5OS5srRHUw2KZQcREVDpUBlSXEQ4y7Hl/qE1KjNodO/mb2zH8P9bJ0mX0o81k7pPcD6EppBR6LgkE9LBrxBB35PzT/7Tjq9ja7YJAwmj5d9yLFpeLCLgcUQ8AP5HqG1c4Urael0Rqe6gVmxBbfxWOBHgmWKg+qS/w3AY7hyiFrUfLd5Xyw==)
-
-server:
-  ssl:
-    key-store: keystore.p12
-    key-store-type: PKCS12
-    key-store-password: ENC(BrX+B0Pn+L3sk/TKC53WFSSo2ZBBgjh8hCAXHSuHOMI=)
-  port: 8443
 
 coolsms:
   api:

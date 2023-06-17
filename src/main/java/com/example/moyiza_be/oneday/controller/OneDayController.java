@@ -2,6 +2,8 @@ package com.example.moyiza_be.oneday.controller;
 
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
+import com.example.moyiza_be.common.utils.Message;
+import com.example.moyiza_be.oneday.dto.OneDayImminentResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayListResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
 import com.example.moyiza_be.oneday.dto.OneDayUpdateRequestDto;
@@ -47,10 +49,12 @@ public class OneDayController {
             @RequestParam(required = false) Double longitude,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double radius,
-            @RequestParam(required = false) LocalDateTime startafter
+            @RequestParam(required = false) LocalDateTime startafter,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
+        User user = userDetails == null ? null : userDetails.getUser();
         return oneDayService.getFilteredOneDayList(
-                pageable, null, null, null, null, null, null, null, null,
+                user, pageable, null, null, null, null, null, null, null, null,
                 null
         );
     }
@@ -66,18 +70,23 @@ public class OneDayController {
             @RequestParam(required = false) Double longitude,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double radius,
-            @RequestParam(required = false) LocalDateTime startafter
+            @RequestParam(required = false) LocalDateTime startafter,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
             ){
+        User user = userDetails == null ? null : userDetails.getUser();
         return oneDayService.getFilteredOneDayList(
-                pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius,
+                user, pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius,
                 startafter
         );
     }
 
     // ReadOne
     @GetMapping("/{oneDayId}")
-    public ResponseEntity<?> getOneDay(@PathVariable Long oneDayId) {
-        return oneDayService.getOneDayDetail(oneDayId);
+    public ResponseEntity<?> getOneDay(
+            @PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        User user = userDetails.getUser();
+        return oneDayService.getOneDayDetail(oneDayId, user);
     }
     // Update
     @PutMapping(value = "/{oneDayId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -102,10 +111,53 @@ public class OneDayController {
         return oneDayService.cancelOneDay(oneDayId, userDetails.getUser());
     }
 
+    @PostMapping("/{onedayId}/like")
+    public ResponseEntity<Message> likeOneday(
+            @PathVariable Long onedayId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+        User user = userDetails.getUser();
+        return oneDayService.likeOneday(onedayId, user);
+    }
+
+    @DeleteMapping("/{onedayId}/like")
+    public ResponseEntity<Message> cancelLikeOneday(
+            @PathVariable Long onedayId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+        User user = userDetails.getUser();
+        return oneDayService.cancelLikeOneday(onedayId, user);
+    }
+
     // Recommendation Based On Distance
     @GetMapping("/recommend")
     public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(@RequestParam("lat") double nowLatitude, @RequestParam("lon") double nowLongitude) {
         return oneDayService.recommendByDistance(nowLatitude, nowLongitude);
+    }
+
+    // JoinWishList
+    @GetMapping("/{oneDayId}/joinList")
+    public ResponseEntity<?> joinWishList(@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return oneDayService.joinWishList(oneDayId, userDetails.getUser());
+    }
+    // Join Approve
+    @PostMapping("/{oneDayId}/joinList/{userId}")
+    public ResponseEntity<?> approveJoin(@PathVariable Long oneDayId, @PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails)  {
+        return oneDayService.approveJoin(oneDayId, userId, userDetails.getUser());
+    }
+    // reject Approve
+    @DeleteMapping("/{oneDayId}/joinList/{userId}")
+    public ResponseEntity<?> rejectJoin(@PathVariable Long oneDayId, @PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return oneDayService.rejectJoin(oneDayId, userId, userDetails.getUser());
+    }
+
+    @GetMapping("/imminent")
+    public ResponseEntity<List<OneDayImminentResponseDto>> imminentOneDays(){
+        return oneDayService.getImminentOneDays();
+    }
+    @GetMapping("/popular")
+    public ResponseEntity<?> mostLikedOneDays(){
+        return oneDayService.getMostLikedOneDays();
     }
 
 }

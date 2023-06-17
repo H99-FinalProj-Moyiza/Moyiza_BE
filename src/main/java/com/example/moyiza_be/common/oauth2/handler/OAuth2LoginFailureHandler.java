@@ -20,7 +20,7 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
         response.getWriter().write("Social login failed, please check your server logs.");
         log.info("Social login failed. Error message: {}", exception.getMessage());
 
-        String targetUrl = "http://moyiza.s3-website.ap-northeast-2.amazonaws.com/oauth/redirect";
+        String targetUrl = "https://mo2za.com/oauth/redirect/oauth/redirect";
         String redirectUrl = UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("error", exception.getLocalizedMessage())
                 .build().toUriString();

@@ -44,6 +44,8 @@ public class Club extends TimeStamped {
 
     @Column
     private Integer numLikes = 0;
+    @Column
+    private String clubRule = "";
 
     public Club(ConfirmClubCreationDto creationRequest) {
         this.ownerId = creationRequest.getOwnerId();
@@ -57,6 +59,43 @@ public class Club extends TimeStamped {
         this.thumbnailUrl = creationRequest.getThumbnailUrl();
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setCategory(CategoryEnum category) {
+        this.category = category;
+    }
+
+    public void setTagString(String tagString) {
+        this.tagString = tagString;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setAgePolicy(Integer agePolicy) {
+        this.agePolicy = agePolicy;
+    }
+
+    public void setGenderPolicy(GenderPolicyEnum genderPolicy) {
+        this.genderPolicy = genderPolicy;
+    }
+
+    public void setMaxGroupSize(Integer maxGroupSize) {
+        this.maxGroupSize = maxGroupSize;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public void setNowMemberCount(Integer nowMemberCount) {
+        this.nowMemberCount = nowMemberCount;
+    }
+
+    public void setClubRule(String clubRule){this.clubRule = clubRule;}
 
     public void flagDeleted(Boolean deleted) {
         this.isDeleted = deleted;

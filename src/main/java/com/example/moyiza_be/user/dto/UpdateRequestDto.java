@@ -9,6 +9,8 @@ import java.util.List;
 public class UpdateRequestDto {
     private String nickname;
     private List<String> tags;
+    private String imageUrl;
+    private String content;
 
     public List<TagEnum> getTagEnumList() {
         return tags.stream()

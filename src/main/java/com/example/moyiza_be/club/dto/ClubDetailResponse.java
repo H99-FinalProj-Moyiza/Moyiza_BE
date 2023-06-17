@@ -28,6 +28,9 @@ public class ClubDetailResponse {
     private List<String> clubImageUrlList;
     private Integer numLikes;
     private Boolean isLikedByUser;
+    private List<ClubMemberResponse> memberList;
+    private String clubRule;
+
 
     public ClubDetailResponse(Club club, List<String> clubImageUrlList, User user) {
         this.club_id = club.getId();
@@ -44,13 +47,16 @@ public class ClubDetailResponse {
         this.clubImageUrlList = clubImageUrlList;  //  쿼리한방에 가능한가 ?
         this.numLikes = 0;
         this.isLikedByUser = false;
+        this.clubRule = club.getClubRule();
     }
 
     @QueryProjection
     public ClubDetailResponse(
             Long club_id, String ownerNickname, String clubTitle, CategoryEnum categoryEnum, String tagString,
             String clubContent, Integer agePolicy, GenderPolicyEnum genderPolicyEnum, Integer maxGroupSize,
-            Integer nowMemberCount, String thumbnailUrl, Integer numLikes, Boolean isLikedByUser) {
+            Integer nowMemberCount, String thumbnailUrl, Integer numLikes, Boolean isLikedByUser,
+            String clubRule
+    ) {
         this.club_id = club_id;
         this.ownerNickname = ownerNickname;
         this.clubTitle = clubTitle;
@@ -64,9 +70,11 @@ public class ClubDetailResponse {
         this.thumbnailUrl = thumbnailUrl;
         this.numLikes = numLikes;
         this.isLikedByUser = isLikedByUser;
+        this.clubRule = clubRule;
 //        this.clubImageUrlList = clubImageUrlList; //Difficult to handle with queries
     }
     public void setClubImageUrlList(List<String> clubImageUrlList) {
         this.clubImageUrlList = clubImageUrlList;
     }
+    public void setMemberList(List<ClubMemberResponse> memberList) { this.memberList = memberList;}
 }

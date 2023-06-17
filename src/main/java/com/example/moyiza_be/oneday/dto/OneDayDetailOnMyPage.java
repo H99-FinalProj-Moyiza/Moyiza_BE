@@ -23,6 +23,8 @@ public class OneDayDetailOnMyPage {
     private int oneDayGroupSize;
     private String oneDayImage;
     private int oneDayAttendantListSize;
+    private Integer oneDayNumLikes;
+    private Boolean oneDayIsLikedByUser;
 
     public OneDayDetailOnMyPage(OneDay oneDay) {
         this.oneDayId = oneDay.getId();
@@ -32,6 +34,7 @@ public class OneDayDetailOnMyPage {
         this.category = oneDay.getCategory().getCategory();
         this.tagString = TagEnum.parseTag(oneDay.getTagString());
         this.oneDayGroupSize = oneDay.getOneDayGroupSize();
-        this.oneDayImage =oneDay.getOneDayImage();
+        this.oneDayImage = oneDay.getOneDayImage();
+        this.oneDayNumLikes = oneDay.getNumLikes();
     }
 }

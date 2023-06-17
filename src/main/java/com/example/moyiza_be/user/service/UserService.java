@@ -1,6 +1,5 @@
 package com.example.moyiza_be.user.service;
 
-import com.example.moyiza_be.club.service.ClubService;
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
@@ -44,18 +43,14 @@ public class UserService {
     private final RedisUtil redisUtil;
 
     //Signup
-    public ResponseEntity<?> signup(SignupRequestDto requestDto, MultipartFile imageFile) {
-        String password = passwordEncoder.encode(requestDto.getPassword());
-        String storedFileUrl = BasicProfileEnum.getRandomImage().getImageUrl();
-        validationUtil.checkDuplicatedEmail(requestDto.getEmail());
-        validationUtil.checkDuplicatedNick(requestDto.getNickname());
-        if(imageFile != null){
-            storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
-        }
-        User user = new User(password, requestDto, storedFileUrl);
+    public ResponseEntity<?> signup(SignupRequestDto testRequestDto) {
+        String password = passwordEncoder.encode(testRequestDto.getPassword());
+        validationUtil.checkDuplicatedEmail(testRequestDto.getEmail());
+        validationUtil.checkDuplicatedNick(testRequestDto.getNickname());
+        User user = new User(password, testRequestDto);
         user.authorizeUser();
         userRepository.save(user);
-        return new ResponseEntity<>("Sign up successfully", HttpStatus.OK);
+        return new ResponseEntity<>("Signup complete!", HttpStatus.OK);
     }
 
     public ResponseEntity<?> updateSocialInfo(UpdateSocialInfoRequestDto requestDto, User user) {
@@ -89,28 +84,6 @@ public class UserService {
         refreshTokenRepository.deleteByEmail(email).orElseThrow(
                 ()-> new NoSuchElementException("You are not the logged in user."));
         return new ResponseEntity<>("Successful logout", HttpStatus.OK);
-    }
-
-    //Modify Profile
-    public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
-        User user = validationUtil.findUser(email);
-        validationUtil.checkDuplicatedNick(requestDto.getNickname());
-
-        if(imageFile != null){
-            awsS3Uploader.delete(user.getProfileImage());
-            String storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
-            user.updateProfileImage(storedFileUrl);
-        }
-
-        List<TagEnum> tagEnumList = requestDto.getTagEnumList();
-        String newString = "0".repeat(TagEnum.values().length);
-        StringBuilder tagBuilder = new StringBuilder(newString);
-        for (TagEnum tagEnum : tagEnumList) {
-            tagBuilder.setCharAt(tagEnum.ordinal(), '1');
-        }
-        user.updateProfile(requestDto.getNickname(), tagBuilder.toString());
-
-        return new ResponseEntity<>("Edit your membership information", HttpStatus.OK);
     }
 
     public ResponseEntity<?> tagsOfCategory(String category) {
@@ -170,7 +143,7 @@ public class UserService {
     }
 
     //Test
-    public ResponseEntity<?> uploadTest(MultipartFile image) {
+    public ResponseEntity<?> uploadImg(MultipartFile image) {
         if(image.isEmpty()){
             return new ResponseEntity<>(BasicProfileEnum.getRandomImage().getImageUrl(), HttpStatus.OK);
         }
@@ -178,17 +151,7 @@ public class UserService {
         return new ResponseEntity<>(storedFileUrl, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> signupTest(TestSignupRequestDto testRequestDto) {
-        String password = passwordEncoder.encode(testRequestDto.getPassword());
-        validationUtil.checkDuplicatedEmail(testRequestDto.getEmail());
-        validationUtil.checkDuplicatedNick(testRequestDto.getNickname());
-        User user = new User(password, testRequestDto);
-        user.authorizeUser();
-        userRepository.save(user);
-        return new ResponseEntity<>("🎊테스트 성공!!🎊 고생하셨어요ㅠㅠ", HttpStatus.OK);
-    }
-
-    public ResponseEntity<?> updateProfileTest(TestUpdateRequestDto requestDto, String email) {
+    public ResponseEntity<?> updateProfile(UpdateRequestDto requestDto, String email) {
         User user = validationUtil.findUser(email);
         validationUtil.checkDuplicatedNick(requestDto.getNickname());
         List<TagEnum> tagEnumList = requestDto.getTagEnumList();
@@ -197,7 +160,7 @@ public class UserService {
         for (TagEnum tagEnum : tagEnumList) {
             tagBuilder.setCharAt(tagEnum.ordinal(), '1');
         }
-        user.updateProfileTest(requestDto, tagBuilder.toString());
+        user.updateProfile(requestDto, tagBuilder.toString());
         return new ResponseEntity<>("Edit your membership information", HttpStatus.OK);
     }
 
@@ -209,4 +172,26 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(
                 () -> new NullPointerException("User not found"));
     }
+
+    //Modify Profile - test
+//    public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
+//        User user = validationUtil.findUser(email);
+//        validationUtil.checkDuplicatedNick(requestDto.getNickname());
+//
+//        if(imageFile != null){
+//            awsS3Uploader.delete(user.getProfileImage());
+//            String storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
+//            user.updateProfileImage(storedFileUrl);
+//        }
+//
+//        List<TagEnum> tagEnumList = requestDto.getTagEnumList();
+//        String newString = "0".repeat(TagEnum.values().length);
+//        StringBuilder tagBuilder = new StringBuilder(newString);
+//        for (TagEnum tagEnum : tagEnumList) {
+//            tagBuilder.setCharAt(tagEnum.ordinal(), '1');
+//        }
+//        user.updateProfile(requestDto.getNickname(), tagBuilder.toString());
+//
+//        return new ResponseEntity<>("Edit your membership information", HttpStatus.OK);
+//    }
 }

@@ -13,4 +13,6 @@ public interface ClubImageUrlRepository extends JpaRepository<ClubImageUrl, Long
     List<ClubImageUrl> findAllByCreateClubId(Long createclub_id);
     void deleteByClubId(Long clubId);
 
+    void deleteByImageUrl(String imageUrl);
+
 }
