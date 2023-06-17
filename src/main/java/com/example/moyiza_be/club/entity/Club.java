@@ -25,7 +25,7 @@ public class Club extends TimeStamped {
     private CategoryEnum category;
     @Column(nullable = false)
     private String tagString;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
     @Column(nullable = false)
     private Integer agePolicy;
