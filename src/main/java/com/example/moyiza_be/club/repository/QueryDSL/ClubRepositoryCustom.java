@@ -41,9 +41,9 @@ public class ClubRepositoryCustom {
         Long userId = nowUser == null ? -1 : nowUser.getId();
         List<ClubListResponse> clubListResponseList =
                 jpaQueryFactory
-                        .from(club)
+                        .from(club).where(club.isDeleted.isFalse())
                         .join(user).on(club.ownerId.eq(user.id))
-                        .join(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
+                        .leftJoin(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
                         .where(
                                 club.isDeleted.isFalse(),
                                 eqCategory(categoryEnum),
@@ -78,7 +78,6 @@ public class ClubRepositoryCustom {
 
                                         )
                         )
-
                 ;
 //        Long count = jpaQueryFactory
 //                .select(club.count())
