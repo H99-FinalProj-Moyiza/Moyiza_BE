@@ -216,7 +216,7 @@ public class ClubController {
     public ResponseEntity<Message> updateClubImage(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestPart @Nullable List<MultipartFile> image,
-            @RequestPart RemoveImageRequest removeImageRequest,
+            @RequestPart @Nullable RemoveImageRequest removeImageRequest,
             @PathVariable Long club_id
     ) {
         User user = userDetails.getUser();
