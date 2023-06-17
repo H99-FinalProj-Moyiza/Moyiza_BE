@@ -85,7 +85,7 @@ public class OneDayController {
     public ResponseEntity<?> getOneDay(
             @PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        User user = userDetails.getUser();
+        User user = userDetails == null ? null : userDetails.getUser();
         return oneDayService.getOneDayDetail(oneDayId, user);
     }
     // Update

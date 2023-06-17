@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -221,7 +220,7 @@ public class ClubService {
     }
 
     public ResponseEntity<?> getMostLikedClub() {
-        List<Club> clubList = clubRepository.findAllByOrderByNumLikesDesc();
+        List<Club> clubList = clubRepository.findAllByIsDeletedFalseOrderByNumLikesDesc();
         List<ClubSimpleResponseDto> clubs = new ArrayList<>();
         for (Club club : clubList) {
             List<String> clubImageUrlList = clubImageUrlRepositoryCustom.getAllImageUrlByClubId(club.getId());
