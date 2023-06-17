@@ -145,7 +145,7 @@ public class ClubRepositoryCustom {
                         )
                 )
                 .from(club)
-                .join(user).on(club.ownerId.eq(userId))
+                .join(user).on(club.ownerId.eq(profileId))
                 .where(user.id.eq(profileId), club.isDeleted.isFalse())
                 .orderBy(club.id.desc())
                 .fetch();
@@ -178,7 +178,7 @@ public class ClubRepositoryCustom {
                 )
                 .from(club)
                 .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
-                .join(user).on(clubJoinEntry.userId.eq(userId))
+                .join(user).on(clubJoinEntry.userId.eq(profileId))
                 .where(user.id.eq(profileId), club.isDeleted.isFalse())
                 .orderBy(club.id.desc())
                 .fetch();
