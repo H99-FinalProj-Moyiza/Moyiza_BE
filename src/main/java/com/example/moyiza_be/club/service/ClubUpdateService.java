@@ -2,6 +2,7 @@ package com.example.moyiza_be.club.service;
 
 
 import com.example.moyiza_be.club.dto.AgePolicyUpdateRequest;
+import com.example.moyiza_be.club.dto.ClubRuleUpdateRequest;
 import com.example.moyiza_be.club.dto.GenderPolicyUpdateRequest;
 import com.example.moyiza_be.club.dto.RemoveImageRequest;
 import com.example.moyiza_be.club.dto.createclub.*;
@@ -36,6 +37,7 @@ public class ClubUpdateService {
     public ResponseEntity<Message> updateClubTitle(User user, Long clubId, CreateRequestTitleDto titleDto) {
         Club club = loadClubAndCheckOwnership(user.getId(), clubId);
         club.setTitle(titleDto.getTitle());
+        log.info("clubTitle updated for clubId : " + clubId);
         return ResponseEntity.ok(new Message("title update successful"));
     }
 
@@ -43,6 +45,7 @@ public class ClubUpdateService {
     public ResponseEntity<Message> updateClubCategory(User user, Long clubId, CreateRequestCategoryDto categoryDto) {
         Club club = loadClubAndCheckOwnership(user.getId(), clubId);
         club.setCategory(categoryDto.getCategoryEnum());
+        log.info("clubCategory updated for clubId : " + clubId);
         return ResponseEntity.ok(new Message("category update successful"));
     }
 
@@ -51,6 +54,7 @@ public class ClubUpdateService {
         Club club = loadClubAndCheckOwnership(user.getId(), clubId);
         String tagString = TagEnum.tagListToTagString(tagDto.getTag());
         club.setTagString(tagString);
+        log.info("clubTag updated for clubId : " + clubId);
         return ResponseEntity.ok(new Message("tag update successful"));
     }
 
@@ -58,6 +62,7 @@ public class ClubUpdateService {
     public ResponseEntity<Message> updateClubContent(User user, Long clubId, CreateRequestContentDto contentDto) {
         Club club = loadClubAndCheckOwnership(user.getId(), clubId);
         club.setContent(contentDto.getContent());
+        log.info("clubContent updated for clubId : " + clubId);
         return ResponseEntity.ok(new Message("content update successful"));
     }
 
@@ -65,6 +70,7 @@ public class ClubUpdateService {
     public ResponseEntity<Message> updateClubAgePolicy(User user, Long clubId, AgePolicyUpdateRequest agePolicy) {
         Club club = loadClubAndCheckOwnership(user.getId(), clubId);
         club.setAgePolicy(agePolicy.getAgePolicy());
+        log.info("clubAgePolicy updated for clubId : " + clubId);
         return ResponseEntity.ok(new Message("agePolicy update successful"));
     }
 
@@ -72,6 +78,7 @@ public class ClubUpdateService {
     public ResponseEntity<Message> updateClubGenderPolicy(User user, Long clubId, GenderPolicyUpdateRequest genderPolicy) {
         Club club = loadClubAndCheckOwnership(user.getId(), clubId);
         club.setGenderPolicy(GenderPolicyEnum.fromString(genderPolicy.getGenderPolicy()));
+        log.info("clubGenderPolicy updated for clubId : " + clubId);
         return ResponseEntity.ok(new Message("genderPolicy update successful"));
     }
 
@@ -79,6 +86,7 @@ public class ClubUpdateService {
     public ResponseEntity<Message> updateClubMaxGroupSize(User user, Long clubId, CreateRequestMaxSizeDto maxSizeDto) {
         Club club = loadClubAndCheckOwnership(user.getId(), clubId);
         club.setMaxGroupSize(maxSizeDto.getMaxGroupSize());
+        log.info("clubMaxGroupSize updated for clubId : " + clubId);
         return ResponseEntity.ok(new Message("maxGroupSize update successful"));
     }
 
@@ -103,6 +111,16 @@ public class ClubUpdateService {
         }
 
         return ResponseEntity.ok(new Message("clubImage update successful"));
+    }
+
+    @Transactional
+    public ResponseEntity<Message> updateClubRule(
+            User user, Long clubId, ClubRuleUpdateRequest clubRuleUpdateRequest
+    ) {
+        Club club = loadClubAndCheckOwnership(user.getId(), clubId);
+        club.setClubRule(clubRuleUpdateRequest.getClubRule());
+        log.info("clubRule updated for clubId : " + clubId);
+        return ResponseEntity.ok(new Message("clubRule update successful"));
     }
 
 

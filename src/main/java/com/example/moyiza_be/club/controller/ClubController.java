@@ -134,7 +134,7 @@ public class ClubController {
     }
 
     ///////////////////updateservice//////////////////////
-    @PutMapping("{club_id}/title")
+    @PutMapping("/{club_id}/title")
     public ResponseEntity<Message> updateClubTitle(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id,
@@ -146,7 +146,7 @@ public class ClubController {
         return clubUpdateService.updateClubTitle(user, club_id, titleDto);
     }
 
-    @PutMapping("{club_id}/category")
+    @PutMapping("/{club_id}/category")
     public ResponseEntity<Message> updateClubCategory(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id,
@@ -158,7 +158,7 @@ public class ClubController {
         return clubUpdateService.updateClubCategory(user, club_id, categoryDto);
     }
 
-    @PutMapping("{club_id}/tag")
+    @PutMapping("/{club_id}/tag")
     public ResponseEntity<Message> updateClubTag(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id,
@@ -170,7 +170,7 @@ public class ClubController {
         return clubUpdateService.updateClubTag(user, club_id, tagDto);
     }
 
-    @PutMapping("{club_id}/content")
+    @PutMapping("/{club_id}/content")
     public ResponseEntity<Message> updateClubContent(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id,
@@ -180,7 +180,7 @@ public class ClubController {
         return clubUpdateService.updateClubContent(user, club_id, contentDto);
     }
 
-    @PutMapping("{club_id}/agePolicy")
+    @PutMapping("/{club_id}/agePolicy")
     public ResponseEntity<Message> updateClubAgePolicy(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id,
@@ -190,7 +190,7 @@ public class ClubController {
         return clubUpdateService.updateClubAgePolicy(user, club_id, agePolicyRequest);
     }
 
-    @PutMapping("{club_id}/genderPolicy")
+    @PutMapping("/{club_id}/genderPolicy")
     public ResponseEntity<Message> updateClubGenderPolicy(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id,
@@ -200,7 +200,7 @@ public class ClubController {
         return clubUpdateService.updateClubGenderPolicy(user, club_id, genderPolicyRequest);
     }
 
-    @PutMapping("{club_id}/maxGroupSize")
+    @PutMapping("/{club_id}/maxGroupSize")
     public ResponseEntity<Message> updateClubMaxGroupSize(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long club_id,
@@ -212,11 +212,11 @@ public class ClubController {
         return clubUpdateService.updateClubMaxGroupSize(user, club_id, maxSizeDto);
     }
 
-    @PutMapping("{club_id}/image")
+    @PutMapping("/{club_id}/image")
     public ResponseEntity<Message> updateClubImage(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestPart @Nullable List<MultipartFile> image,
-            @RequestPart RemoveImageRequest removeImageRequest,
+            @RequestPart @Nullable RemoveImageRequest removeImageRequest,
             @PathVariable Long club_id
     ) {
         User user = userDetails.getUser();
@@ -226,6 +226,16 @@ public class ClubController {
     @GetMapping("/popular")
     public ResponseEntity<?> getMostLikedClub(){
         return clubService.getMostLikedClub();
+    }
+
+    @PutMapping("/{club_id}/rule")
+    public ResponseEntity<Message> updateClubRule(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long club_id,
+            @RequestBody ClubRuleUpdateRequest clubRuleUpdateRequest
+    ){
+        User user = userDetails.getUser();
+        return clubUpdateService.updateClubRule(user, club_id, clubRuleUpdateRequest);
     }
 
 }
