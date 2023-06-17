@@ -2,10 +2,7 @@ package com.example.moyiza_be.club.entity;
 
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,6 +22,7 @@ public class CreateClub {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private GenderPolicyEnum genderPolicy;
