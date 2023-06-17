@@ -24,4 +24,5 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     Optional<Club> findByIdAndIsDeletedFalse(Long clubId);
 
     List<Club> findByOwnerId(Long userId);
+    List<Club> findAllByOrderByNumLikesDesc();
 }

@@ -223,5 +223,9 @@ public class ClubController {
         return clubUpdateService.updateClubImage(user, club_id, image, removeImageRequest);
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<?> getMostLikedClub(){
+        return clubService.getMostLikedClub();
+    }
 
 }

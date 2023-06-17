@@ -17,7 +17,6 @@ import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.event.service.EventService;
 import com.example.moyiza_be.like.service.LikeService;
-import com.example.moyiza_be.oneday.dto.MemberResponse;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -218,4 +218,11 @@ public class ClubService {
     public Integer userOwnedClubCount(Long userId) {
         return clubRepository.countByOwnerIdAndIsDeletedFalse(userId);
     }
+
+    public ResponseEntity<?> getMostLikedClub() {
+        List<ClubSimpleResponseDto> clubs = clubRepository.findAllByOrderByNumLikesDesc().stream().map(ClubSimpleResponseDto::new).collect(Collectors.toList());
+        return new ResponseEntity<>(clubs, HttpStatus.OK);
+    }
+
+
 }
