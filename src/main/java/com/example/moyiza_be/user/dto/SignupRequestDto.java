@@ -13,8 +13,8 @@ public class SignupRequestDto {
     private String name;
     @Email
     private String email;
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@!%*?&()_])[A-Za-z\\d$@!%*?&()_]{8,16}$",
-            message = "비밀번호는 최소 8자 이상 16자 이하이며 알파벳 대소문자, 숫자와 특수문자로 구성되어야 합니다.")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9])[A-Za-z\\d$@!%*?&()_]{8,16}$",
+            message = "비밀번호는 최소 8자 이상 16자 이하이며 알파벳 영문, 숫자가 포함되어야 합니다.")
     private String password;
     private String nickname;
     private GenderEnum gender;
