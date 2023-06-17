@@ -6,6 +6,7 @@ import com.example.moyiza_be.user.email.EmailRequestDto;
 import com.example.moyiza_be.user.email.EmailService;
 import com.example.moyiza_be.user.service.MypageService;
 import com.example.moyiza_be.user.service.UserService;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -30,7 +31,7 @@ public class UserController {
         return userService.signup(testRequestDto);
     }
     @PostMapping("/uploadImg")
-    public ResponseEntity<?> uploadImg(@RequestPart(value = "imageFile") MultipartFile image){
+    public ResponseEntity<?> uploadImg(@RequestPart(value = "imageFile") @Nullable MultipartFile image){
         return userService.uploadImg(image);
     }
 
