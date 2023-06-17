@@ -3,8 +3,6 @@ package com.example.moyiza_be.oneday.service;
 //import com.example.moyiza_be.alarm.repository.AlarmRepository;
 //import com.example.moyiza_be.alarm.service.AlarmService;
 import com.example.moyiza_be.chat.service.ChatService;
-import com.example.moyiza_be.club.dto.ClubSimpleResponseDto;
-import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.enums.*;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
@@ -360,7 +358,7 @@ public class OneDayService {
 
     public ResponseEntity<List<OneDayImminentResponseDto>> getImminentOneDays() {
         LocalDateTime now = LocalDateTime.now();
-        List<OneDay> imminentOneDays = oneDayRepository.findAllByOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
+        List<OneDay> imminentOneDays = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
         List<OneDayImminentResponseDto> oneDays = imminentOneDays.stream()
                 .map(oneDay -> {
                     Duration duration = Duration.between(now, oneDay.getOneDayStartTime());
@@ -372,7 +370,7 @@ public class OneDayService {
     }
 
     public ResponseEntity<?> getMostLikedOneDays() {
-        List<OneDay> oneDayList = oneDayRepository.findAllByOrderByNumLikesDesc();
+        List<OneDay> oneDayList = oneDayRepository.findAllByDeletedFalseOrderByNumLikesDesc();
         List<OneDaySimpleResponseDto> oneDays = new ArrayList<>();
         for (OneDay oneDay : oneDayList) {
             List<OneDayImageUrl> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDay.getId());
