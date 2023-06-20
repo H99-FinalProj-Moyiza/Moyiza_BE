@@ -26,7 +26,7 @@ public class ClubListResponse {
 
     @QueryProjection
     public ClubListResponse(Long club_id, String ownerNickname, String clubTitle,String clubContent, String tagString,
-                            Integer maxGroupSize, Integer nowMemberCount, String thumbnailUrl,List<String> imageUrlList,
+                            Integer maxGroupSize, Integer nowMemberCount, String thumbnailUrl, List<String> imageUrlList,
                             Integer numLikes, Boolean isLikedByUser) {
         this.club_id = club_id;
         this.ownerNickname = ownerNickname;
@@ -40,5 +40,4 @@ public class ClubListResponse {
         this.numLikes = numLikes;
         this.isLikedByUser = isLikedByUser;
     }
-
 }

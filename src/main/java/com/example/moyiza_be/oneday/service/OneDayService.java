@@ -105,60 +105,20 @@ public class OneDayService {
             Double longitude, Double latitude, Double radius, LocalDateTime startafter
     ) {
         Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
-                user, pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
+                user, null, pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
         );
         return ResponseEntity.ok(filteredOnedayList);
     }
 
     // List For MyPage OneDay
-    public OneDayListOnMyPage getOneDayListOnMyPage(Long userId, Long profileId) {
+    public OneDayListOnMyPage getOneDayListOnMyPage(Pageable pageable, User user, Long profileId) {
         // List For Operating OneDay
-        List<OneDay> oneDaysInOperation = oneDayRepository.findAllByOwnerId(profileId);
-        List<OneDayDetailOnMyPage> oneDaysInOperationInfo = oneDaysInOperation.stream()
-                .map(oneDay -> {
-                    boolean isLikedByUser = onedayLikeRepository.existsByUserIdAndOnedayId(userId, oneDay.getId());
-                    return OneDayDetailOnMyPage.builder()
-                            .oneDayId(oneDay.getId())
-                            .oneDayTitle(oneDay.getOneDayTitle())
-                            .oneDayContent(oneDay.getOneDayContent())
-                            .oneDayLocation(oneDay.getOneDayLocation())
-                            .category(oneDay.getCategory().getCategory())
-                            .tagString(TagEnum.parseTag(oneDay.getTagString()))
-                            .oneDayGroupSize(oneDay.getOneDayGroupSize())
-                            .oneDayImage(oneDay.getOneDayImage())
-                            .oneDayAttendantListSize(oneDaysInOperation.size())
-                            .oneDayNumLikes(oneDay.getNumLikes())
-                            .oneDayIsLikedByUser(isLikedByUser)
-                            .build();
-                })
-                .sorted(Comparator.comparing(OneDayDetailOnMyPage::getOneDayId).reversed())
-                .collect(Collectors.toList());
+        Page<OneDayListResponseDto> oneDaysInOperationInfo = oneDayRepositoryCustom.getFilteredOnedayList(
+                user, profileId, pageable, null, null, null, null, null, null, null, null, null
+        );
 
-        // List For Attending OneDay
-        List<OneDayAttendant> oneDaysInParticipatingEntry = attendantRepository.findByUserId(profileId);
-        List<Long> oneDaysInParticipatingIds = oneDaysInParticipatingEntry.stream()
-                .map(OneDayAttendant::getOneDayId)
-                .collect(Collectors.toList());
-        List<OneDay> oneDaysInParticipating = oneDayRepository.findAllByIdIn(oneDaysInParticipatingIds);
-        List<OneDayDetailOnMyPage> oneDaysInParticipatingInfo = oneDaysInParticipating.stream()
-                .map(oneDay -> {
-                    boolean isLikedByUser = onedayLikeRepository.existsByUserIdAndOnedayId(userId, oneDay.getId());
-                    return OneDayDetailOnMyPage.builder()
-                            .oneDayId(oneDay.getId())
-                            .oneDayTitle(oneDay.getOneDayTitle())
-                            .oneDayContent(oneDay.getOneDayContent())
-                            .oneDayLocation(oneDay.getOneDayLocation())
-                            .category(oneDay.getCategory().getCategory())
-                            .tagString(TagEnum.parseTag(oneDay.getTagString()))
-                            .oneDayGroupSize(oneDay.getOneDayGroupSize())
-                            .oneDayImage(oneDay.getOneDayImage())
-                            .oneDayAttendantListSize(oneDaysInParticipating.size())
-                            .oneDayNumLikes(oneDay.getNumLikes())
-                            .oneDayIsLikedByUser(isLikedByUser)
-                            .build();
-                })
-                .sorted(Comparator.comparing(OneDayDetailOnMyPage::getOneDayId).reversed())
-                .collect(Collectors.toList());
+        Page<OneDayListResponseDto> oneDaysInParticipatingInfo = oneDayRepositoryCustom.getFilteredJoinedOnedayList(
+                user, profileId, pageable);
 
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }

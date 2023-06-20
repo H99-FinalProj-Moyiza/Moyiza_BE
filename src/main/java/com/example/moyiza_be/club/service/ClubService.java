@@ -69,10 +69,10 @@ public class ClubService {
 
     //Club List Search (including full and search)
     public ResponseEntity<Page<ClubListResponse>> getClubList(
-            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3, User user
+            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3, User user, Long profileId
     ) {
         Page<ClubListResponse> responseList = clubRepositoryCustom.filteredClubResponseList(
-                pageable, category, q, tag1, tag2, tag3, user);
+                pageable, category, q, tag1, tag2, tag3, user, null);
         return ResponseEntity.ok(responseList);
     }
   
@@ -92,9 +92,11 @@ public class ClubService {
     }
 
     //Get Club List on Mypage
-    public ClubListOnMyPage getClubListOnMyPage(Long userId, Long profileId) {
-        List<ClubDetailResponse> clubsInOperationInfo = clubRepositoryCustom.getManagedClubDetail(userId, profileId);
-        List<ClubDetailResponse> clubsInParticipatingInfo = clubRepositoryCustom.getJoinedClubDetail(userId, profileId);
+    public ClubListOnMyPage getClubListOnMyPage(Pageable pageable, User user, Long profileId) {
+        Page<ClubListResponse> clubsInOperationInfo = clubRepositoryCustom.filteredClubResponseList(
+                pageable, null, null, null, null, null, user, profileId);
+        Page<ClubListResponse> clubsInParticipatingInfo = clubRepositoryCustom.filteredJoinedClubResponseList(
+                pageable, user, profileId);
         return new ClubListOnMyPage(clubsInOperationInfo, clubsInParticipatingInfo);
     }
 
