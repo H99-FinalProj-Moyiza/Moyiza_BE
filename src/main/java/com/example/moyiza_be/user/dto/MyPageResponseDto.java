@@ -5,6 +5,7 @@ import com.example.moyiza_be.club.dto.ClubListResponse;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.dto.OneDayDetailOnMyPage;
 import com.example.moyiza_be.oneday.dto.OneDayListOnMyPage;
+import com.example.moyiza_be.oneday.dto.OneDayListResponseDto;
 import com.example.moyiza_be.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,8 +28,8 @@ public class MyPageResponseDto {
     private Integer oneDaysInParticipatingCount;
     private Page<ClubListResponse> clubsInOperationInfo;
     private Page<ClubListResponse> clubsInParticipatingInfo;
-    private List<OneDayDetailOnMyPage> oneDaysInOperationInfo;
-    private List<OneDayDetailOnMyPage> oneDaysInParticipatingInfo;
+    private Page<OneDayListResponseDto> oneDaysInOperationInfo;
+    private Page<OneDayListResponseDto> oneDaysInParticipatingInfo;
 
 
     public MyPageResponseDto(User profileUser, ClubListOnMyPage clubListOnMyPage, OneDayListOnMyPage oneDayListOnMyPage) {
@@ -40,8 +41,8 @@ public class MyPageResponseDto {
         this.content = profileUser.getContent();
         this.clubsInOperationCount = clubListOnMyPage.getClubsInOperationInfo().getNumberOfElements();
         this.clubsInParticipatingCount = clubListOnMyPage.getClubsInParticipatingInfo().getNumberOfElements();
-        this.oneDaysInOperationCount = oneDayListOnMyPage.getOneDaysInOperationInfo().size();
-        this.oneDaysInParticipatingCount = oneDayListOnMyPage.getOneDaysInParticipatingInfo().size();
+        this.oneDaysInOperationCount = oneDayListOnMyPage.getOneDaysInOperationInfo().getNumberOfElements();
+        this.oneDaysInParticipatingCount = oneDayListOnMyPage.getOneDaysInParticipatingInfo().getNumberOfElements();
         this.clubsInOperationInfo = clubListOnMyPage.getClubsInOperationInfo();
         this.clubsInParticipatingInfo = clubListOnMyPage.getClubsInParticipatingInfo();
         this.oneDaysInOperationInfo = oneDayListOnMyPage.getOneDaysInOperationInfo();

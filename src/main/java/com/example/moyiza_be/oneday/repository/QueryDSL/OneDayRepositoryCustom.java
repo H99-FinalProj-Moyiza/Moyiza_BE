@@ -3,10 +3,7 @@ package com.example.moyiza_be.oneday.repository.QueryDSL;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.dto.OneDayListResponseDto;
-import com.example.moyiza_be.oneday.dto.QOneDayListResponseDto;
-
-import static com.example.moyiza_be.club.entity.QClubImageUrl.clubImageUrl;
-import static com.example.moyiza_be.oneday.entity.QOneDayImageUrl.oneDayImageUrl;
+import com.example.moyiza_be.user.entity.QUser;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
@@ -15,7 +12,6 @@ import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +20,10 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.example.moyiza_be.club.entity.QClub.club;
 import static com.example.moyiza_be.like.entity.QOnedayLike.onedayLike;
-import static com.example.moyiza_be.like.entity.QReviewLike.reviewLike;
 import static com.example.moyiza_be.oneday.entity.QOneDay.oneDay;
-import static com.example.moyiza_be.review.entity.QReview.review;
+import static com.example.moyiza_be.oneday.entity.QOneDayAttendant.oneDayAttendant;
+import static com.example.moyiza_be.oneday.entity.QOneDayImageUrl.oneDayImageUrl;
 import static com.example.moyiza_be.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.types.dsl.MathExpressions.power;
@@ -40,7 +35,7 @@ public class OneDayRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     public Page<OneDayListResponseDto> getFilteredOnedayList(
-            User nowUser, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
+            User nowUser, Long profileId, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
             Double nowLongitude, Double nowLatitude, Double radius, LocalDateTime timeCondition
     ) {
         Long userId = nowUser == null ? -1 : nowUser.getId();
@@ -57,7 +52,8 @@ public class OneDayRepositoryCustom {
                                 eqCategory(category),
                                 titleContainOrContentContain(q),
                                 nearby(radius, nowLongitude, nowLatitude),
-                                startTimeAfter(timeCondition)
+                                startTimeAfter(timeCondition),
+                                isProfileId(profileId)
                         )
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -84,6 +80,57 @@ public class OneDayRepositoryCustom {
                                                                 .selectFrom(onedayLike)
                                                                 .where(onedayLike.onedayId.eq(oneDay.id)
                                                                         .and(onedayLike.userId.eq(userId))
+                                                                )
+                                                                .exists()
+
+                                                )
+                                        )
+
+                        );
+
+        return new PageImpl<>(onedayList, pageable, 1000L);
+    }
+
+    public Page<OneDayListResponseDto> getFilteredJoinedOnedayList(
+            User nowUser, Long profileId, Pageable pageable
+    ) {
+        QUser owner = new QUser("owner");
+        List<OneDayListResponseDto> onedayList =
+                jpaQueryFactory
+                        .from(oneDay)
+                        .join(oneDayAttendant).on(oneDayAttendant.oneDayId.eq(oneDay.id))
+                        .join(user).on(oneDayAttendant.userId.eq(user.id))
+                        .join(owner).on(oneDay.ownerId.eq(owner.id))
+                        .leftJoin(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
+                        .where(
+                                user.id.eq(profileId),
+                                oneDay.deleted.isFalse()
+                        )
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .orderBy(oneDay.id.desc())
+                        .transform(
+                                groupBy(oneDay.id)
+                                        .list(
+                                                Projections.constructor(OneDayListResponseDto.class,
+                                                        oneDay.id,
+                                                        owner.nickname,
+                                                        user.profileImage,
+                                                        oneDay.oneDayTitle,
+                                                        oneDay.oneDayContent,
+                                                        oneDay.tagString,
+                                                        oneDay.oneDayGroupSize,
+                                                        oneDay.attendantsNum,
+                                                        oneDay.oneDayImage,
+                                                        GroupBy.list(oneDayImageUrl.imageUrl),
+                                                        oneDay.oneDayLongitude,
+                                                        oneDay.oneDayLatitude,
+                                                        oneDay.oneDayLocation,
+                                                        oneDay.numLikes,
+                                                        JPAExpressions
+                                                                .selectFrom(onedayLike)
+                                                                .where(onedayLike.onedayId.eq(oneDay.id)
+                                                                        .and(onedayLike.userId.eq(nowUser.getId()))
                                                                 )
                                                                 .exists()
 
@@ -149,5 +196,8 @@ public class OneDayRepositoryCustom {
         }
     }
 
+    private BooleanExpression isProfileId(Long profileId) {
+        return profileId == null ? null : user.id.eq(profileId);
+    }
 
 }

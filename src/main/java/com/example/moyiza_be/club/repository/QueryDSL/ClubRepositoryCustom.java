@@ -5,6 +5,7 @@ import com.example.moyiza_be.club.dto.ClubListResponse;
 import com.example.moyiza_be.club.dto.QClubDetailResponse;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
+import com.example.moyiza_be.user.entity.QUser;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
@@ -89,11 +90,13 @@ public class ClubRepositoryCustom {
             Pageable pageable, User nowUser, Long profileId
     ) {
 
+        QUser owner = new QUser("owner");
         List<ClubListResponse> clubListResponseList =
                 jpaQueryFactory
                         .from(club)
                         .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
                         .join(user).on(clubJoinEntry.userId.eq(user.id))
+                        .join(owner).on(club.ownerId.eq(owner.id))
                         .leftJoin(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
                         .where(
                                 user.id.eq(profileId),
@@ -106,7 +109,7 @@ public class ClubRepositoryCustom {
                                 groupBy(club.id)
                                         .list(Projections.constructor(ClubListResponse.class,
                                                 club.id,
-                                                user.nickname,
+                                                owner.nickname,
                                                 club.title,
                                                 club.content,
                                                 club.tagString,

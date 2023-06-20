@@ -21,7 +21,7 @@ public class MypageService {
     public ResponseEntity<?> getMypage(Pageable pageable, User user, Long profileId) {
         User profileUser = userService.loadUserById(profileId);
         ClubListOnMyPage clubListOnMyPage = clubService.getClubListOnMyPage(pageable, user, profileId);
-        OneDayListOnMyPage oneDayListOnMyPage = oneDayService.getOneDayListOnMyPage(user.getId(), profileId);
+        OneDayListOnMyPage oneDayListOnMyPage = oneDayService.getOneDayListOnMyPage(pageable ,user, profileId);
         MyPageResponseDto myPageResponseDto = new MyPageResponseDto(profileUser, clubListOnMyPage, oneDayListOnMyPage);
         return ResponseEntity.ok(myPageResponseDto);
     }
