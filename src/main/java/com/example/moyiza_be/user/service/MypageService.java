@@ -7,6 +7,7 @@ import com.example.moyiza_be.oneday.service.OneDayService;
 import com.example.moyiza_be.user.dto.MyPageResponseDto;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +18,9 @@ public class MypageService {
     private final OneDayService oneDayService;
     private final ClubService clubService;
 
-    public ResponseEntity<?> getMypage(User user, Long profileId) {
+    public ResponseEntity<?> getMypage(Pageable pageable, User user, Long profileId) {
         User profileUser = userService.loadUserById(profileId);
-        ClubListOnMyPage clubListOnMyPage = clubService.getClubListOnMyPage(user.getId(), profileId);
+        ClubListOnMyPage clubListOnMyPage = clubService.getClubListOnMyPage(pageable, user, profileId);
         OneDayListOnMyPage oneDayListOnMyPage = oneDayService.getOneDayListOnMyPage(user.getId(), profileId);
         MyPageResponseDto myPageResponseDto = new MyPageResponseDto(profileUser, clubListOnMyPage, oneDayListOnMyPage);
         return ResponseEntity.ok(myPageResponseDto);

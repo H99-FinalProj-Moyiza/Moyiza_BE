@@ -3,15 +3,12 @@ package com.example.moyiza_be.club.repository.QueryDSL;
 import com.example.moyiza_be.club.dto.ClubDetailResponse;
 import com.example.moyiza_be.club.dto.ClubListResponse;
 import com.example.moyiza_be.club.dto.QClubDetailResponse;
-import com.example.moyiza_be.club.dto.QClubListResponse;
-import com.example.moyiza_be.club.entity.QClubImageUrl;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +33,11 @@ public class ClubRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     public Page<ClubListResponse> filteredClubResponseList(
-            Pageable pageable, CategoryEnum categoryEnum, String q, String tag1, String tag2, String tag3, User nowUser
+            Pageable pageable, CategoryEnum categoryEnum, String q, String tag1, String tag2, String tag3, User nowUser,
+            Long profileId
     ) {
         Long userId = nowUser == null ? -1 : nowUser.getId();
+
         List<ClubListResponse> clubListResponseList =
                 jpaQueryFactory
                         .from(club).where(club.isDeleted.isFalse())
@@ -50,7 +49,55 @@ public class ClubRepositoryCustom {
                                 titleContainOrContentContain(q),
                                 eqTag1(tag1),
                                 eqTag2(tag2),
-                                eqTag3(tag3)
+                                eqTag3(tag3),
+                                isProfileId(profileId)
+                        )
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .orderBy(club.id.desc())
+                        .transform(
+                                groupBy(club.id)
+                                        .list(Projections.constructor(ClubListResponse.class,
+                                                        club.id,
+                                                        user.nickname,
+                                                        club.title,
+                                                        club.content,
+                                                        club.tagString,
+                                                        club.maxGroupSize,
+                                                        club.nowMemberCount,
+                                                        club.thumbnailUrl,
+                                                        GroupBy.list(clubImageUrl.imageUrl),
+                                                        club.numLikes,
+                                                        JPAExpressions
+                                                                .selectFrom(clubLike)
+                                                                .where(clubLike.clubId.eq(club.id)
+                                                                        .and(clubLike.userId.eq(userId))
+                                                                )
+                                                                .exists()
+                                                ))
+                        );
+
+
+//        Long count = jpaQueryFactory
+//                .select(club.count())
+//                .fetchOne();
+
+        return new PageImpl<>(clubListResponseList, pageable, 5000L);
+    }
+
+    public Page<ClubListResponse> filteredJoinedClubResponseList(
+            Pageable pageable, User nowUser, Long profileId
+    ) {
+
+        List<ClubListResponse> clubListResponseList =
+                jpaQueryFactory
+                        .from(club)
+                        .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
+                        .join(user).on(clubJoinEntry.userId.eq(user.id))
+                        .leftJoin(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
+                        .where(
+                                user.id.eq(profileId),
+                                club.isDeleted.isFalse()
                         )
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
@@ -71,20 +118,15 @@ public class ClubRepositoryCustom {
                                                 JPAExpressions
                                                         .selectFrom(clubLike)
                                                         .where(clubLike.clubId.eq(club.id)
-                                                                .and(clubLike.userId.eq(userId))
+                                                                .and(clubLike.userId.eq(nowUser.getId()))
                                                         )
                                                         .exists()
-                                                )
-
-                                        )
-                        )
-                ;
-//        Long count = jpaQueryFactory
-//                .select(club.count())
-//                .fetchOne();
-
+                                        ))
+                        );
         return new PageImpl<>(clubListResponseList, pageable, 5000L);
     }
+
+
 
     public ClubDetailResponse getClubDetail(Long clubId, User nowUser){
         Long userId = nowUser == null ? -1 : nowUser.getId();
@@ -118,71 +160,71 @@ public class ClubRepositoryCustom {
                 .fetchOne();
     }
 
-//운영중인 마이페이지 클럽 리스트 조회
-    public List<ClubDetailResponse> getManagedClubDetail(Long userId, Long profileId) {
-        return jpaQueryFactory
-                .select(
-                        new QClubDetailResponse(
-                                club.id,
-                                user.nickname,
-                                club.title,
-                                club.category,
-                                club.tagString,
-                                club.content,
-                                club.agePolicy,
-                                club.genderPolicy,
-                                club.maxGroupSize,
-                                club.nowMemberCount,
-                                club.thumbnailUrl,
-                                club.numLikes,
-                                JPAExpressions
-                                        .selectFrom(clubLike)
-                                        .where(clubLike.clubId.eq(club.id)
-                                                .and(clubLike.userId.eq(userId))
-                                        )
-                                        .exists(),
-                                club.clubRule
-                        )
-                )
-                .from(club)
-                .join(user).on(club.ownerId.eq(profileId))
-                .where(user.id.eq(profileId), club.isDeleted.isFalse())
-                .orderBy(club.id.desc())
-                .fetch();
-    }
-
-    public List<ClubDetailResponse> getJoinedClubDetail(Long userId, Long profileId) {
-        return jpaQueryFactory
-                .select(
-                        new QClubDetailResponse(
-                                club.id,
-                                user.nickname,
-                                club.title,
-                                club.category,
-                                club.tagString,
-                                club.content,
-                                club.agePolicy,
-                                club.genderPolicy,
-                                club.maxGroupSize,
-                                club.nowMemberCount,
-                                club.thumbnailUrl,
-                                club.numLikes,
-                                JPAExpressions
-                                        .selectFrom(clubLike)
-                                        .where(clubLike.clubId.eq(club.id)
-                                                .and(clubLike.userId.eq(userId))
-                                        )
-                                        .exists(),
-                                club.clubRule
-                        )
-                )
-                .from(club)
-                .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
-                .join(user).on(clubJoinEntry.userId.eq(profileId))
-                .where(user.id.eq(profileId), club.isDeleted.isFalse())
-                .orderBy(club.id.desc())
-                .fetch();
-    }
+////운영중인 마이페이지 클럽 리스트 조회
+//    public List<ClubDetailResponse> getManagedClubDetail(Long userId, Long profileId) {
+//        return jpaQueryFactory
+//                .select(
+//                        new QClubDetailResponse(
+//                                club.id,
+//                                user.nickname,
+//                                club.title,
+//                                club.category,
+//                                club.tagString,
+//                                club.content,
+//                                club.agePolicy,
+//                                club.genderPolicy,
+//                                club.maxGroupSize,
+//                                club.nowMemberCount,
+//                                club.thumbnailUrl,
+//                                club.numLikes,
+//                                JPAExpressions
+//                                        .selectFrom(clubLike)
+//                                        .where(clubLike.clubId.eq(club.id)
+//                                                .and(clubLike.userId.eq(userId))
+//                                        )
+//                                        .exists(),
+//                                club.clubRule
+//                        )
+//                )
+//                .from(club)
+//                .join(user).on(club.ownerId.eq(profileId))
+//                .where(user.id.eq(profileId), club.isDeleted.isFalse())
+//                .orderBy(club.id.desc())
+//                .fetch();
+//    }
+//
+//    public List<ClubDetailResponse> getJoinedClubDetail(Long userId, Long profileId) {
+//        return jpaQueryFactory
+//                .select(
+//                        new QClubDetailResponse(
+//                                club.id,
+//                                user.nickname,
+//                                club.title,
+//                                club.category,
+//                                club.tagString,
+//                                club.content,
+//                                club.agePolicy,
+//                                club.genderPolicy,
+//                                club.maxGroupSize,
+//                                club.nowMemberCount,
+//                                club.thumbnailUrl,
+//                                club.numLikes,
+//                                JPAExpressions
+//                                        .selectFrom(clubLike)
+//                                        .where(clubLike.clubId.eq(club.id)
+//                                                .and(clubLike.userId.eq(userId))
+//                                        )
+//                                        .exists(),
+//                                club.clubRule
+//                        )
+//                )
+//                .from(club)
+//                .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
+//                .join(user).on(clubJoinEntry.userId.eq(profileId))
+//                .where(user.id.eq(profileId), club.isDeleted.isFalse())
+//                .orderBy(club.id.desc())
+//                .fetch();
+//    }
 
 //    private OrderSpecifier createOrderSpecifier(OrderCondition orderCondition) {
 //
@@ -234,6 +276,10 @@ public class ClubRepositoryCustom {
 
     private BooleanExpression contentContain(String q) {
         return q == null ? null : club.content.contains(q);
+    }
+
+    private BooleanExpression isProfileId(Long profileId) {
+        return profileId == null ? null : user.id.eq(profileId);
     }
 
 

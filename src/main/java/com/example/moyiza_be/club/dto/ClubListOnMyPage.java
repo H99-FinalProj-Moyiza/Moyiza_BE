@@ -2,17 +2,18 @@ package com.example.moyiza_be.club.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
 public class ClubListOnMyPage {
-    private List<ClubDetailResponse> clubsInOperationInfo;
-    private List<ClubDetailResponse> clubsInParticipatingInfo;
+    private Page<ClubListResponse> clubsInOperationInfo;
+    private Page<ClubListResponse> clubsInParticipatingInfo;
 
-    public ClubListOnMyPage(List<ClubDetailResponse> clubsInOperationInfo,
-                            List<ClubDetailResponse> clubsInParticipatingInfo) {
+    public ClubListOnMyPage(Page<ClubListResponse> clubsInOperationInfo,
+                            Page<ClubListResponse> clubsInParticipatingInfo) {
         this.clubsInOperationInfo = clubsInOperationInfo;
         this.clubsInParticipatingInfo = clubsInParticipatingInfo;
     }
