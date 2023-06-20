@@ -173,6 +173,11 @@ public class UserService {
                 () -> new NullPointerException("User not found"));
     }
 
+    public ResponseEntity<?> getUserInfo(User user) {
+        UserInfoResponseDto responseDto = new UserInfoResponseDto(user);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
     //Modify Profile - test
 //    public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
 //        User user = validationUtil.findUser(email);
