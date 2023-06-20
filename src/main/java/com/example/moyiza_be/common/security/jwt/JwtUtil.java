@@ -145,7 +145,7 @@ public class JwtUtil {
             RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmail());
             refreshTokenRepository.save(newToken);
         }
-        cookieUtil.addCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+        cookieUtil.addResponseCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
         response.setHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
     }
 
