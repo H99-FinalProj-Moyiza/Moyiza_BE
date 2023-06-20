@@ -59,14 +59,19 @@ public class EventService {
 //        if(!Objects.isNull(eventRequestDto.getImage()) && !eventRequestDto.getImage().isEmpty() && !eventRequestDto.getImage().getContentType().isEmpty()){
 //            imageUrl = s3Uploader.eventUpload(eventRequestDto.getImage(), "image");
 //        }
+        log.info("Is Image Empty?");
         if(!image.isEmpty()) {
+            log.info("No, Image is not Empty!");
             imageUrl = s3Uploader.uploadFile(image);
         }
+        log.info("create Event");
         // Create + (Delete : false) + (AttendantsNum : 1(Owner)) | (Should Attendants contain owner? attendantsNum++ : nothing change)
         Event event = new Event(eventRequestDto, user.getId(), clubId, imageUrl); // 이미지 넣으면 user, image로 변경
+        log.info("set Deleted false");
         event.setDeleted(false);
 //        event.setAttendantsNum(1);
         eventRepository.saveAndFlush(event);
+        log.info("Create and Save Complete!");
         return new ResponseEntity<>("Create Success", HttpStatus.OK);
     }
 
@@ -133,23 +138,31 @@ public class EventService {
     // Event Attend/Cancel
     public ResponseEntity<?> joinEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 EventNot Found"));
+        log.info("Double Attend Check");
         if(attendantRepository.findByEventIdAndUserId(eventId, user.getId()) != null) {
+            log.info("Fail! You Already Attend The Event!");
             return new ResponseEntity<>(new Message("Cannot Attend Twice"), HttpStatus.FORBIDDEN);
         }
+        log.info("Add AttendantList");
         EventAttendant eventAttendant = new EventAttendant(eventId, user.getId(), user);
         attendantRepository.save(eventAttendant);
+        log.info("AttendantsNum++");
         event.addAttend();
         return ResponseEntity.ok("Attending Complete.");
     }
 
     public ResponseEntity<?> cancelEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 Event NotFound"));
+        log.info("Did You Attend The Event?");
         EventAttendant eventAttendant = attendantRepository.findByEventIdAndUserId(eventId, user.getId());
         if (eventAttendant != null) {
+            log.info("Yes! And Want To Cancel.");
             attendantRepository.delete(eventAttendant);
+            log.info("AttendantsNum--");
             event.cancelAttend();
             return ResponseEntity.ok("Cancel Complete.");
         } else {
+            log.info("No, You Did Not Attend The Event!");
             return ResponseEntity.ok("401 Unauthorized.");
         }
     }
@@ -182,12 +195,12 @@ public class EventService {
 
     private Event loadEventById(Long eventId){
         return eventRepository.findById(eventId)
-                .orElseThrow(() -> new NullPointerException("Event Not Found"));
+                .orElseThrow(() -> new NullPointerException("Event Not Found for eventId : " + eventId));
     }
 
     public void checkValidity(User user, Long identifier) {
         if (!eventAttendantRepository.existsByUserIdAndEventId(user.getId(), identifier)){
-            throw new NullPointerException("Event join entry not found");
+            throw new NullPointerException("Event join entry not found for userId " + user.getId() + "eventId : " + identifier);
         }
     }
 }

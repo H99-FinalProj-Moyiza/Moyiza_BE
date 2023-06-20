@@ -9,8 +9,14 @@ import com.example.moyiza_be.chat.repository.ChatRecordRepository;
 import com.example.moyiza_be.chat.repository.ChatRepository;
 import com.example.moyiza_be.chat.repository.QueryDSL.ChatRecordRepositoryCustom;
 import com.example.moyiza_be.chat.repository.QueryDSL.ChatRepositoryCustom;
+import com.example.moyiza_be.club.entity.ClubImageUrl;
+import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
+import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.redis.RedisCacheService;
+import com.example.moyiza_be.common.utils.BadWordFiltering;
+import com.example.moyiza_be.oneday.entity.OneDayImageUrl;
+import com.example.moyiza_be.oneday.repository.OneDayImageUrlRepository;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,13 +44,19 @@ public class ChatService {
     private final RedisCacheService cacheService;
     private final ChatRepositoryCustom chatRepositoryCustom;
     private final ChatRecordRepositoryCustom chatRecordRepositoryCustom;
+    private final ClubImageUrlRepository clubImageUrlRepository;
+    private final OneDayImageUrlRepository oneDayImageUrlRepository;
+    private final BadWordFiltering badWordFiltering;
+
+    private final String DEFAULT_CHATROOM_IMAGE = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/e048a389-8488-4ab5-a973-c8e5bae99d2e_pngaaa.com-293633.png";
 
     public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
                                    Long chatId,
                                    ChatMessageInput chatMessageInput
     ) {
         //Filtering ? need to some logic
-        ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userPrincipal.getUserId());
+        ChatMessageInput filteredChatInput = badWordFiltering.change(chatMessageInput);
+        ChatRecord chatRecord = filteredChatInput.toChatRecord(chatId, userPrincipal.getUserId());
         chatRecordRepository.save(chatRecord);  // id받아오려면 saveAndFlush로 변경
         Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
         Long chatMemberCount = getChatMemberCount(chatId);
@@ -65,18 +77,28 @@ public class ChatService {
                 .peek(chatRoomInfo ->
                         chatRoomInfo.setLastMessage(
                                 cacheService.loadRecentChat(chatRoomInfo.getChatId().toString())))
+                .peek(chatRoomInfo ->
+                        chatRoomInfo.setChatThumbnail(
+                                findClubThumbnailUrl(chatRoomInfo.getRoomIdentifier())
+                        )
+                )
                 .toList();
 
         return ResponseEntity.ok(clubChatRoomInfoList);
     }
 
-    public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(Long userId){
+    public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(Long userId) {
 
         List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId)
                 .stream()
                 .peek(chatRoomInfo ->
                         chatRoomInfo.setLastMessage(
                                 cacheService.loadRecentChat(chatRoomInfo.getChatId().toString())))
+                .peek(chatRoomInfo ->
+                        chatRoomInfo.setChatThumbnail(
+                                findOnedayThumbnailUrl(chatRoomInfo.getRoomIdentifier())
+                        )
+                )
                 .toList();
         return ResponseEntity.ok(onedayChatRoomInfoList);
     }
@@ -95,12 +117,12 @@ public class ChatService {
     public ResponseEntity<Page<ChatMessageOutput>> getChatRoomRecord(User user, Long chatId, Pageable pageable) {
         ChatJoinEntry chatJoinEntry =
                 chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
-                        .orElseThrow(()-> new NullPointerException("chatRoomEntry not found"));
+                        .orElseThrow(() -> new NullPointerException("chatRoomEntry not found"));
         Long memberCount = getChatMemberCount(chatId);
         if (pageable.getPageNumber() == 0) {
             return ResponseEntity.ok(cacheService.loadRecentChatList(chatId.toString(), memberCount, pageable));
         }
-        List<ChatMessageOutput> previousChatList = chatRecordRepositoryCustom.getPreviousChat(pageable,chatId);
+        List<ChatMessageOutput> previousChatList = chatRecordRepositoryCustom.getPreviousChat(pageable, chatId);
 
         if (previousChatList == null) {
             return ResponseEntity.ok(new PageImpl<>(new LinkedList<>(), pageable, 0L));
@@ -156,5 +178,17 @@ public class ChatService {
 
     public Long getChatMemberCount(Long chatId) {
         return chatJoinEntryRepository.countByChatIdAndAndIsCurrentlyJoinedTrue(chatId);
+    }
+
+    public String findClubThumbnailUrl(Long clubId) {
+        ClubImageUrl clubImageEntity = clubImageUrlRepository.findFirstByClubId(clubId)
+                .orElse(null);
+        return clubImageEntity == null ? DEFAULT_CHATROOM_IMAGE : clubImageEntity.getImageUrl();
+    }
+
+    public String findOnedayThumbnailUrl(Long onedayId) {
+        OneDayImageUrl onedayImageEntity = oneDayImageUrlRepository.findFirstByOneDayId(onedayId)
+                .orElse(null);
+        return onedayImageEntity == null ? DEFAULT_CHATROOM_IMAGE : onedayImageEntity.getImageUrl();
     }
 }

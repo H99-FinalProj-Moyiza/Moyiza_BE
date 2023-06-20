@@ -105,60 +105,20 @@ public class OneDayService {
             Double longitude, Double latitude, Double radius, LocalDateTime startafter
     ) {
         Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
-                user, pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
+                user, null, pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
         );
         return ResponseEntity.ok(filteredOnedayList);
     }
 
     // List For MyPage OneDay
-    public OneDayListOnMyPage getOneDayListOnMyPage(Long userId, Long profileId) {
+    public OneDayListOnMyPage getOneDayListOnMyPage(Pageable pageable, User user, Long profileId) {
         // List For Operating OneDay
-        List<OneDay> oneDaysInOperation = oneDayRepository.findAllByOwnerId(profileId);
-        List<OneDayDetailOnMyPage> oneDaysInOperationInfo = oneDaysInOperation.stream()
-                .map(oneDay -> {
-                    boolean isLikedByUser = onedayLikeRepository.existsByUserIdAndOnedayId(userId, oneDay.getId());
-                    return OneDayDetailOnMyPage.builder()
-                            .oneDayId(oneDay.getId())
-                            .oneDayTitle(oneDay.getOneDayTitle())
-                            .oneDayContent(oneDay.getOneDayContent())
-                            .oneDayLocation(oneDay.getOneDayLocation())
-                            .category(oneDay.getCategory().getCategory())
-                            .tagString(TagEnum.parseTag(oneDay.getTagString()))
-                            .oneDayGroupSize(oneDay.getOneDayGroupSize())
-                            .oneDayImage(oneDay.getOneDayImage())
-                            .oneDayAttendantListSize(oneDaysInOperation.size())
-                            .oneDayNumLikes(oneDay.getNumLikes())
-                            .oneDayIsLikedByUser(isLikedByUser)
-                            .build();
-                })
-                .sorted(Comparator.comparing(OneDayDetailOnMyPage::getOneDayId).reversed())
-                .collect(Collectors.toList());
+        Page<OneDayListResponseDto> oneDaysInOperationInfo = oneDayRepositoryCustom.getFilteredOnedayList(
+                user, profileId, pageable, null, null, null, null, null, null, null, null, null
+        );
 
-        // List For Attending OneDay
-        List<OneDayAttendant> oneDaysInParticipatingEntry = attendantRepository.findByUserId(profileId);
-        List<Long> oneDaysInParticipatingIds = oneDaysInParticipatingEntry.stream()
-                .map(OneDayAttendant::getOneDayId)
-                .collect(Collectors.toList());
-        List<OneDay> oneDaysInParticipating = oneDayRepository.findAllByIdIn(oneDaysInParticipatingIds);
-        List<OneDayDetailOnMyPage> oneDaysInParticipatingInfo = oneDaysInParticipating.stream()
-                .map(oneDay -> {
-                    boolean isLikedByUser = onedayLikeRepository.existsByUserIdAndOnedayId(userId, oneDay.getId());
-                    return OneDayDetailOnMyPage.builder()
-                            .oneDayId(oneDay.getId())
-                            .oneDayTitle(oneDay.getOneDayTitle())
-                            .oneDayContent(oneDay.getOneDayContent())
-                            .oneDayLocation(oneDay.getOneDayLocation())
-                            .category(oneDay.getCategory().getCategory())
-                            .tagString(TagEnum.parseTag(oneDay.getTagString()))
-                            .oneDayGroupSize(oneDay.getOneDayGroupSize())
-                            .oneDayImage(oneDay.getOneDayImage())
-                            .oneDayAttendantListSize(oneDaysInParticipating.size())
-                            .oneDayNumLikes(oneDay.getNumLikes())
-                            .oneDayIsLikedByUser(isLikedByUser)
-                            .build();
-                })
-                .sorted(Comparator.comparing(OneDayDetailOnMyPage::getOneDayId).reversed())
-                .collect(Collectors.toList());
+        Page<OneDayListResponseDto> oneDaysInParticipatingInfo = oneDayRepositoryCustom.getFilteredJoinedOnedayList(
+                user, profileId, pageable);
 
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }
@@ -257,38 +217,54 @@ public class OneDayService {
         chatService.leaveChat(oneDayId, ChatTypeEnum.ONEDAY, banUser);
         return new ResponseEntity<>(String.format("user %d has been banned", banRequest.getBanUserId()), HttpStatus.BAD_REQUEST);
     }
-
+    // Approval WaitingList
     public ResponseEntity<?> joinWishList(Long oneDayId, User user) {
+        log.info("Get OneDay");
         OneDay oneDay = loadExistingOnedayById(oneDayId);
+        ArrayList<User> approvalUsers = new ArrayList<>();
         // valid Check
+        log.info("Valid Check : Are You Owner?");
         if (oneDay.getOwnerId() != user.getId()) return new ResponseEntity<>("You are Not owner", HttpStatus.FORBIDDEN);
+        log.info("Get All Attendant Wish list");
         List<OneDayApproval> approvalList = approvalRepository.findAllByOneDayId(oneDayId);
-        return new ResponseEntity<>(approvalList, HttpStatus.OK);
+        log.info("Transform userId to User");
+        for (OneDayApproval approval : approvalList) {
+            User attendant = userRepository.findById(approval.getUserId()).orElseThrow(()-> new NullPointerException("No Such User Want To Attend"));
+            approvalUsers.add(attendant);
+        }
+        return new ResponseEntity<>(approvalUsers, HttpStatus.OK);
     }
     public ResponseEntity<?> approveJoin(Long oneDayId, Long userId, User user) {
+        log.info("Get Approval And OneDay");
         OneDayApproval oneDayApproval = approvalRepository.findByOneDayId(oneDayId);
         OneDay oneDay = loadExistingOnedayById(oneDayId);
-        // Are You Owner?
+        log.info("Valid Check : Are You Owner");
         if (user.getId() != oneDay.getOwnerId()) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
         // Join Process
+        log.info("Valid Check : Is It Fully Occupied?");
         Integer groupSize = oneDay.getOneDayGroupSize();
         Integer currentSize = attendantRepository.findAllByOneDayId(oneDayId).size();
         // Vacant Room for attend?
+        log.info("Yes, Fully Occupied");
         if (groupSize < currentSize) return new ResponseEntity<>("Fully Occupied", HttpStatus.FORBIDDEN);
+        log.info("No, Vacant Area Exists");
         OneDayAttendant attendant = new OneDayAttendant(oneDay, userId);
+        log.info("Add Attendant");
         attendantRepository.save(attendant);
+        log.info("Invite to ChatRoom");
         chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+        log.info("AttendantsNum++");
         oneDay.addAttendantNum();
-        // After Join, Delete waitingList
+        log.info("After Join, Delete waitingList");
         approvalRepository.delete(oneDayApproval);
         return new ResponseEntity<>("Attending Success", HttpStatus.OK);
     }
     public ResponseEntity<?> rejectJoin(Long oneDayId, Long userId, User user) {
         OneDayApproval oneDayApproval = approvalRepository.findByOneDayIdAndUserId(oneDayId, userId);
         OneDay oneDay = loadExistingOnedayById(oneDayId);
-        // Are You Owner?
+        log.info("Valid Check : Are You Owner");
         if (user.getId() != oneDay.getOwnerId()) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
-        // Reject Process
+        log.info("RejectProcess : delete from wishList");
         approvalRepository.delete(oneDayApproval);
         return new ResponseEntity<>("Reject Success", HttpStatus.OK);
     }
@@ -358,7 +334,7 @@ public class OneDayService {
 
     public ResponseEntity<List<OneDayImminentResponseDto>> getImminentOneDays() {
         LocalDateTime now = LocalDateTime.now();
-        List<OneDay> imminentOneDays = oneDayRepository.findAllByOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
+        List<OneDay> imminentOneDays = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
         List<OneDayImminentResponseDto> oneDays = imminentOneDays.stream()
                 .map(oneDay -> {
                     Duration duration = Duration.between(now, oneDay.getOneDayStartTime());
@@ -370,8 +346,13 @@ public class OneDayService {
     }
 
     public ResponseEntity<?> getMostLikedOneDays() {
-        List<OneDaySimpleResponseDto> oneDays = oneDayRepository.findAllByOrderByNumLikesDesc()
-                .stream().map(OneDaySimpleResponseDto::new).collect(Collectors.toList());
+        List<OneDay> oneDayList = oneDayRepository.findAllByDeletedFalseOrderByNumLikesDesc();
+        List<OneDaySimpleResponseDto> oneDays = new ArrayList<>();
+        for (OneDay oneDay : oneDayList) {
+            List<OneDayImageUrl> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDay.getId());
+            OneDaySimpleResponseDto oneDayDto = new OneDaySimpleResponseDto(oneDay, oneDayImageUrlList);
+            oneDays.add(oneDayDto);
+        }
         return new ResponseEntity<>(oneDays, HttpStatus.OK);
     }
 

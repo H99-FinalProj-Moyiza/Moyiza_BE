@@ -3,10 +3,7 @@ package com.example.moyiza_be.oneday.entity;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.GenderPolicyEnum;
 import com.example.moyiza_be.common.enums.OneDayTypeEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,6 +21,7 @@ public class OneDayCreate {
     private Long id;
     private Long ownerId;
     private String oneDayTitle;
+    @Column(columnDefinition = "TEXT")
     private String oneDayContent;
     private CategoryEnum category;
     private String tagString;

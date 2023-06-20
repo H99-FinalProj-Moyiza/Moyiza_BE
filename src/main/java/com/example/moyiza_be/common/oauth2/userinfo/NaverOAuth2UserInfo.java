@@ -17,16 +17,16 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
         }
         return (String) response.get("id");
     }
-    @Override
-    public String getName() {
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-
-        if (response == null) {
-            return null;
-        }
-
-        return (String) response.get("name");
-    }
+//    @Override
+//    public String getName() {
+//        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+//
+//        if (response == null) {
+//            return null;
+//        }
+//
+//        return (String) response.get("name");
+//    }
     @Override
     public String getEmail() {
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
@@ -37,16 +37,16 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
 
         return (String) response.get("email");
     }
-    @Override
-    public String getNickname() {
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-
-        if (response == null) {
-            return null;
-        }
-
-        return (String) response.get("nickname");
-    }
+//    @Override
+//    public String getNickname() {
+//        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+//
+//        if (response == null) {
+//            return null;
+//        }
+//
+//        return (String) response.get("nickname");
+//    }
     @Override
     public String getImageUrl() {
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
