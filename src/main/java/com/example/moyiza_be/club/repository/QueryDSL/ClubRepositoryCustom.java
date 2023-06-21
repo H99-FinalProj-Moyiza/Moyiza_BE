@@ -98,10 +98,14 @@ public class ClubRepositoryCustom {
     }
 
     public Page<ClubListResponse> filteredJoinedClubResponseList(
-            Pageable pageable, User nowUser, Long profileId
+            Pageable pageable, User nowUser, Long profileId, List<Long> filteringIdList
     ) {
-
         QUser owner = new QUser("owner");
+
+        SubQueryExpression<Long> subQuery = JPAExpressions.select(clubJoinEntry.clubId)
+                .from(clubJoinEntry)
+                .where(clubJoinEntry.userId.in(filteringIdList));
+
         List<ClubListResponse> clubListResponseList =
                 jpaQueryFactory
                         .from(club)
@@ -110,9 +114,12 @@ public class ClubRepositoryCustom {
                         .join(owner).on(club.ownerId.eq(owner.id))
                         .leftJoin(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
                         .where(
-                                user.id.eq(profileId),
-                                club.isDeleted.isFalse()
+                                club.isDeleted.isFalse(),
+                                filteringBlackList(filteringIdList),
+                                clubJoinEntry.clubId.notIn(subQuery),
+                                user.id.eq(profileId)
                         )
+                        .distinct()
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .orderBy(club.id.desc())

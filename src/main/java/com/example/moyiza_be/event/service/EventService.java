@@ -1,6 +1,7 @@
 package com.example.moyiza_be.event.service;
 
 
+import com.example.moyiza_be.blackList.service.BlackListService;
 import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.enums.LikeTypeEnum;
@@ -45,6 +46,7 @@ public class EventService {
     private final LikeService likeService;
     private final EventRepositoryCustom eventRepositoryCustom;
     private final EventAttendantRepository eventAttendantRepository;
+    private final BlackListService blackListService;
     public static final String basicImageUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/87f7fcdb-254b-474a-9bf0-86cf3e89adcc_basicProfile.jpg";
 
     // Create Event
@@ -116,7 +118,9 @@ public class EventService {
 
     // Event ReadAll
     public List<EventSimpleDetailDto> getEventList(long clubId, User user) { //ResponseEntity GenericType ListEntity
-        return eventRepositoryCustom.getClubEventList(clubId, user);
+        List<Long> filteringIdList = blackListService.filtering(user);
+        log.info("List of userId that require filtering : " + filteringIdList.toString());
+        return eventRepositoryCustom.getClubEventList(clubId, user, filteringIdList);
     }
 
     // Deleting Event

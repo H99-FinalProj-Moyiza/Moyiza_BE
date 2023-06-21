@@ -101,7 +101,7 @@ public class ClubService {
         Page<ClubListResponse> clubsInOperationInfo = clubRepositoryCustom.filteredClubResponseList(
                 pageable, null, null, null, null, null, user, profileId, filteringIdList);
         Page<ClubListResponse> clubsInParticipatingInfo = clubRepositoryCustom.filteredJoinedClubResponseList(
-                pageable, user, profileId);
+                pageable, user, profileId, filteringIdList);
         return new ClubListOnMyPage(clubsInOperationInfo, clubsInParticipatingInfo);
     }
 
