@@ -1,7 +1,8 @@
 package com.example.moyiza_be.oneday.service;
 
-//import com.example.moyiza_be.alarm.repository.AlarmRepository;
-//import com.example.moyiza_be.alarm.service.AlarmService;
+import com.example.moyiza_be.alert.entity.Alert;
+import com.example.moyiza_be.alert.repository.AlertRepository;
+import com.example.moyiza_be.alert.service.AlertService;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.enums.*;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
@@ -45,8 +46,8 @@ public class OneDayService {
     private final OneDayRepository oneDayRepository;
     private final OneDayAttendantRepository attendantRepository;
     private final UserRepository userRepository;
-//    private final AlarmRepository alarmRepository;
-//    private final AlarmService alarmService;
+    private final AlertRepository alertRepository;
+    private final AlertService alertService;
     private final AwsS3Uploader awsS3Uploader;
     private final ChatService chatService;
     private final UserService userService;
@@ -58,6 +59,7 @@ public class OneDayService {
     private final OnedayLikeRepository onedayLikeRepository;
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
+    private final LocalDateTime timeNow = LocalDateTime.now();
 
     // Create OneDay
     // revisit
@@ -158,24 +160,29 @@ public class OneDayService {
         }
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         User owner = userRepository.findById(oneDay.getOwnerId()).orElseThrow(()->new NullPointerException("Owner Not Found"));
-        if (user.getId() == oneDay.getOwnerId()) {
+        if (Objects.equals(user.getId(), oneDay.getOwnerId())) {
             OneDayAttendant attendant = new OneDayAttendant(oneDay, user.getId());
             attendantRepository.save(attendant);
             chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
             oneDay.addAttendantNum();
             return new ResponseEntity<>("Attending Success", HttpStatus.OK);
         }
+        if (oneDay.getOneDayStartTime().isBefore(timeNow)) return new ResponseEntity<>("This OneDay Is Expired", HttpStatus.BAD_REQUEST);
         if (oneDay.getType() == OneDayTypeEnum.APPROVAL) { // Logic should be added if user is owner
-//            // user is not owner
-//            Alarm alarm = Alarm.builder()
-//                    .sender(user.getName())
-////                    .imgUrl(user.getProfileImage())
-//                    .message(user.getNickname() + " 님이 " +oneDay.getOneDayTitle()+ "에 참여를 신청하였습니다.")
-//                    .receiver(owner.getNickname())
-//                    .check(false)
-//                    .build();
-//            alarmRepository.save(alarm);
-//            alarmService.alarmEvent(user.getNickname());
+            // Double Check
+            if (approvalRepository.existsByOneDayIdAndUserId(oneDayId, user.getId())) {
+                throw new RuntimeException("Already send join");
+            }
+            // user is not owner
+            Alert alert = Alert.builder()
+                    .sender(user.getName())
+//                    .imgUrl(user.getProfileImage())
+                    .message(user.getNickname() + " 님이 " +oneDay.getOneDayTitle()+ "에 참여를 신청하였습니다.")
+                    .receiver(owner.getNickname())
+                    .check(false)
+                    .build();
+            alertRepository.save(alert);
+            alertService.alertEvent(owner.getNickname());
             // OneDayApproval Add Process
             OneDayApproval oneDayApproval = new OneDayApproval(oneDay, user.getId());
             approvalRepository.save(oneDayApproval);
@@ -196,11 +203,22 @@ public class OneDayService {
 
     // Cancel OneDay Attend
     public ResponseEntity<?> cancelOneDay(Long oneDayId, User user) {
+        log.info("cancel process");
         OneDay oneday = loadExistingOnedayById(oneDayId);
+        log.info("Attendant find");
         OneDayAttendant oneDayAttendant = findAndLoadOnedayAttendant(oneDayId, user.getId());
+        int check =0;
+        if (Objects.equals(oneday.getOwnerId(), oneDayAttendant.getUserId())) {
+            log.info("you are owner");
+            check = 1;
+        }
         attendantRepository.delete(oneDayAttendant);
         chatService.leaveChat(oneDayId, ChatTypeEnum.ONEDAY, user);
         oneday.minusAttendantNum();
+        if (check == 1) {
+            log.info("if owner cancel attending, then oneDay should be deleted");
+            oneday.setDeleted(true);
+        }
         return new ResponseEntity<>("cancel attending completed", HttpStatus.OK);
     }
 
@@ -221,16 +239,18 @@ public class OneDayService {
     public ResponseEntity<?> joinWishList(Long oneDayId, User user) {
         log.info("Get OneDay");
         OneDay oneDay = loadExistingOnedayById(oneDayId);
-        ArrayList<User> approvalUsers = new ArrayList<>();
+        ArrayList<MemberResponse> approvalUsers = new ArrayList<>();
         // valid Check
         log.info("Valid Check : Are You Owner?");
-        if (oneDay.getOwnerId() != user.getId()) return new ResponseEntity<>("You are Not owner", HttpStatus.FORBIDDEN);
+        if (!Objects.equals(oneDay.getOwnerId(), user.getId())) return new ResponseEntity<>("You are Not owner", HttpStatus.FORBIDDEN);
         log.info("Get All Attendant Wish list");
         List<OneDayApproval> approvalList = approvalRepository.findAllByOneDayId(oneDayId);
-        log.info("Transform userId to User");
+        log.info("Transform userId to User Information");
         for (OneDayApproval approval : approvalList) {
+            log.info("attendant get!");
             User attendant = userRepository.findById(approval.getUserId()).orElseThrow(()-> new NullPointerException("No Such User Want To Attend"));
-            approvalUsers.add(attendant);
+            MemberResponse attendantInfo = new MemberResponse(attendant.getId(), attendant.getNickname(), attendant.getProfileImage());
+            approvalUsers.add(attendantInfo);
         }
         return new ResponseEntity<>(approvalUsers, HttpStatus.OK);
     }
@@ -239,7 +259,7 @@ public class OneDayService {
         OneDayApproval oneDayApproval = approvalRepository.findByOneDayId(oneDayId);
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         log.info("Valid Check : Are You Owner");
-        if (user.getId() != oneDay.getOwnerId()) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
+        if (!Objects.equals(user.getId(), oneDay.getOwnerId())) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
         // Join Process
         log.info("Valid Check : Is It Fully Occupied?");
         Integer groupSize = oneDay.getOneDayGroupSize();
