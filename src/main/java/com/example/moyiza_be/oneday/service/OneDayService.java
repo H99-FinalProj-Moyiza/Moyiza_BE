@@ -3,6 +3,7 @@ package com.example.moyiza_be.oneday.service;
 import com.example.moyiza_be.alert.entity.Alert;
 import com.example.moyiza_be.alert.repository.AlertRepository;
 import com.example.moyiza_be.alert.service.AlertService;
+import com.example.moyiza_be.blackList.service.BlackListService;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.common.enums.*;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
@@ -57,6 +58,7 @@ public class OneDayService {
     private final OneDayAttendantRepositoryCustom oneDayAttendantRepositoryCustom;
     private final LikeService likeService;
     private final OnedayLikeRepository onedayLikeRepository;
+    private final BlackListService blackListService;
 
     private final static String DEFAULT_IMAGE_URL = "https://res.cloudinary.com/dsav9fenu/image/upload/v1684890347/KakaoTalk_Photo_2023-05-24-10-04-52_ubgcug.png";
     private final LocalDateTime timeNow = LocalDateTime.now();
@@ -106,21 +108,24 @@ public class OneDayService {
             User user, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
             Double longitude, Double latitude, Double radius, LocalDateTime startafter
     ) {
+        List<Long> filteringIdList = blackListService.filtering(user);
         Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
-                user, null, pageable, category, q, tag1, tag2, tag3, longitude, latitude, radius, startafter
+                user, null, pageable, category, q, tag1, tag2, tag3,
+                longitude, latitude, radius, startafter, filteringIdList
         );
         return ResponseEntity.ok(filteredOnedayList);
     }
 
     // List For MyPage OneDay
     public OneDayListOnMyPage getOneDayListOnMyPage(Pageable pageable, User user, Long profileId) {
-        // List For Operating OneDay
+        List<Long> filteringIdList = blackListService.filtering(user);
         Page<OneDayListResponseDto> oneDaysInOperationInfo = oneDayRepositoryCustom.getFilteredOnedayList(
-                user, profileId, pageable, null, null, null, null, null, null, null, null, null
+                user, profileId, pageable, null, null, null, null,
+                null, null, null, null, null, filteringIdList
         );
 
         Page<OneDayListResponseDto> oneDaysInParticipatingInfo = oneDayRepositoryCustom.getFilteredJoinedOnedayList(
-                user, profileId, pageable);
+                user, profileId, pageable, filteringIdList);
 
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }

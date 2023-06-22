@@ -1,6 +1,7 @@
 package com.example.moyiza_be.review.service;
 
 
+import com.example.moyiza_be.blackList.service.BlackListService;
 import com.example.moyiza_be.common.enums.ReviewTypeEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
@@ -36,6 +37,7 @@ public class ReviewService {
     private final LikeService likeService;
     private final EventService eventService;
     private final OneDayService oneDayService;
+    private final BlackListService blackListService;
     private final AwsS3Uploader s3Uploader;
     private final ReviewImageRepository reviewImageRepository;
     private final ReviewRepositoryCustom reviewRepositoryCustom;
@@ -45,7 +47,8 @@ public class ReviewService {
             User user, ReviewTypeEnum reviewTypeEnum, Long identifier, Pageable pageable
     )
     {
-        return ResponseEntity.ok(reviewRepositoryCustom.getReviewList(user, reviewTypeEnum, identifier, pageable));
+        List<Long> filteringIdList = blackListService.filtering(user);
+        return ResponseEntity.ok(reviewRepositoryCustom.getReviewList(user, reviewTypeEnum, identifier, pageable, filteringIdList));
     }
 
 

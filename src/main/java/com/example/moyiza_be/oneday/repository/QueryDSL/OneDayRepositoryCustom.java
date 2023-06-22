@@ -7,6 +7,7 @@ import com.example.moyiza_be.user.entity.QUser;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -36,16 +37,27 @@ public class OneDayRepositoryCustom {
 
     public Page<OneDayListResponseDto> getFilteredOnedayList(
             User nowUser, Long profileId, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
-            Double nowLongitude, Double nowLatitude, Double radius, LocalDateTime timeCondition
+            Double nowLongitude, Double nowLatitude, Double radius,
+            LocalDateTime timeCondition, List<Long> filteringIdList
     ) {
         Long userId = nowUser == null ? -1 : nowUser.getId();
+        QUser owner = new QUser("owner");
+
+        SubQueryExpression<Long> subQuery = JPAExpressions.select(oneDayAttendant.oneDayId)
+                .from(oneDayAttendant)
+                .where(oneDayAttendant.userId.in(filteringIdList));
+
         List<OneDayListResponseDto> onedayList =
                 jpaQueryFactory
                         .from(oneDay)
-                        .join(user).on(oneDay.ownerId.eq(user.id))
+                        .join(oneDayAttendant).on(oneDay.id.eq(oneDayAttendant.oneDayId))
+                        .join(user).on(oneDayAttendant.userId.eq(user.id))
+                        .join(owner).on(oneDay.ownerId.eq(owner.id))
                         .leftJoin(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
                         .where(
                                 oneDay.deleted.isFalse(),
+                                filteringBlackList(filteringIdList),
+                                oneDayAttendant.oneDayId.notIn(subQuery),
                                 eqTag1(tag1),
                                 eqTag2(tag2),
                                 eqTag3(tag3),
@@ -55,6 +67,7 @@ public class OneDayRepositoryCustom {
                                 startTimeAfter(timeCondition),
                                 isProfileId(profileId)
                         )
+                        .distinct()
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .orderBy(oneDay.id.desc())
@@ -63,8 +76,8 @@ public class OneDayRepositoryCustom {
                                         .list(
                                                 Projections.constructor(OneDayListResponseDto.class,
                                                         oneDay.id,
-                                                        user.nickname,
-                                                        user.profileImage,
+                                                        owner.nickname,
+                                                        owner.profileImage,
                                                         oneDay.oneDayTitle,
                                                         oneDay.oneDayContent,
                                                         oneDay.tagString,
@@ -92,9 +105,14 @@ public class OneDayRepositoryCustom {
     }
 
     public Page<OneDayListResponseDto> getFilteredJoinedOnedayList(
-            User nowUser, Long profileId, Pageable pageable
+            User nowUser, Long profileId, Pageable pageable, List<Long> filteringIdList
     ) {
         QUser owner = new QUser("owner");
+
+        SubQueryExpression<Long> subQuery = JPAExpressions.select(oneDayAttendant.oneDayId)
+                .from(oneDayAttendant)
+                .where(oneDayAttendant.userId.in(filteringIdList));
+
         List<OneDayListResponseDto> onedayList =
                 jpaQueryFactory
                         .from(oneDay)
@@ -103,9 +121,12 @@ public class OneDayRepositoryCustom {
                         .join(owner).on(oneDay.ownerId.eq(owner.id))
                         .leftJoin(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
                         .where(
-                                user.id.eq(profileId),
-                                oneDay.deleted.isFalse()
+                                oneDay.deleted.isFalse(),
+                                filteringBlackList(filteringIdList),
+                                oneDayAttendant.oneDayId.notIn(subQuery),
+                                user.id.eq(profileId)
                         )
+                        .distinct()
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .orderBy(oneDay.id.desc())
@@ -200,4 +221,7 @@ public class OneDayRepositoryCustom {
         return profileId == null ? null : user.id.eq(profileId);
     }
 
+    private BooleanExpression filteringBlackList(List<Long> filteringIdList) {
+        return filteringIdList.isEmpty() ? null : oneDayAttendant.userId.notIn(filteringIdList);
+    }
 }

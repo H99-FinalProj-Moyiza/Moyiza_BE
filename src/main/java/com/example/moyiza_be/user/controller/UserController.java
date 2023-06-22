@@ -73,7 +73,7 @@ public class UserController {
         return userService.logout(request, response, userDetails.getUser().getEmail());
     }
 
-    //마이페이지
+    //프로필 페이지
     @GetMapping("/mypage/{profileId}")
     public ResponseEntity<?> getMypage(@PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                        @AuthenticationPrincipal UserDetailsImpl userDetails,
