@@ -51,7 +51,6 @@ public class BlackListService {
         if (user != null) {
             Long userId = user.getId();
             List<Long> blackUserIdList = blackListRepositoryCustom.getBlackUserIdList(userId);
-            log.info("blackUserIdList : " + blackUserIdList);
 
             if (blackUserIdList.isEmpty()) {
                 return Collections.emptyList();
@@ -62,6 +61,7 @@ public class BlackListService {
                     case ONEDAY -> blackListRepositoryCustom.getBlackOneDayIdList(blackUserIdList);
                     case REVIEW -> blackListRepositoryCustom.getBlackReviewIdList(blackUserIdList);
                 };
+                log.info("blackUserIdList : " + blackUserIdList);
                 log.info("blackListBoardIdList : " + boardTypeEnum + " / " + blackListBoardIdList.toString());
                 return blackListBoardIdList;
             }
