@@ -48,11 +48,16 @@ public class RedisCacheService {
         if (userInfoMap == null) {
             return null;
         }
-
-        Long userId = Long.valueOf(userInfoMap.get("userId").toString());
-        String nickname = userInfoMap.get("nickname").toString();
-        String profileUrl = userInfoMap.get("profileUrl").toString();
-        return new ChatUserPrincipal(userId, nickname, profileUrl);
+        try{
+            Long userId = Long.valueOf(userInfoMap.get("userId").toString());
+            String nickname = userInfoMap.get("nickname").toString();
+            String profileUrl = userInfoMap.get("profileUrl").toString();
+            return new ChatUserPrincipal(userId, nickname, profileUrl);
+        }
+        catch(Exception e){
+            log.info("error getting userInfo : " + e.getMessage());
+        }
+        return null;
     }
 
     public void deleteUserInfoFromCache(String sessionId) {
