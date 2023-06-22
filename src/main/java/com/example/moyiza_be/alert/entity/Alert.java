@@ -29,7 +29,7 @@ public class Alert {
 
 
     @Column
-    private boolean check;
+    private boolean checking;
 
     // If Sender Change NickName
     public void updateAlert(String sender) { // String imgUrl needed if image keep go with.

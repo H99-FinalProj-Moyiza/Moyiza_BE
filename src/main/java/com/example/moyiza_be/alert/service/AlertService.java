@@ -32,7 +32,7 @@ public class AlertService {
                 List<Alert> alerts = alertRepository.findAllByReceiver(user.getName());
                 for (Alert alert : alerts
                 ) {
-                    if (!alert.isCheck()) {
+                    if (!alert.isChecking()) {
                         sseEmitter.send(SseEmitter.event().data(alert));
                     }
                 }
@@ -51,7 +51,7 @@ public class AlertService {
             alertList.add(
                     AlertResponseDto.builder()
                             .id(alert.getId())
-                            .check(alert.isCheck())
+                            .checking(alert.isChecking())
                             .message(alert.getMessage())
                             .receiver(alert.getReceiver())
                             .build()
@@ -65,7 +65,7 @@ public class AlertService {
     // If Alert Checked => Change to true
     public ResponseEntity<String> alertCheck(Long alertId) {
         Alert alert = alertRepository.findById(alertId).get();
-        alert.setCheck(true);
+        alert.setChecking(true);
         alertRepository.save(alert);
         return new ResponseEntity<>("Alert Checked",HttpStatus.OK);
     }
