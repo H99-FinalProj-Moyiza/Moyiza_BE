@@ -30,7 +30,7 @@ public class OneDay extends TimeStamped {
     private Long ownerId;
     @Column(nullable = false)
     private String oneDayTitle;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String oneDayContent;
     @Column
     private CategoryEnum category;

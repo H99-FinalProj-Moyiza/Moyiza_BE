@@ -8,6 +8,8 @@ import com.example.moyiza_be.common.security.jwt.CookieUtil;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
+import com.example.moyiza_be.common.utils.BadWordFiltering;
+import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
@@ -41,6 +43,7 @@ public class UserService {
     private final SmsUtil smsUtil;
     private final ValidationUtil validationUtil;
     private final RedisUtil redisUtil;
+    private final BadWordFiltering badWordFiltering;
 
     //Signup
     public ResponseEntity<?> signup(SignupRequestDto testRequestDto) {
@@ -112,7 +115,11 @@ public class UserService {
 
     //Check for nickname duplicates
     public ResponseEntity<?> isDuplicatedNick(CheckNickRequestDto requestDto) {
-        validationUtil.checkDuplicatedNick(requestDto.getNickname());
+        String nickname = requestDto.getNickname();
+        validationUtil.checkDuplicatedNick(nickname);
+        if(badWordFiltering.checkBadNick(nickname)){
+            return new ResponseEntity<>(new Message("고운말을 씁시다."), HttpStatus.BAD_REQUEST);
+        }
         Map<String, Boolean> result = new HashMap<>();
         result.put("isDuplicatedNick", false);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -144,7 +151,7 @@ public class UserService {
 
     //Test
     public ResponseEntity<?> uploadImg(MultipartFile image) {
-        if(image.isEmpty()){
+        if(image == null || image.isEmpty()){
             return new ResponseEntity<>(BasicProfileEnum.getRandomImage().getImageUrl(), HttpStatus.OK);
         }
         String storedFileUrl  = awsS3Uploader.uploadFile(image);
@@ -171,6 +178,11 @@ public class UserService {
     public User loadUserById(Long userId){
         return userRepository.findById(userId).orElseThrow(
                 () -> new NullPointerException("User not found"));
+    }
+
+    public ResponseEntity<?> getUserInfo(User user) {
+        UserInfoResponseDto responseDto = new UserInfoResponseDto(user);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     //Modify Profile - test
