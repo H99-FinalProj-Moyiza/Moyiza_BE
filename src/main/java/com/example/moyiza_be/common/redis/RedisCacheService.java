@@ -41,13 +41,10 @@ public class RedisCacheService {
         log.info("updating/saving userInfo : " + userInfo.getUserId() + " for sessionId : " + sessionId);
     }
 
-    //userInfo 조회
     public ChatUserPrincipal getUserInfoFromCache(String sessionId) {
         HashOperations<String, Object, Object> hashOperations = redisTemplate.opsForHash();
         Map<Object, Object> userInfoMap = hashOperations.entries(sessionId);
-        if (userInfoMap == null) {
-            return null;
-        }
+
         try{
             Long userId = Long.valueOf(userInfoMap.get("userId").toString());
             String nickname = userInfoMap.get("nickname").toString();
@@ -56,8 +53,8 @@ public class RedisCacheService {
         }
         catch(Exception e){
             log.info("error getting userInfo : " + e.getMessage());
+            throw e;
         }
-        return null;
     }
 
     public void deleteUserInfoFromCache(String sessionId) {

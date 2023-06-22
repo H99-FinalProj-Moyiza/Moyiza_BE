@@ -36,8 +36,6 @@ public class ChatController {
     private final ChatService chatService;
     private final RedisCacheService redisCacheService;
 
-
-    //채팅 메시지 전송, 수신
     @MessageMapping("/chat/{chatId}")
     public void receiveAndSendChat(
             @DestinationVariable Long chatId, ChatMessageInput chatMessageInput,

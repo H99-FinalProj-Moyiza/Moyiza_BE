@@ -24,7 +24,6 @@ spring:
     username: ENC(1RC2fLhE3xF2E+OyJP7gdA==)
     url: ENC(FLABZ3U84RdLp+5UmSAEmbYmkafqBM20nx/9yLQEvdw9qSxsMn9gx4Js5XbNvnAvWqzNYlj0Dyzly1XTyiR5YlYIDZufFamFRXBQOI6U54iR1UH3u84bY+bbBDli0OzN)
 
-
   #local Redis
   data:
     redis:
@@ -35,3 +34,8 @@ spring:
       port: 6379
       host: 127.0.0.1
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,beans,conditions,threaddump, heapdump, metrics, httptrace

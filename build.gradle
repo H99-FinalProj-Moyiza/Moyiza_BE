@@ -74,6 +74,8 @@ dependencies {
     //coolSMS
     implementation 'net.nurigo:sdk:4.3.0'
 
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
