@@ -57,7 +57,7 @@ public class ChatService {
         //Filtering ? need to some logic
         ChatMessageInput filteredChatInput = badWordFiltering.change(chatMessageInput);
         ChatRecord chatRecord = filteredChatInput.toChatRecord(chatId, userPrincipal.getUserId());
-        chatRecordRepository.save(chatRecord);  // id받아오려면 saveAndFlush로 변경
+        chatRecordRepository.save(chatRecord); 
         Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
         Long chatMemberCount = getChatMemberCount(chatId);
         ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal, chatMemberCount - subscriptionCount);
