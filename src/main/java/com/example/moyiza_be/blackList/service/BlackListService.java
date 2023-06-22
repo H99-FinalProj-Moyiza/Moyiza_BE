@@ -52,14 +52,19 @@ public class BlackListService {
             Long userId = user.getId();
             List<Long> blackUserIdList = blackListRepositoryCustom.getBlackUserIdList(userId);
             log.info("blackUserIdList : " + blackUserIdList);
-            List<Long> blackListBoardIdList = switch (boardTypeEnum) {
-                case CLUB -> blackListRepositoryCustom.getBlackClubIdList(blackUserIdList);
-                case EVENT -> blackListRepositoryCustom.getBlackEventIdList(blackUserIdList);
-                case ONEDAY -> blackListRepositoryCustom.getBlackOneDayIdList(blackUserIdList);
-                case REVIEW -> blackListRepositoryCustom.getBlackReviewIdList(blackUserIdList);
-            };
-            log.info("blackListBoardIdList : " + boardTypeEnum + " / " + blackListBoardIdList.toString());
-            return blackListBoardIdList;
+
+            if (blackUserIdList.isEmpty()) {
+                return Collections.emptyList();
+            } else {
+                List<Long> blackListBoardIdList = switch (boardTypeEnum) {
+                    case CLUB -> blackListRepositoryCustom.getBlackClubIdList(blackUserIdList);
+                    case EVENT -> blackListRepositoryCustom.getBlackEventIdList(blackUserIdList);
+                    case ONEDAY -> blackListRepositoryCustom.getBlackOneDayIdList(blackUserIdList);
+                    case REVIEW -> blackListRepositoryCustom.getBlackReviewIdList(blackUserIdList);
+                };
+                log.info("blackListBoardIdList : " + boardTypeEnum + " / " + blackListBoardIdList.toString());
+                return blackListBoardIdList;
+            }
         } else {
             return Collections.emptyList();
         }
