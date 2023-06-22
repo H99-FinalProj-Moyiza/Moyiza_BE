@@ -6,10 +6,14 @@ import com.example.moyiza_be.user.email.EmailRequestDto;
 import com.example.moyiza_be.user.email.EmailService;
 import com.example.moyiza_be.user.service.MypageService;
 import com.example.moyiza_be.user.service.UserService;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +34,7 @@ public class UserController {
         return userService.signup(testRequestDto);
     }
     @PostMapping("/uploadImg")
-    public ResponseEntity<?> uploadImg(@RequestPart(value = "imageFile") MultipartFile image){
+    public ResponseEntity<?> uploadImg(@RequestPart(value = "imageFile") @Nullable MultipartFile image){
         return userService.uploadImg(image);
     }
 
@@ -69,11 +73,12 @@ public class UserController {
         return userService.logout(request, response, userDetails.getUser().getEmail());
     }
 
-    //마이페이지
+    //프로필 페이지
     @GetMapping("/mypage/{profileId}")
-    public ResponseEntity<?> getMypage(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<?> getMypage(@PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                       @AuthenticationPrincipal UserDetailsImpl userDetails,
                                        @PathVariable Long profileId) {
-        return mypageService.getMypage(userDetails.getUser(), profileId);
+        return mypageService.getMypage(pageable, userDetails.getUser(), profileId);
     }
 
     //회원정보 수정 - 관심사 추가 tagList 조회
@@ -115,6 +120,10 @@ public class UserController {
         return userService.verifyCodeToFindEmail(codeMap.get("code"));
     }
 
+    @GetMapping("/userInfo")
+    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.getUserInfo(userDetails.getUser());
+    }
     //profile test
 //    @PutMapping(value = "/profile",
 //            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})

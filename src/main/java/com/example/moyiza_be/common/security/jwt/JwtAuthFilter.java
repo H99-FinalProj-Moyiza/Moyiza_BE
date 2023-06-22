@@ -37,7 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 .map(Cookie::getValue)
                 .orElse((null));
         // Validate the token if it exists, and throw an exception if it's invalid
-        log.info("JwtAuthFilter activated");
+//        log.info("JwtAuthFilter activated");
         if(access_token == null){
             filterChain.doFilter(request, response);
         } else {

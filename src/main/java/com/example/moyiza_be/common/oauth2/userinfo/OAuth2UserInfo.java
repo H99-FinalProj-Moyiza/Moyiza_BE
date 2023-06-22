@@ -12,9 +12,9 @@ public abstract class OAuth2UserInfo {
 
     public abstract String getId(); //Social identification values: Google - "sub", Kakao - "id", Naver - "id"
 
-    public abstract String getName();
+//    public abstract String getName();
 
-    public abstract String getNickname();
+//    public abstract String getNickname();
 
     public abstract String getEmail();
 

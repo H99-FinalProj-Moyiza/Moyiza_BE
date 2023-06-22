@@ -44,7 +44,7 @@ public class ClubController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         User user = userDetails == null ? null : userDetails.getUser();
-        return clubService.getClubList(pageable, null, null, null, null, null, user);
+        return clubService.getClubList(pageable, null, null, null, null, null, user, null);
     }
 
     //Search Club List
@@ -56,10 +56,11 @@ public class ClubController {
             @RequestParam(required = false) String tag2,
             @RequestParam(required = false) String tag3,
             @PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            Long profileId
     ) {
         User user = userDetails == null ? null : userDetails.getUser();
-        return clubService.getClubList(pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, user);
+        return clubService.getClubList(pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, user, null);
     }
 
 

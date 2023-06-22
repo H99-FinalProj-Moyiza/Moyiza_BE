@@ -21,6 +21,7 @@ public class OneDayCreate {
     private Long id;
     private Long ownerId;
     private String oneDayTitle;
+    @Column(columnDefinition = "TEXT")
     private String oneDayContent;
     private CategoryEnum category;
     private String tagString;

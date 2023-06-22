@@ -14,6 +14,7 @@ import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.redis.RedisCacheService;
+import com.example.moyiza_be.common.utils.BadWordFiltering;
 import com.example.moyiza_be.oneday.entity.OneDayImageUrl;
 import com.example.moyiza_be.oneday.repository.OneDayImageUrlRepository;
 import com.example.moyiza_be.user.entity.User;
@@ -45,6 +46,8 @@ public class ChatService {
     private final ChatRecordRepositoryCustom chatRecordRepositoryCustom;
     private final ClubImageUrlRepository clubImageUrlRepository;
     private final OneDayImageUrlRepository oneDayImageUrlRepository;
+    private final BadWordFiltering badWordFiltering;
+
     private final String DEFAULT_CHATROOM_IMAGE = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/e048a389-8488-4ab5-a973-c8e5bae99d2e_pngaaa.com-293633.png";
 
     public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
@@ -52,8 +55,9 @@ public class ChatService {
                                    ChatMessageInput chatMessageInput
     ) {
         //Filtering ? need to some logic
-        ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userPrincipal.getUserId());
-        chatRecordRepository.save(chatRecord);
+        ChatMessageInput filteredChatInput = badWordFiltering.change(chatMessageInput);
+        ChatRecord chatRecord = filteredChatInput.toChatRecord(chatId, userPrincipal.getUserId());
+        chatRecordRepository.save(chatRecord); 
         Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
         Long chatMemberCount = getChatMemberCount(chatId);
         ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal, chatMemberCount - subscriptionCount);

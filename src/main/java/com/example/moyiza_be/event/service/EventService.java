@@ -1,6 +1,7 @@
 package com.example.moyiza_be.event.service;
 
 
+import com.example.moyiza_be.blackList.service.BlackListService;
 import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.enums.LikeTypeEnum;
@@ -45,6 +46,7 @@ public class EventService {
     private final LikeService likeService;
     private final EventRepositoryCustom eventRepositoryCustom;
     private final EventAttendantRepository eventAttendantRepository;
+    private final BlackListService blackListService;
     public static final String basicImageUrl = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/87f7fcdb-254b-474a-9bf0-86cf3e89adcc_basicProfile.jpg";
 
     // Create Event
@@ -59,14 +61,19 @@ public class EventService {
 //        if(!Objects.isNull(eventRequestDto.getImage()) && !eventRequestDto.getImage().isEmpty() && !eventRequestDto.getImage().getContentType().isEmpty()){
 //            imageUrl = s3Uploader.eventUpload(eventRequestDto.getImage(), "image");
 //        }
+        log.info("Is Image Empty?");
         if(!image.isEmpty()) {
+            log.info("No, Image is not Empty!");
             imageUrl = s3Uploader.uploadFile(image);
         }
+        log.info("create Event");
         // Create + (Delete : false) + (AttendantsNum : 1(Owner)) | (Should Attendants contain owner? attendantsNum++ : nothing change)
         Event event = new Event(eventRequestDto, user.getId(), clubId, imageUrl); // 이미지 넣으면 user, image로 변경
+        log.info("set Deleted false");
         event.setDeleted(false);
 //        event.setAttendantsNum(1);
         eventRepository.saveAndFlush(event);
+        log.info("Create and Save Complete!");
         return new ResponseEntity<>("Create Success", HttpStatus.OK);
     }
 
@@ -111,7 +118,9 @@ public class EventService {
 
     // Event ReadAll
     public List<EventSimpleDetailDto> getEventList(long clubId, User user) { //ResponseEntity GenericType ListEntity
-        return eventRepositoryCustom.getClubEventList(clubId, user);
+        List<Long> filteringIdList = blackListService.filtering(user);
+        log.info("List of userId that require filtering : " + filteringIdList.toString());
+        return eventRepositoryCustom.getClubEventList(clubId, user, filteringIdList);
     }
 
     // Deleting Event
@@ -133,23 +142,31 @@ public class EventService {
     // Event Attend/Cancel
     public ResponseEntity<?> joinEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 EventNot Found"));
+        log.info("Double Attend Check");
         if(attendantRepository.findByEventIdAndUserId(eventId, user.getId()) != null) {
+            log.info("Fail! You Already Attend The Event!");
             return new ResponseEntity<>(new Message("Cannot Attend Twice"), HttpStatus.FORBIDDEN);
         }
+        log.info("Add AttendantList");
         EventAttendant eventAttendant = new EventAttendant(eventId, user.getId(), user);
         attendantRepository.save(eventAttendant);
+        log.info("AttendantsNum++");
         event.addAttend();
         return ResponseEntity.ok("Attending Complete.");
     }
 
     public ResponseEntity<?> cancelEvent(Long eventId, User user) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NullPointerException("404 Event NotFound"));
+        log.info("Did You Attend The Event?");
         EventAttendant eventAttendant = attendantRepository.findByEventIdAndUserId(eventId, user.getId());
         if (eventAttendant != null) {
+            log.info("Yes! And Want To Cancel.");
             attendantRepository.delete(eventAttendant);
+            log.info("AttendantsNum--");
             event.cancelAttend();
             return ResponseEntity.ok("Cancel Complete.");
         } else {
+            log.info("No, You Did Not Attend The Event!");
             return ResponseEntity.ok("401 Unauthorized.");
         }
     }
