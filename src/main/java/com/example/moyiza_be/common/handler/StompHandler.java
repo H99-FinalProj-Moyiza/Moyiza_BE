@@ -154,13 +154,13 @@ public class StompHandler implements ChannelInterceptor {
         Long recentMessageId;
 
 //        disable for Jmeter Test
-        if (recentMessage == null) {
-            log.info("recent message not present for chatId : " + chatId);
-        } else {
-            recentMessageId = recentMessage.getChatRecordId();
-            redisCacheService.addUnsubscribedUser(chatId.toString(), userId);
-            log.info("adding recent message " + recentMessageId + " to userId : " + userId);
-        }
+//        if (recentMessage == null) {
+//            log.info("recent message not present for chatId : " + chatId);
+//        } else {
+//            recentMessageId = recentMessage.getChatRecordId();
+//            redisCacheService.addUnsubscribedUser(chatId.toString(), userId);
+//            log.info("adding recent message " + recentMessageId + " to userId : " + userId);
+//        }
 
         redisCacheService.removeSubIdFromSession(sessionId, subId);
         redisCacheService.removeSubscriptionFromChatId(chatId.toString(), userId);
