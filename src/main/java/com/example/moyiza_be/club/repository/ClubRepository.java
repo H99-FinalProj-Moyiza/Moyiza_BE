@@ -5,6 +5,8 @@ import com.example.moyiza_be.common.enums.CategoryEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,4 +27,7 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
 
     List<Club> findByOwnerId(Long userId);
     List<Club> findAllByIsDeletedFalseOrderByNumLikesDesc();
+
+    @Query("SELECT c FROM Club c JOIN ClubJoinEntry cj ON c.id = cj.clubId WHERE c.isDeleted = false AND cj.userId NOT IN :filteringIdList ORDER BY c.numLikes DESC")
+    List<Club> findAllClubsFilteredBlackList(@Param("filteringIdList") List<Long> filteringIdList);
 }

@@ -108,24 +108,24 @@ public class OneDayService {
             User user, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
             Double longitude, Double latitude, Double radius, LocalDateTime startafter
     ) {
-        List<Long> filteringIdList = blackListService.filtering(user);
+        List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
         Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
                 user, null, pageable, category, q, tag1, tag2, tag3,
-                longitude, latitude, radius, startafter, filteringIdList
+                longitude, latitude, radius, startafter, blackOneDayIdList
         );
         return ResponseEntity.ok(filteredOnedayList);
     }
 
     // List For MyPage OneDay
     public OneDayListOnMyPage getOneDayListOnMyPage(Pageable pageable, User user, Long profileId) {
-        List<Long> filteringIdList = blackListService.filtering(user);
+        List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
         Page<OneDayListResponseDto> oneDaysInOperationInfo = oneDayRepositoryCustom.getFilteredOnedayList(
                 user, profileId, pageable, null, null, null, null,
-                null, null, null, null, null, filteringIdList
+                null, null, null, null, null, blackOneDayIdList
         );
 
         Page<OneDayListResponseDto> oneDaysInParticipatingInfo = oneDayRepositoryCustom.getFilteredJoinedOnedayList(
-                user, profileId, pageable, filteringIdList);
+                user, profileId, pageable, blackOneDayIdList);
 
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }

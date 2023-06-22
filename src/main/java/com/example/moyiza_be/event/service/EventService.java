@@ -4,6 +4,7 @@ package com.example.moyiza_be.event.service;
 import com.example.moyiza_be.blackList.service.BlackListService;
 import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.club.repository.ClubRepository;
+import com.example.moyiza_be.common.enums.BoardTypeEnum;
 import com.example.moyiza_be.common.enums.LikeTypeEnum;
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.Message;
@@ -16,22 +17,17 @@ import com.example.moyiza_be.event.entity.EventAttendant;
 import com.example.moyiza_be.event.repository.EventAttendantRepository;
 import com.example.moyiza_be.event.repository.EventRepository;
 import com.example.moyiza_be.event.repository.QueryDSL.EventRepositoryCustom;
-import com.example.moyiza_be.like.repository.EventLikeRepository;
 import com.example.moyiza_be.like.service.LikeService;
 import com.example.moyiza_be.user.entity.User;
 import jakarta.transaction.Transactional;
-import jdk.jshell.spi.ExecutionControl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.NotImplementedYetException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -118,9 +114,8 @@ public class EventService {
 
     // Event ReadAll
     public List<EventSimpleDetailDto> getEventList(long clubId, User user) { //ResponseEntity GenericType ListEntity
-        List<Long> filteringIdList = blackListService.filtering(user);
-        log.info("List of userId that require filtering : " + filteringIdList.toString());
-        return eventRepositoryCustom.getClubEventList(clubId, user, filteringIdList);
+        List<Long> blackEventIdList = blackListService.blackListFiltering(user, BoardTypeEnum.EVENT);
+        return eventRepositoryCustom.getClubEventList(clubId, user, blackEventIdList);
     }
 
     // Deleting Event
