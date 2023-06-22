@@ -9,7 +9,6 @@ import com.example.moyiza_be.user.entity.QUser;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -36,26 +35,18 @@ public class ClubRepositoryCustom {
 
     public Page<ClubListResponse> filteredClubResponseList(
             Pageable pageable, CategoryEnum categoryEnum, String q, String tag1, String tag2, String tag3, User nowUser,
-            Long profileId, List<Long> filteringIdList
+            Long profileId, List<Long> blackClubIdList
     ) {
         Long userId = nowUser == null ? -1 : nowUser.getId();
-        QUser owner = new QUser("owner");
-
-        SubQueryExpression<Long> subQuery = JPAExpressions.select(clubJoinEntry.clubId)
-                .from(clubJoinEntry)
-                .where(clubJoinEntry.userId.in(filteringIdList));
 
         List<ClubListResponse> clubListResponseList =
                 jpaQueryFactory
                         .from(club).where(club.isDeleted.isFalse())
-                        .join(clubJoinEntry).on(club.id.eq(clubJoinEntry.clubId))
-                        .join(user).on(clubJoinEntry.userId.eq(user.id))
-                        .join(owner).on(club.ownerId.eq(owner.id))
+                        .join(user).on(club.ownerId.eq(user.id))
                         .leftJoin(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
                         .where(
                                 club.isDeleted.isFalse(),
-                                filteringBlackList(filteringIdList),
-                                clubJoinEntry.clubId.notIn(subQuery),
+                                filteringBlackList(blackClubIdList),
                                 eqCategory(categoryEnum),
                                 titleContainOrContentContain(q),
                                 eqTag1(tag1),
@@ -63,7 +54,6 @@ public class ClubRepositoryCustom {
                                 eqTag3(tag3),
                                 isProfileId(profileId)
                         )
-                        .distinct()
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .orderBy(club.id.desc())
@@ -71,7 +61,7 @@ public class ClubRepositoryCustom {
                                 groupBy(club.id)
                                         .list(Projections.constructor(ClubListResponse.class,
                                                         club.id,
-                                                        owner.nickname,
+                                                        user.nickname,
                                                         club.title,
                                                         club.content,
                                                         club.tagString,
@@ -98,13 +88,9 @@ public class ClubRepositoryCustom {
     }
 
     public Page<ClubListResponse> filteredJoinedClubResponseList(
-            Pageable pageable, User nowUser, Long profileId, List<Long> filteringIdList
+            Pageable pageable, User nowUser, Long profileId, List<Long> blackClubIdList
     ) {
         QUser owner = new QUser("owner");
-
-        SubQueryExpression<Long> subQuery = JPAExpressions.select(clubJoinEntry.clubId)
-                .from(clubJoinEntry)
-                .where(clubJoinEntry.userId.in(filteringIdList));
 
         List<ClubListResponse> clubListResponseList =
                 jpaQueryFactory
@@ -115,8 +101,7 @@ public class ClubRepositoryCustom {
                         .leftJoin(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
                         .where(
                                 club.isDeleted.isFalse(),
-                                filteringBlackList(filteringIdList),
-                                clubJoinEntry.clubId.notIn(subQuery),
+                                filteringBlackList(blackClubIdList),
                                 user.id.eq(profileId)
                         )
                         .distinct()
@@ -146,7 +131,6 @@ public class ClubRepositoryCustom {
                         );
         return new PageImpl<>(clubListResponseList, pageable, 5000L);
     }
-
 
 
     public ClubDetailResponse getClubDetail(Long clubId, User nowUser){
@@ -181,71 +165,6 @@ public class ClubRepositoryCustom {
                 .fetchOne();
     }
 
-////운영중인 마이페이지 클럽 리스트 조회
-//    public List<ClubDetailResponse> getManagedClubDetail(Long userId, Long profileId) {
-//        return jpaQueryFactory
-//                .select(
-//                        new QClubDetailResponse(
-//                                club.id,
-//                                user.nickname,
-//                                club.title,
-//                                club.category,
-//                                club.tagString,
-//                                club.content,
-//                                club.agePolicy,
-//                                club.genderPolicy,
-//                                club.maxGroupSize,
-//                                club.nowMemberCount,
-//                                club.thumbnailUrl,
-//                                club.numLikes,
-//                                JPAExpressions
-//                                        .selectFrom(clubLike)
-//                                        .where(clubLike.clubId.eq(club.id)
-//                                                .and(clubLike.userId.eq(userId))
-//                                        )
-//                                        .exists(),
-//                                club.clubRule
-//                        )
-//                )
-//                .from(club)
-//                .join(user).on(club.ownerId.eq(profileId))
-//                .where(user.id.eq(profileId), club.isDeleted.isFalse())
-//                .orderBy(club.id.desc())
-//                .fetch();
-//    }
-//
-//    public List<ClubDetailResponse> getJoinedClubDetail(Long userId, Long profileId) {
-//        return jpaQueryFactory
-//                .select(
-//                        new QClubDetailResponse(
-//                                club.id,
-//                                user.nickname,
-//                                club.title,
-//                                club.category,
-//                                club.tagString,
-//                                club.content,
-//                                club.agePolicy,
-//                                club.genderPolicy,
-//                                club.maxGroupSize,
-//                                club.nowMemberCount,
-//                                club.thumbnailUrl,
-//                                club.numLikes,
-//                                JPAExpressions
-//                                        .selectFrom(clubLike)
-//                                        .where(clubLike.clubId.eq(club.id)
-//                                                .and(clubLike.userId.eq(userId))
-//                                        )
-//                                        .exists(),
-//                                club.clubRule
-//                        )
-//                )
-//                .from(club)
-//                .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
-//                .join(user).on(clubJoinEntry.userId.eq(profileId))
-//                .where(user.id.eq(profileId), club.isDeleted.isFalse())
-//                .orderBy(club.id.desc())
-//                .fetch();
-//    }
 
 //    private OrderSpecifier createOrderSpecifier(OrderCondition orderCondition) {
 //
@@ -303,9 +222,8 @@ public class ClubRepositoryCustom {
         return profileId == null ? null : user.id.eq(profileId);
     }
 
-    private BooleanExpression filteringBlackList(List<Long> filteringIdList) {
-        return filteringIdList.isEmpty() ? null : clubJoinEntry.userId.notIn(filteringIdList);
+    private BooleanExpression filteringBlackList(List<Long> blackClubIdList) {
+        return blackClubIdList.isEmpty() ? null : club.id.notIn(blackClubIdList);
     }
-
 
 }

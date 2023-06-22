@@ -4,24 +4,27 @@ import com.example.moyiza_be.blackList.dto.BlackListMemberResponse;
 import com.example.moyiza_be.blackList.entity.BlackList;
 import com.example.moyiza_be.blackList.repository.BlackListRepository;
 import com.example.moyiza_be.blackList.repository.QueryDSL.BlackListRepositoryCustom;
+import com.example.moyiza_be.common.enums.BoardTypeEnum;
 import com.example.moyiza_be.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class BlackListService {
 
     private final BlackListRepository blackListRepository;
     private final BlackListRepositoryCustom blackListRepositoryCustom;
+
     public ResponseEntity<?> blackListing(User user, Long profileId) {
         Long userId = user.getId();
         if (userId.equals(profileId)) {
@@ -44,22 +47,21 @@ public class BlackListService {
         return new ResponseEntity<>(blackListMemberList, HttpStatus.OK);
     }
 
-    public List<Long> filtering(User user) {
-        List<BlackList> filteringList = blackListRepository.findAllByUserIdOrBlackListUserId(user.getId(), user.getId());
-        //List of blacklisted IDs by the user
-        List<Long> blackListIdList = filteringList.stream()
-                .filter(blackList -> blackList.getUserId().equals(user.getId()))
-                .map(BlackList::getBlackListUserId)
-                .collect(Collectors.toList());
-
-        //List of IDs that blacklisted the user
-        List<Long> blackListedIdList = filteringList.stream()
-                .filter(blackList -> blackList.getBlackListUserId().equals(user.getId()))
-                .map(BlackList::getUserId)
-                .collect(Collectors.toList());
-
-        //List of IDs with duplicates removed
-        return Stream.concat(blackListIdList.stream(), blackListedIdList.stream())
-                .distinct().collect(Collectors.toList());
+    public List<Long> blackListFiltering(User user, BoardTypeEnum boardTypeEnum) {
+        if (user != null) {
+            Long userId = user.getId();
+            List<Long> blackUserIdList = blackListRepositoryCustom.getBlackUserIdList(userId);
+            log.info("blackUserIdList : " + blackUserIdList);
+            List<Long> blackListBoardIdList = switch (boardTypeEnum) {
+                case CLUB -> blackListRepositoryCustom.getBlackClubIdList(blackUserIdList);
+                case EVENT -> blackListRepositoryCustom.getBlackEventIdList(blackUserIdList);
+                case ONEDAY -> blackListRepositoryCustom.getBlackOneDayIdList(blackUserIdList);
+                case REVIEW -> blackListRepositoryCustom.getBlackReviewIdList(blackUserIdList);
+            };
+            log.info("blackListBoardIdList : " + boardTypeEnum + " / " + blackListBoardIdList.toString());
+            return blackListBoardIdList;
+        } else {
+            return Collections.emptyList();
+        }
     }
 }
