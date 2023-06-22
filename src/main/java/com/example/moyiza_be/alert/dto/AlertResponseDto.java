@@ -11,5 +11,5 @@ public class AlertResponseDto {
     private Long id;
     private String message;
     private String receiver;
-    private boolean check;
+    private boolean checking;
 }

@@ -160,47 +160,56 @@ public class OneDayService {
 
     // Attending OneDay
     public ResponseEntity<?> joinOneDay(Long oneDayId, User user) {
+        log.info("Check Double Attend");
         if (attendantRepository.existsByOneDayIdAndUserId(oneDayId, user.getId())) {
             return new ResponseEntity<>(new Message("Cannot Attend Twice"), HttpStatus.BAD_REQUEST);
         }
+        log.info("Get OneDay");
         OneDay oneDay = loadExistingOnedayById(oneDayId);
+        log.info("Get Owner");
         User owner = userRepository.findById(oneDay.getOwnerId()).orElseThrow(()->new NullPointerException("Owner Not Found"));
+        log.info("Are you Owner of OneDay?");
         if (Objects.equals(user.getId(), oneDay.getOwnerId())) {
+            log.info("Yes, I am. -> Add Owner to AttendantList");
             OneDayAttendant attendant = new OneDayAttendant(oneDay, user.getId());
             attendantRepository.save(attendant);
+            log.info("Add Owner To Chat Room");
             chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+            log.info("AttendantNum ++");
             oneDay.addAttendantNum();
             return new ResponseEntity<>("Attending Success", HttpStatus.OK);
         }
+        log.info("No, I am not the owner");
+        log.info("Valid Date Check");
         if (oneDay.getOneDayStartTime().isBefore(timeNow)) return new ResponseEntity<>("This OneDay Is Expired", HttpStatus.BAD_REQUEST);
-        if (oneDay.getType() == OneDayTypeEnum.APPROVAL) { // Logic should be added if user is owner
-            // Double Check
-            if (approvalRepository.existsByOneDayIdAndUserId(oneDayId, user.getId())) {
-                throw new RuntimeException("Already send join");
-            }
-            // user is not owner
+        log.info("OneDay Type Check: Approval");
+        if (oneDay.getType() == OneDayTypeEnum.APPROVAL) { // Logic should be added if user is owner -> Added Logic Before This Part
+            log.info("user is not owner -> Send alarm");
             Alert alert = Alert.builder()
                     .sender(user.getName())
 //                    .imgUrl(user.getProfileImage())
                     .message(user.getNickname() + " 님이 " +oneDay.getOneDayTitle()+ "에 참여를 신청하였습니다.")
                     .receiver(owner.getNickname())
-                    .check(false)
+                    .checking(false)
                     .build();
+            log.info("Approval Request Alarm sent");
             alertRepository.save(alert);
             alertService.alertEvent(owner.getNickname());
-            // OneDayApproval Add Process
+            log.info("OneDayApproval Add Process");
             OneDayApproval oneDayApproval = new OneDayApproval(oneDay, user.getId());
             approvalRepository.save(oneDayApproval);
             return new ResponseEntity<>("Approval System Testing", HttpStatus.OK);
         } else {
-            // FCGSB -> Is it Fully occupied?
+            log.info("FCGSB -> Is it Fully occupied?");
             if (oneDay.getAttendantsNum() < oneDay.getOneDayGroupSize()) {
+                log.info("Vacant => Add attendant");
                 OneDayAttendant attendant = new OneDayAttendant(oneDay, user.getId());
                 attendantRepository.save(attendant);
                 chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
                 oneDay.addAttendantNum();
                 return new ResponseEntity<>("Attending Success", HttpStatus.OK);
             } else {
+                log.info("Fully Occupied => Reject Request");
                 return new ResponseEntity<>("Fully Occupied", HttpStatus.FORBIDDEN);
             }
         }
@@ -210,17 +219,23 @@ public class OneDayService {
     public ResponseEntity<?> cancelOneDay(Long oneDayId, User user) {
         log.info("cancel process");
         OneDay oneday = loadExistingOnedayById(oneDayId);
+        if (oneday.getType().equals(OneDayTypeEnum.APPROVAL)) {
+            log.info("oneDay is Approval And Owner's not approved yet");
+            OneDayApproval approval = approvalRepository.findByOneDayIdAndUserId(oneDayId, user.getId());
+            approvalRepository.delete(approval);
+            return new ResponseEntity<>("Approval Request Canceled", HttpStatus.OK);
+        }
         log.info("Attendant find");
         OneDayAttendant oneDayAttendant = findAndLoadOnedayAttendant(oneDayId, user.getId());
-        int check =0;
+        int checking =0;
         if (Objects.equals(oneday.getOwnerId(), oneDayAttendant.getUserId())) {
             log.info("you are owner");
-            check = 1;
+            checking = 1;
         }
         attendantRepository.delete(oneDayAttendant);
         chatService.leaveChat(oneDayId, ChatTypeEnum.ONEDAY, user);
         oneday.minusAttendantNum();
-        if (check == 1) {
+        if (checking == 1) {
             log.info("if owner cancel attending, then oneDay should be deleted");
             oneday.setDeleted(true);
         }
@@ -288,7 +303,7 @@ public class OneDayService {
         OneDayApproval oneDayApproval = approvalRepository.findByOneDayIdAndUserId(oneDayId, userId);
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         log.info("Valid Check : Are You Owner");
-        if (user.getId() != oneDay.getOwnerId()) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
+        if (!Objects.equals(user.getId(), oneDay.getOwnerId())) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
         log.info("RejectProcess : delete from wishList");
         approvalRepository.delete(oneDayApproval);
         return new ResponseEntity<>("Reject Success", HttpStatus.OK);
