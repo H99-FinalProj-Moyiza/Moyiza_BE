@@ -58,7 +58,7 @@ public class ChatService {
         ChatMessageInput filteredChatInput = badWordFiltering.change(chatMessageInput);
         ChatRecord chatRecord = filteredChatInput.toChatRecord(chatId, userPrincipal.getUserId());
         //disable for Jmeter test
-//        chatRecordRepository.save(chatRecord);
+        chatRecordRepository.save(chatRecord);
         Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
         Long chatMemberCount = getChatMemberCount(chatId);
         ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal, chatMemberCount - subscriptionCount);
