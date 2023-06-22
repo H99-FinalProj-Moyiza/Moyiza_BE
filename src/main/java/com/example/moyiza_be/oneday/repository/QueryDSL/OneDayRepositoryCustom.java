@@ -105,9 +105,14 @@ public class OneDayRepositoryCustom {
     }
 
     public Page<OneDayListResponseDto> getFilteredJoinedOnedayList(
-            User nowUser, Long profileId, Pageable pageable
+            User nowUser, Long profileId, Pageable pageable, List<Long> filteringIdList
     ) {
         QUser owner = new QUser("owner");
+
+        SubQueryExpression<Long> subQuery = JPAExpressions.select(oneDayAttendant.oneDayId)
+                .from(oneDayAttendant)
+                .where(oneDayAttendant.userId.in(filteringIdList));
+
         List<OneDayListResponseDto> onedayList =
                 jpaQueryFactory
                         .from(oneDay)
@@ -116,9 +121,12 @@ public class OneDayRepositoryCustom {
                         .join(owner).on(oneDay.ownerId.eq(owner.id))
                         .leftJoin(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
                         .where(
-                                user.id.eq(profileId),
-                                oneDay.deleted.isFalse()
+                                oneDay.deleted.isFalse(),
+                                filteringBlackList(filteringIdList),
+                                oneDayAttendant.oneDayId.notIn(subQuery),
+                                user.id.eq(profileId)
                         )
+                        .distinct()
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .orderBy(oneDay.id.desc())

@@ -123,7 +123,7 @@ public class OneDayService {
         );
 
         Page<OneDayListResponseDto> oneDaysInParticipatingInfo = oneDayRepositoryCustom.getFilteredJoinedOnedayList(
-                user, profileId, pageable);
+                user, profileId, pageable, filteringIdList);
 
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }
