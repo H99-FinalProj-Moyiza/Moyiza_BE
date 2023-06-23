@@ -18,7 +18,7 @@ public class ValidationUtil {
     private final RedisUtil redisUtil;
     private final UserRepository userRepository;
 
-    public User findUser(String email){
+    public User findUserByEmail(String email){
         return userRepository.findByEmail(email).orElseThrow(()->
                 new NoSuchElementException("사용자가 존재하지 않습니다."));
     }

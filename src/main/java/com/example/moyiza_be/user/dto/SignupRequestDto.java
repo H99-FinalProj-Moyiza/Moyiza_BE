@@ -4,10 +4,12 @@ import com.example.moyiza_be.common.enums.GenderEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Calendar;
 
 @Getter
+@Setter
 public class SignupRequestDto {
 
     private String name;
