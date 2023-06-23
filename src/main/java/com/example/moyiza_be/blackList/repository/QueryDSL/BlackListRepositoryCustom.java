@@ -3,6 +3,7 @@ package com.example.moyiza_be.blackList.repository.QueryDSL;
 import com.example.moyiza_be.blackList.dto.BlackListMemberResponse;
 import com.example.moyiza_be.blackList.dto.QBlackListMemberResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -64,7 +65,7 @@ public class BlackListRepositoryCustom {
         return blackUserIdList.stream().distinct().sorted().toList();
     }
 
-    public List<Long> getBlackClubIdList(List<Long> blackUserIdList) {
+    public List<Long> getBlackClubIdList(List<Long> blackUserIdList, Long userId) {
         return jpaQueryFactory
                 .select(
                         club.id
@@ -73,8 +74,13 @@ public class BlackListRepositoryCustom {
                 .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
                 .join(user).on(user.id.eq(clubJoinEntry.userId))
                 .where(
-                        club.isDeleted.isFalse(),
-                        isBlackClub(blackUserIdList)
+                        club.isDeleted.isFalse()
+                                .and(isBlackClub(blackUserIdList))
+                                .and(club.id.notIn(
+                                        JPAExpressions.select(clubJoinEntry.clubId)
+                                                .from(clubJoinEntry)
+                                                .where(clubJoinEntry.userId.eq(userId))
+                                ))
                 )
                 .stream()
                 .distinct()
@@ -82,7 +88,7 @@ public class BlackListRepositoryCustom {
                 .toList();
     }
 
-    public List<Long> getBlackEventIdList(List<Long> blackUserIdList) {
+    public List<Long> getBlackEventIdList(List<Long> blackUserIdList, Long userId) {
         return jpaQueryFactory
                 .select(
                         event.id
@@ -91,8 +97,13 @@ public class BlackListRepositoryCustom {
                 .join(eventAttendant).on(eventAttendant.eventId.eq(event.id))
                 .join(user).on(user.id.eq(eventAttendant.userId))
                 .where(
-                        event.deleted.isFalse(),
-                        isBlackEvent(blackUserIdList)
+                        event.deleted.isFalse()
+                                .and(isBlackEvent(blackUserIdList))
+                                .and(event.id.notIn(
+                                        JPAExpressions.select(eventAttendant.eventId)
+                                                .from(eventAttendant)
+                                                .where(eventAttendant.userId.eq(userId))
+                                ))
                 )
                 .stream()
                 .distinct()
@@ -100,7 +111,7 @@ public class BlackListRepositoryCustom {
                 .toList();
     }
 
-    public List<Long> getBlackOneDayIdList(List<Long> blackUserIdList) {
+    public List<Long> getBlackOneDayIdList(List<Long> blackUserIdList, Long userId) {
         return jpaQueryFactory
                 .select(
                         oneDay.id
@@ -109,8 +120,13 @@ public class BlackListRepositoryCustom {
                 .join(oneDayAttendant).on(oneDayAttendant.oneDayId.eq(oneDay.id))
                 .join(user).on(user.id.eq(oneDayAttendant.userId))
                 .where(
-                        oneDay.deleted.isFalse(),
-                        isBlackOneDay(blackUserIdList)
+                        oneDay.deleted.isFalse()
+                                    .and(isBlackOneDay(blackUserIdList))
+                                    .and(oneDay.id.notIn(
+                                            JPAExpressions.select(oneDayAttendant.oneDayId)
+                                                    .from(oneDayAttendant)
+                                                    .where(oneDayAttendant.userId.eq(userId))
+                                    ))
                 )
                 .stream()
                 .distinct()
