@@ -28,6 +28,6 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     List<Club> findByOwnerId(Long userId);
     List<Club> findAllByIsDeletedFalseOrderByNumLikesDesc();
 
-    @Query("SELECT c FROM Club c JOIN ClubJoinEntry cj ON c.id = cj.clubId WHERE c.isDeleted = false AND cj.userId NOT IN :filteringIdList ORDER BY c.numLikes DESC")
-    List<Club> findAllClubsFilteredBlackList(@Param("filteringIdList") List<Long> filteringIdList);
+    @Query("SELECT c FROM Club c WHERE c.isDeleted = false AND c.id NOT IN :blackClubIdList ORDER BY c.numLikes DESC")
+    List<Club> findMostLikedClubsFilteredBlackList(@Param("blackClubIdList") List<Long> blackClubIdList);
 }

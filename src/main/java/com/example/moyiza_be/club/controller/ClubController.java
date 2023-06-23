@@ -225,8 +225,9 @@ public class ClubController {
     }
 
     @GetMapping("/popular")
-    public ResponseEntity<?> getMostLikedClub(){
-        return clubService.getMostLikedClub();
+    public ResponseEntity<?> getMostLikedClub(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        User user = userDetails == null ? null : userDetails.getUser();
+        return clubService.getMostLikedClub(user);
     }
 
     @PutMapping("/{club_id}/rule")
