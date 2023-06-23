@@ -1,5 +1,6 @@
 package com.example.moyiza_be.batch;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,23 +15,38 @@ import org.springframework.batch.test.MetaDataInstanceFactory;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class WithdrawUserJobSchedulerTest {
+public class JobSchedulerTest {
 
     @Mock
     private JobLauncher jobLauncher;
     @Mock
     private Job withdrawUserJob;
+    @Mock
+    private Job cleanUpEntitiesJob;
     @InjectMocks
-    private WithdrawUserJobScheduler scheduler;
+    private JobScheduler scheduler;
 
     @Test
-    public void runJob() throws Exception {
+    @DisplayName("runWithdrawUserJob")
+    public void runWithdrawUserJob() throws Exception {
         // Given
         JobExecution jobExecution = MetaDataInstanceFactory.createJobExecution();
         when(jobLauncher.run(withdrawUserJob, new JobParameters())).thenReturn(jobExecution);
         // When
-        scheduler.runJob();
+        scheduler.runWithdrawUserJob();
         // Then
         verify(jobLauncher, times(1)).run(withdrawUserJob, new JobParameters());
+    }
+
+    @Test
+    @DisplayName("runCleanUpEntitiesJob")
+    public void runCleanUpEntitiesJob() throws Exception {
+        //Given
+        JobExecution jobExecution = MetaDataInstanceFactory.createJobExecution();
+        when(jobLauncher.run(cleanUpEntitiesJob, new JobParameters())).thenReturn(jobExecution);
+        //when
+        scheduler.runCleanUpEntitiesJob();
+        //THen
+        verify(jobLauncher, times(1)).run(cleanUpEntitiesJob, new JobParameters());
     }
 }
