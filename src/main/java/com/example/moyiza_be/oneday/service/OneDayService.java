@@ -198,7 +198,7 @@ public class OneDayService {
             log.info("OneDayApproval Add Process");
             OneDayApproval oneDayApproval = new OneDayApproval(oneDay, user.getId());
             approvalRepository.save(oneDayApproval);
-            return new ResponseEntity<>("Approval System Testing", HttpStatus.OK);
+            return new ResponseEntity<>("Approval Request", HttpStatus.OK);
         } else {
             log.info("FCGSB -> Is it Fully occupied?");
             if (oneDay.getAttendantsNum() < oneDay.getOneDayGroupSize()) {
@@ -276,7 +276,14 @@ public class OneDayService {
     }
     public ResponseEntity<?> approveJoin(Long oneDayId, Long userId, User user) {
         log.info("Get Approval And OneDay");
-        OneDayApproval oneDayApproval = approvalRepository.findByOneDayId(oneDayId);
+        List<OneDayApproval> approvalList = approvalRepository.findAllByOneDayIdAndUserId(oneDayId,userId);
+        OneDayApproval oneDayApproval = approvalRepository.findByOneDayIdAndUserId(oneDayId,userId);
+        if (approvalList.size()>2) {
+//            OneDayApproval approval = approvalList.get(0);
+            approvalRepository.deleteAll(approvalList);
+        } else if (approvalList.isEmpty()) {
+            throw new NullPointerException("No Approval Threw");
+        }
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         log.info("Valid Check : Are You Owner");
         if (!Objects.equals(user.getId(), oneDay.getOwnerId())) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);

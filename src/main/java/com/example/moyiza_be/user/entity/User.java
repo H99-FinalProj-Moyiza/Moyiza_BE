@@ -9,11 +9,9 @@ import com.example.moyiza_be.common.utils.TimeStamped;
 
 import com.example.moyiza_be.user.dto.*;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 
 @Entity(name = "users")
@@ -54,6 +52,9 @@ public class User extends TimeStamped {
 
     private String socialLoginId; // The identifier value of the social type you are logged in as (null for normal login)
     private String content;
+
+    @Column(nullable = false)
+    private Boolean isDeleted = false;
 
     // Methods for setting user permissions
     public void authorizeUser() {
@@ -99,5 +100,37 @@ public class User extends TimeStamped {
         this.birth = requestDto.getBirth();
         this.phone = requestDto.getPhone();
         this.profileImage = (!requestDto.getImageUrl().isEmpty()) ? requestDto.getImageUrl() : BasicProfileEnum.getRandomImage().getImageUrl();
+    }
+
+    public void setIsDeleted(boolean flag){
+        this.isDeleted = flag;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setTagString(String tagString) {
+        this.tagString = tagString;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

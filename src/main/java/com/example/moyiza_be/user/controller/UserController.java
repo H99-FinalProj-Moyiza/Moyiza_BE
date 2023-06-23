@@ -124,6 +124,12 @@ public class UserController {
     public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails){
         return userService.getUserInfo(userDetails.getUser());
     }
+
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<?> withdrawUser(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.withdrawUser(userDetails.getUser());
+    }
+
     //profile test
 //    @PutMapping(value = "/profile",
 //            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE})

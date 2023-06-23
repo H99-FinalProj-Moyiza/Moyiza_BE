@@ -50,7 +50,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 refreshTokenRepository.save(newToken);
             }
             cookieUtil.deleteCookie(request, response, JwtUtil.REFRESH_TOKEN);
-            cookieUtil.addCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+            cookieUtil.addResponseCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
 
             String tokenName = (findUser.getRole() == Role.GUEST) ? "token" : "confirm";
 
