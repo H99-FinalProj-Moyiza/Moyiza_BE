@@ -48,4 +48,7 @@ public interface OneDayRepository extends JpaRepository<OneDay, User> {
     List<OneDay> findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(LocalDateTime now);
     List<OneDay> findAllByDeletedFalseOrderByNumLikesDesc();
     List<OneDay> findAllByIdIn(List<Long> oneDayIds);
+
+    @Query("DELETE FROM OneDay o WHERE o.deleted=true AND o.modifiedAt < :targetDate")
+    void cleanUpDeletedOneDays(@Param("targetDate")LocalDateTime targetDate);
 }
