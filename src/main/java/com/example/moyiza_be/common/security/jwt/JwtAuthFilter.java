@@ -29,7 +29,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // Interpreting and extracting JWT tokens
         String access_token = jwtUtil.resolveToken(request, JwtUtil.ACCESS_TOKEN);
@@ -71,7 +71,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         Authentication authentication = jwtUtil.createAuthentication(userEmail);
         context.setAuthentication(authentication);
-
         SecurityContextHolder.setContext(context);
     }
 

@@ -1,7 +1,7 @@
 package com.example.moyiza_be.common.oauth2.handler;
 
+import com.example.moyiza_be.common.enums.UserRoleEnum;
 import com.example.moyiza_be.common.oauth2.CustomOAuth2User;
-import com.example.moyiza_be.common.oauth2.Role;
 import com.example.moyiza_be.common.security.jwt.CookieUtil;
 import com.example.moyiza_be.common.security.jwt.JwtTokenDto;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
@@ -52,7 +52,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             cookieUtil.deleteCookie(request, response, JwtUtil.REFRESH_TOKEN);
             cookieUtil.addResponseCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
 
-            String tokenName = (findUser.getRole() == Role.GUEST) ? "token" : "confirm";
+            String tokenName = (findUser.getRole() == UserRoleEnum.GUEST) ? "token" : "confirm";
 
             String targetUrl = "https://mo2za.com/oauth/redirect";
             String redirectUrl = UriComponentsBuilder.fromUriString(targetUrl)
