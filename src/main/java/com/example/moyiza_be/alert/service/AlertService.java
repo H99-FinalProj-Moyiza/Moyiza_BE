@@ -45,8 +45,11 @@ public class AlertService {
 
     // Read Alert on DB
     public ResponseEntity<List<Alert>> getAllAlert(User user) {
+        System.out.println("alert intro");
         List<AlertResponseDto> alertList = new ArrayList<>();
+        System.out.println("get all alerts By Receiver");
         List<Alert> alerts = alertRepository.findAllByReceiver(user.getName());
+        System.out.println("put alerts in list");
         for (Alert alert : alerts) {
             alertList.add(
                     AlertResponseDto.builder()
@@ -57,8 +60,9 @@ public class AlertService {
                             .build()
             );
         }
+
         return new ResponseEntity<>(
-                alertRepository.findAllByReceiver(user.getName()),HttpStatus.OK
+                alertRepository.findAllByReceiver(user.getNickname()),HttpStatus.OK
         );
     }
 
