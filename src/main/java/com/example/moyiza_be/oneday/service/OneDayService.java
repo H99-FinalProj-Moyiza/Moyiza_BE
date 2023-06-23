@@ -198,7 +198,7 @@ public class OneDayService {
             log.info("OneDayApproval Add Process");
             OneDayApproval oneDayApproval = new OneDayApproval(oneDay, user.getId());
             approvalRepository.save(oneDayApproval);
-            return new ResponseEntity<>("Approval System Testing", HttpStatus.OK);
+            return new ResponseEntity<>("Approval Request", HttpStatus.OK);
         } else {
             log.info("FCGSB -> Is it Fully occupied?");
             if (oneDay.getAttendantsNum() < oneDay.getOneDayGroupSize()) {
@@ -276,7 +276,14 @@ public class OneDayService {
     }
     public ResponseEntity<?> approveJoin(Long oneDayId, Long userId, User user) {
         log.info("Get Approval And OneDay");
-        OneDayApproval oneDayApproval = approvalRepository.findByOneDayId(oneDayId);
+        List<OneDayApproval> approvalList = approvalRepository.findAllByOneDayIdAndUserId(oneDayId,userId);
+        OneDayApproval oneDayApproval = approvalRepository.findByOneDayIdAndUserId(oneDayId,userId);
+        if (approvalList.size()>2) {
+//            OneDayApproval approval = approvalList.get(0);
+            approvalRepository.deleteAll(approvalList);
+        } else if (approvalList.isEmpty()) {
+            throw new NullPointerException("No Approval Threw");
+        }
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         log.info("Valid Check : Are You Owner");
         if (!Objects.equals(user.getId(), oneDay.getOwnerId())) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
@@ -311,9 +318,15 @@ public class OneDayService {
 
     // Recommendation Based on Distance
 
-    public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(double nowLatitude, double nowLongitude) {
-        List<Object[]> nearByOneDays = oneDayRepository.findNearByOneDays(nowLatitude, nowLongitude);
-
+    public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(User user, double nowLatitude, double nowLongitude) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Object[]> nearByOneDays;
+        if (user != null) {
+            List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
+            nearByOneDays = oneDayRepository.findNearByOneDaysFilteredBlackList(nowLatitude, nowLongitude, blackOneDayIdList, now);
+        } else {
+            nearByOneDays = oneDayRepository.findNearByOneDays(nowLatitude, nowLongitude, now);
+        }
         List<OneDayNearByResponseDto> oneDays = new ArrayList<>();
         for (Object[] row : nearByOneDays) {
             OneDay oneDay = (OneDay) row[0];
@@ -372,9 +385,17 @@ public class OneDayService {
         }
     }
 
-    public ResponseEntity<List<OneDayImminentResponseDto>> getImminentOneDays() {
+    public ResponseEntity<List<OneDayImminentResponseDto>> getImminentOneDays(User user) {
         LocalDateTime now = LocalDateTime.now();
-        List<OneDay> imminentOneDays = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
+        List<OneDay> imminentOneDays;
+
+        if (user != null) {
+            List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
+            imminentOneDays = oneDayRepository.findImminentOneDaysFilteredBlackList(now, blackOneDayIdList);
+        } else {
+            imminentOneDays = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
+        }
+
         List<OneDayImminentResponseDto> oneDays = imminentOneDays.stream()
                 .map(oneDay -> {
                     Duration duration = Duration.between(now, oneDay.getOneDayStartTime());
@@ -385,8 +406,16 @@ public class OneDayService {
         return new ResponseEntity<>(oneDays, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getMostLikedOneDays() {
-        List<OneDay> oneDayList = oneDayRepository.findAllByDeletedFalseOrderByNumLikesDesc();
+    public ResponseEntity<?> getMostLikedOneDays(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        List<OneDay> oneDayList;
+
+        if (user != null) {
+            List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
+            oneDayList = oneDayRepository.findMostLikedOneDaysFilteredBlackList(blackOneDayIdList, now);
+        } else {
+            oneDayList = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByNumLikesDesc(now);
+        }
         List<OneDaySimpleResponseDto> oneDays = new ArrayList<>();
         for (OneDay oneDay : oneDayList) {
             List<OneDayImageUrl> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDay.getId());

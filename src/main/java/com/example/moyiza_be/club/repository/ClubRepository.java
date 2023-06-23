@@ -38,4 +38,8 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     @Modifying
     @Query("DELETE FROM Club c WHERE c.isDeleted=true AND c.modifiedAt < :targetDate")
     void cleanUpDeletedClubs(@Param("targetDate") LocalDateTime targetDate);
+
+    @Query("SELECT c FROM Club c WHERE c.isDeleted = false AND c.id NOT IN :blackClubIdList ORDER BY c.numLikes DESC")
+    List<Club> findMostLikedClubsFilteredBlackList(@Param("blackClubIdList") List<Long> blackClubIdList);
+
 }
