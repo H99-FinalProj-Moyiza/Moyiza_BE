@@ -79,6 +79,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     testImplementation("org.springframework.batch:spring-batch-test")
 
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 }
 
 def querydslDir = "$buildDir/generated/querydsl"

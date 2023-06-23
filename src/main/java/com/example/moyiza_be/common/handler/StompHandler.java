@@ -64,7 +64,6 @@ public class StompHandler implements ChannelInterceptor {
         if (StompCommand.DISCONNECT.equals(headerAccessor.getCommand())
 //                MessageDestinationEnum.CHAT.equals(destinationChecker(headerAccessor.getDestination()))
         ) {
-            System.out.println("headerAccessor = " + headerAccessor);
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             Set<String> chatSubIdSet = redisCacheService.getSessionSubIdSet(sessionId);
             if (chatSubIdSet == null || chatSubIdSet.size() == 0) {
@@ -95,19 +94,19 @@ public class StompHandler implements ChannelInterceptor {
 
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             String userId = userPrincipal.getUserId().toString();
-//
-//            userPrincipal.setSubscribedChatId(chatId);
-//            redisCacheService.saveUserInfoToCache(sessionId, userPrincipal);
 
-            Long lastReadMessageId = redisCacheService.getUserLastReadMessageId(chatId.toString(), userId);
-            if (lastReadMessageId == null) {
-                log.info("User " + userId + " has no lastReadMessage... continue without sending decrease message");
-            } else {
-                Message<byte[]> lastReadIdMessage = buildLastReadMessage(destination, lastReadMessageId, userId);
-                channel.send(lastReadIdMessage);
-                log.info("sending subscritionInfo of user : " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
-            }
-            redisCacheService.saveChatSubscriptionDestination(subId, sessionId, getChatIdFromDestination(destination));
+
+//            disable for JMeter test
+//            Long lastReadMessageId = redisCacheService.getUserLastReadMessageId(chatId.toString(), userId);
+//            if (lastReadMessageId == null) {
+//                log.info("User " + userId + " has no lastReadMessage... continue without sending decrease message");
+//            } else {
+//                Message<byte[]> lastReadIdMessage = buildLastReadMessage(destination, lastReadMessageId, userId);
+//                channel.send(lastReadIdMessage);
+//                log.info("sending subscritionInfo of user : " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
+//            }
+
+            redisCacheService.saveChatSubscriptionDestination(subId, sessionId, chatId);
             redisCacheService.saveSessionChatSubId(sessionId, subId);
             redisCacheService.removeUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString());
             redisCacheService.addSubscriptionToChatId(chatId.toString(), userId);
@@ -145,20 +144,24 @@ public class StompHandler implements ChannelInterceptor {
     private void handleChatUnsubscribe(ChatUserPrincipal userPrincipal, String subId, String sessionId) {
         Long chatId = redisCacheService.removeAndGetChatSubcriptionDestination(subId, sessionId);
         if(chatId == null){
+            log.debug("unsubscribe request for null chatId with subId : " + subId + " sessionId : " + sessionId);
             return;
         }
-        log.info(userPrincipal.getUserId() + " unsubscribing chatroom " + chatId);
+        log.info(userPrincipal.getUserId() + " unsubscribing chatroom : " + chatId);
         String userId = userPrincipal.getUserId().toString();
 
         ChatMessageOutput recentMessage = redisCacheService.loadRecentChat(chatId.toString());
         Long recentMessageId;
-        if (recentMessage == null) {
-            log.info("recent message not present for chatId : " + chatId);
-        } else {
-            recentMessageId = recentMessage.getChatRecordId();
-            redisCacheService.addUnsubscribedUser(chatId.toString(), userId);
-            log.info("adding recent message " + recentMessageId + " to userId : " + userId);
-        }
+
+//        disable for Jmeter Test
+//        if (recentMessage == null) {
+//            log.info("recent message not present for chatId : " + chatId);
+//        } else {
+//            recentMessageId = recentMessage.getChatRecordId();
+//            redisCacheService.addUnsubscribedUser(chatId.toString(), userId);
+//            log.info("adding recent message " + recentMessageId + " to userId : " + userId);
+//        }
+
         redisCacheService.removeSubIdFromSession(sessionId, subId);
         redisCacheService.removeSubscriptionFromChatId(chatId.toString(), userId);
     }

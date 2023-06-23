@@ -11,6 +11,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -70,11 +73,12 @@ public class UserController {
         return userService.logout(request, response, userDetails.getUser().getEmail());
     }
 
-    //마이페이지
+    //프로필 페이지
     @GetMapping("/mypage/{profileId}")
-    public ResponseEntity<?> getMypage(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<?> getMypage(@PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                       @AuthenticationPrincipal UserDetailsImpl userDetails,
                                        @PathVariable Long profileId) {
-        return mypageService.getMypage(userDetails.getUser(), profileId);
+        return mypageService.getMypage(pageable, userDetails.getUser(), profileId);
     }
 
     //회원정보 수정 - 관심사 추가 tagList 조회
@@ -114,6 +118,11 @@ public class UserController {
     @PostMapping("/find/email/verifyCode")
     public ResponseEntity<?> findUserEmailVerifyCode(@RequestBody Map<String, String> codeMap) throws Exception {
         return userService.verifyCodeToFindEmail(codeMap.get("code"));
+    }
+
+    @GetMapping("/userInfo")
+    public ResponseEntity<?> getUserInfo(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return userService.getUserInfo(userDetails.getUser());
     }
 
     @DeleteMapping("/withdraw")

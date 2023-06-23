@@ -1,5 +1,6 @@
 package com.example.moyiza_be.club.service;
 
+import com.example.moyiza_be.blackList.service.BlackListService;
 import com.example.moyiza_be.chat.service.ChatService;
 import com.example.moyiza_be.club.dto.*;
 import com.example.moyiza_be.club.entity.Club;
@@ -11,6 +12,7 @@ import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.club.repository.QueryDSL.ClubImageUrlRepositoryCustom;
 import com.example.moyiza_be.club.repository.QueryDSL.ClubJoinEntryRepositoryCustom;
 import com.example.moyiza_be.club.repository.QueryDSL.ClubRepositoryCustom;
+import com.example.moyiza_be.common.enums.BoardTypeEnum;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.utils.Message;
@@ -45,6 +47,7 @@ public class ClubService {
     private final ClubRepositoryCustom clubRepositoryCustom;
     private final ClubImageUrlRepositoryCustom clubImageUrlRepositoryCustom;
     private final LikeService likeService;
+    private final BlackListService blackListService;
 
 
     //Join Club
@@ -69,10 +72,11 @@ public class ClubService {
 
     //Club List Search (including full and search)
     public ResponseEntity<Page<ClubListResponse>> getClubList(
-            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3, User user
+            Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3, User user, Long profileId
     ) {
+        List<Long> blackClubIdList = blackListService.blackListFiltering(user, BoardTypeEnum.CLUB);
         Page<ClubListResponse> responseList = clubRepositoryCustom.filteredClubResponseList(
-                pageable, category, q, tag1, tag2, tag3, user);
+                pageable, category, q, tag1, tag2, tag3, user, null, blackClubIdList);
         return ResponseEntity.ok(responseList);
     }
   
@@ -92,9 +96,12 @@ public class ClubService {
     }
 
     //Get Club List on Mypage
-    public ClubListOnMyPage getClubListOnMyPage(Long userId, Long profileId) {
-        List<ClubDetailResponse> clubsInOperationInfo = clubRepositoryCustom.getManagedClubDetail(userId, profileId);
-        List<ClubDetailResponse> clubsInParticipatingInfo = clubRepositoryCustom.getJoinedClubDetail(userId, profileId);
+    public ClubListOnMyPage getClubListOnMyPage(Pageable pageable, User user, Long profileId) {
+        List<Long> blackClubIdList = blackListService.blackListFiltering(user, BoardTypeEnum.CLUB);
+        Page<ClubListResponse> clubsInOperationInfo = clubRepositoryCustom.filteredClubResponseList(
+                pageable, null, null, null, null, null, user, profileId, blackClubIdList);
+        Page<ClubListResponse> clubsInParticipatingInfo = clubRepositoryCustom.filteredJoinedClubResponseList(
+                pageable, user, profileId, blackClubIdList);
         return new ClubListOnMyPage(clubsInOperationInfo, clubsInParticipatingInfo);
     }
 
@@ -197,7 +204,6 @@ public class ClubService {
     /////////////////////private method///////////////////////
 
     //Clubid Null Check
-
     private Club loadClubByClubId(Long clubId) {
         Club club = clubRepository.findById(clubId).orElse(null);
         if (club == null) {
@@ -221,6 +227,8 @@ public class ClubService {
 
     public ResponseEntity<?> getMostLikedClub() {
         List<Club> clubList = clubRepository.findAllByIsDeletedFalseOrderByNumLikesDesc();
+//        List<Long> filteringIdList = blackListService.filtering(user);
+//        List<Club> clubList = clubRepository.findAllClubsFilteredBlackList(filteringIdList);
         List<ClubSimpleResponseDto> clubs = new ArrayList<>();
         for (Club club : clubList) {
             List<String> clubImageUrlList = clubImageUrlRepositoryCustom.getAllImageUrlByClubId(club.getId());

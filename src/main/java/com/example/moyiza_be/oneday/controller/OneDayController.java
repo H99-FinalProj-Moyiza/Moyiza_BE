@@ -136,17 +136,17 @@ public class OneDayController {
     }
 
     // JoinWishList
-    @GetMapping("/{oneDayId}/joinList")
+    @GetMapping("/{oneDayId}/joinlist")
     public ResponseEntity<?> joinWishList(@PathVariable Long oneDayId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return oneDayService.joinWishList(oneDayId, userDetails.getUser());
     }
     // Join Approve
-    @PostMapping("/{oneDayId}/joinList/{userId}")
+    @PostMapping("/{oneDayId}/joinlist/{userId}")
     public ResponseEntity<?> approveJoin(@PathVariable Long oneDayId, @PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails)  {
         return oneDayService.approveJoin(oneDayId, userId, userDetails.getUser());
     }
     // reject Approve
-    @DeleteMapping("/{oneDayId}/joinList/{userId}")
+    @DeleteMapping("/{oneDayId}/joinlist/{userId}")
     public ResponseEntity<?> rejectJoin(@PathVariable Long oneDayId, @PathVariable Long userId, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return oneDayService.rejectJoin(oneDayId, userId, userDetails.getUser());
     }

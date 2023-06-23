@@ -197,6 +197,11 @@ public class UserService {
                 () -> new NullPointerException("User not found"));
     }
 
+    public ResponseEntity<?> getUserInfo(User user) {
+        UserInfoResponseDto responseDto = new UserInfoResponseDto(user);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
     public ResponseEntity<?> withdrawUser(User user) {
         Long userId = user.getId();
         User withdrawUser = loadUserById(userId);
