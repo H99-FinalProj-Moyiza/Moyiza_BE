@@ -6,9 +6,11 @@ import com.example.moyiza_be.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,6 +62,13 @@ public interface OneDayRepository extends JpaRepository<OneDay, User> {
                                      @Param("now") LocalDateTime now);
 
     List<OneDay> findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(LocalDateTime now);
+    List<OneDay> findAllByDeletedFalseOrderByNumLikesDesc();
+    List<OneDay> findAllByIdIn(List<Long> oneDayIds);
+    
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM OneDay o WHERE o.deleted=true AND o.modifiedAt < :targetDate")
+    void cleanUpDeletedOneDays(@Param("targetDate")LocalDateTime targetDate);
 
     @Query("SELECT o FROM OneDay o " +
     "WHERE o.deleted = FALSE " +
@@ -74,4 +83,5 @@ public interface OneDayRepository extends JpaRepository<OneDay, User> {
     @Query("SELECT o FROM OneDay o WHERE o.deleted = false AND o.id NOT IN :blackOneDayIdList AND o.oneDayStartTime > :now ORDER BY o.numLikes DESC")
     List<OneDay> findMostLikedOneDaysFilteredBlackList(@Param("blackOneDayIdList") List<Long> blackOneDayIdList,
                                                        @Param("now") LocalDateTime now);
+
 }
