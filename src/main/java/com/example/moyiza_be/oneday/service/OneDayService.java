@@ -206,6 +206,16 @@ public class OneDayService {
                 OneDayAttendant attendant = new OneDayAttendant(oneDay, user.getId());
                 attendantRepository.save(attendant);
                 chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+                Alert alert = Alert.builder()
+                        .sender(user.getName())
+//                    .imgUrl(user.getProfileImage())
+                        .message(user.getNickname() + " 님이 " +oneDay.getOneDayTitle()+ "에 참여하였습니다.")
+                        .receiver(owner.getNickname())
+                        .checking(false)
+                        .build();
+                log.info("Approval Request Alarm sent");
+                alertRepository.save(alert);
+                alertService.alertEvent(owner.getNickname());
                 oneDay.addAttendantNum();
                 return new ResponseEntity<>("Attending Success", HttpStatus.OK);
             } else {
