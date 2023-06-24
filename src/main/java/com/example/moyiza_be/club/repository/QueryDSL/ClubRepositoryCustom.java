@@ -3,6 +3,7 @@ package com.example.moyiza_be.club.repository.QueryDSL;
 import com.example.moyiza_be.club.dto.ClubDetailResponse;
 import com.example.moyiza_be.club.dto.ClubListResponse;
 import com.example.moyiza_be.club.dto.QClubDetailResponse;
+import com.example.moyiza_be.club.entity.Club;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.user.entity.QUser;
@@ -179,6 +180,18 @@ public class ClubRepositoryCustom {
 //        }
 //        return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
 //    }
+
+    public List<Club> findMostLikedClubsFilteredBlackList(List<Long> blackClubIdList) {
+        return jpaQueryFactory
+                .selectFrom(club)
+                .where(
+                        club.isDeleted.isFalse(),
+                        filteringBlackList(blackClubIdList))
+                .orderBy(club.numLikes.desc())
+                .fetch();
+    }
+
+
     private BooleanExpression isDeletedFalse(){
         return club.isDeleted.eq(false);
     }

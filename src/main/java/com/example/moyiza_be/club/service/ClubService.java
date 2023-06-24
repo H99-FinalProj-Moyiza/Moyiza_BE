@@ -229,7 +229,7 @@ public class ClubService {
         List<Club> clubList;
         if (user != null) {
             List<Long> blackClubIdList = blackListService.blackListFiltering(user, BoardTypeEnum.CLUB);
-            clubList = clubRepository.findMostLikedClubsFilteredBlackList(blackClubIdList);
+            clubList = clubRepositoryCustom.findMostLikedClubsFilteredBlackList(blackClubIdList);
         } else {
             clubList = clubRepository.findAllByIsDeletedFalseOrderByNumLikesDesc();
         }

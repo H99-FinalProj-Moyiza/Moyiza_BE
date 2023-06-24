@@ -5,11 +5,10 @@ import com.example.moyiza_be.common.enums.CategoryEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.jpa.repository.Modifying;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,15 +30,9 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     List<Club> findByOwnerId(Long userId);
     List<Club> findAllByIsDeletedFalseOrderByNumLikesDesc();
 
-    @Query("SELECT c FROM Club c JOIN ClubJoinEntry cj ON c.id = cj.clubId WHERE c.isDeleted = false AND cj.userId NOT IN :filteringIdList ORDER BY c.numLikes DESC")
-    List<Club> findAllClubsFilteredBlackList(@Param("filteringIdList") List<Long> filteringIdList);
-
     @Transactional
     @Modifying
     @Query("DELETE FROM Club c WHERE c.isDeleted=true AND c.modifiedAt < :targetDate")
     void cleanUpDeletedClubs(@Param("targetDate") LocalDateTime targetDate);
-
-    @Query("SELECT c FROM Club c WHERE c.isDeleted = false AND c.id NOT IN :blackClubIdList ORDER BY c.numLikes DESC")
-    List<Club> findMostLikedClubsFilteredBlackList(@Param("blackClubIdList") List<Long> blackClubIdList);
 
 }

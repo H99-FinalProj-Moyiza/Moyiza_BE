@@ -333,7 +333,11 @@ public class OneDayService {
         List<Object[]> nearByOneDays;
         if (user != null) {
             List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
-            nearByOneDays = oneDayRepository.findNearByOneDaysFilteredBlackList(nowLatitude, nowLongitude, blackOneDayIdList, now);
+            if (blackOneDayIdList.isEmpty()) {
+                nearByOneDays = oneDayRepository.findNearByOneDays(nowLatitude, nowLongitude, now);
+            } else {
+                nearByOneDays = oneDayRepository.findNearByOneDaysFilteredBlackList(nowLatitude, nowLongitude, blackOneDayIdList, now);
+            }
         } else {
             nearByOneDays = oneDayRepository.findNearByOneDays(nowLatitude, nowLongitude, now);
         }
@@ -401,7 +405,7 @@ public class OneDayService {
 
         if (user != null) {
             List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
-            imminentOneDays = oneDayRepository.findImminentOneDaysFilteredBlackList(now, blackOneDayIdList);
+            imminentOneDays = oneDayRepositoryCustom.findImminentOneDaysFilteredBlackList(now, blackOneDayIdList);
         } else {
             imminentOneDays = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
         }
@@ -422,7 +426,7 @@ public class OneDayService {
 
         if (user != null) {
             List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
-            oneDayList = oneDayRepository.findMostLikedOneDaysFilteredBlackList(blackOneDayIdList, now);
+            oneDayList = oneDayRepositoryCustom.findMostLikedOneDaysFilteredBlackList(blackOneDayIdList, now);
         } else {
             oneDayList = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByNumLikesDesc(now);
         }
