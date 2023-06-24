@@ -206,14 +206,17 @@ public class UserService {
         Long userId = user.getId();
         User withdrawUser = loadUserById(userId);
         withdrawUser.setIsDeleted(true);
+        userRepository.save(withdrawUser);
         List<Club> withdrawUsersClubs = clubRepository.findByOwnerId(userId);
         for (Club club : withdrawUsersClubs) {
             club.flagDeleted(true);
         }
+        clubRepository.saveAll(withdrawUsersClubs);
         List<OneDay> withdrawUsersOneDays = oneDayRepository.findAllByOwnerId(userId);
         for (OneDay oneday : withdrawUsersOneDays) {
             oneday.setDeleted(true);
         }
+        oneDayRepository.saveAll(withdrawUsersOneDays);
         return new ResponseEntity<>(new Message("User withdraw success"), HttpStatus.OK);
     }
 

@@ -1,5 +1,6 @@
 package com.example.moyiza_be.common.security.config;
 
+import com.example.moyiza_be.common.handler.CustomAccessDeniedHandler;
 import com.example.moyiza_be.common.oauth2.handler.OAuth2LoginFailureHandler;
 import com.example.moyiza_be.common.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.example.moyiza_be.common.oauth2.service.CustomOAuth2UserService;
@@ -32,6 +33,7 @@ public class WebSecurityConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final String MOYIZADOMAIN = "https://mo2za.com";
 
     private static final String[] PERMIT_URL_ARRAY = {
@@ -68,12 +70,14 @@ public class WebSecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeHttpRequests().requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                .authorizeHttpRequests()
+                .requestMatchers(PERMIT_URL_ARRAY).permitAll()
                 .requestMatchers(HttpMethod.GET, "/club/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/event/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/oneday/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/*").permitAll()
-                .anyRequest().authenticated().and()
+                .anyRequest().hasAnyAuthority("ROLE_USER", "ROLE_ADMIN").and()
+                .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler).and()
                 .oauth2Login()
                 .successHandler(oAuth2LoginSuccessHandler)
                 .failureHandler(oAuth2LoginFailureHandler)

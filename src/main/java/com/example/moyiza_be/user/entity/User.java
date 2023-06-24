@@ -3,13 +3,15 @@ package com.example.moyiza_be.user.entity;
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
 import com.example.moyiza_be.common.enums.GenderEnum;
 import com.example.moyiza_be.common.enums.SocialType;
+import com.example.moyiza_be.common.enums.UserRoleEnum;
 import com.example.moyiza_be.common.oauth2.OAuthAttributes;
-import com.example.moyiza_be.common.oauth2.Role;
 import com.example.moyiza_be.common.utils.TimeStamped;
 
 import com.example.moyiza_be.user.dto.*;
 import jakarta.persistence.*;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 import java.util.Calendar;
@@ -19,17 +21,19 @@ import java.util.Calendar;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Where(clause = "is_deleted = false")
 public class User extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
     private String email;
-
+    @Column(nullable = false)
+    @JsonIgnore
     private String password;
-
+    @Column(nullable = false)
     private String name;
-
+    @Column(nullable = false)
     private String nickname;
 
     private GenderEnum gender;  // 0 : MALE,  1 : FEMALE
@@ -45,7 +49,8 @@ public class User extends TimeStamped {
     private String profileImage;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(nullable = false)
+    private UserRoleEnum role;
 
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
@@ -58,7 +63,7 @@ public class User extends TimeStamped {
 
     // Methods for setting user permissions
     public void authorizeUser() {
-        this.role = Role.USER;
+        this.role = UserRoleEnum.USER;
     }
 
     public void updateProfileImage(String storedFileName) {
@@ -102,7 +107,7 @@ public class User extends TimeStamped {
         this.profileImage = (!requestDto.getImageUrl().isEmpty()) ? requestDto.getImageUrl() : BasicProfileEnum.getRandomImage().getImageUrl();
     }
 
-    public void setIsDeleted(boolean flag){
+    public void setIsDeleted(Boolean flag){
         this.isDeleted = flag;
     }
 
