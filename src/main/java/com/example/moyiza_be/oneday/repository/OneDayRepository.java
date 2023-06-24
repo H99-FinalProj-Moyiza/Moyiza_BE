@@ -61,17 +61,17 @@ public interface OneDayRepository extends JpaRepository<OneDay, User> {
 
     List<OneDay> findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(LocalDateTime now);
 
-    @Query("SELECT o FROM OneDay o " +
-    "WHERE o.deleted = FALSE " +
-    "AND o.oneDayStartTime > :now " +
-    "AND o.id NOT IN :blackOneDayIdList " +
-    "ORDER BY o.oneDayStartTime ASC")
-    List<OneDay> findImminentOneDaysFilteredBlackList(@Param("now") LocalDateTime now,
-                                                      @Param("blackOneDayIdList") List<Long> blackOneDayIdList);
+//    @Query("SELECT o FROM OneDay o " +
+//    "WHERE o.deleted = FALSE " +
+//    "AND o.oneDayStartTime > :now " +
+//    "AND o.id NOT IN :blackOneDayIdList " +
+//    "ORDER BY o.oneDayStartTime ASC")
+//    List<OneDay> findImminentOneDaysFilteredBlackList(@Param("now") LocalDateTime now,
+//                                                      @Param("blackOneDayIdList") List<Long> blackOneDayIdList);
 
     List<OneDay> findAllByDeletedFalseAndOneDayStartTimeAfterOrderByNumLikesDesc(LocalDateTime now);
 
-    @Query("SELECT o FROM OneDay o WHERE o.deleted = false AND o.id NOT IN :blackOneDayIdList AND o.oneDayStartTime > :now ORDER BY o.numLikes DESC")
-    List<OneDay> findMostLikedOneDaysFilteredBlackList(@Param("blackOneDayIdList") List<Long> blackOneDayIdList,
-                                                       @Param("now") LocalDateTime now);
+//    @Query("SELECT o FROM OneDay o WHERE o.deleted = false AND o.id NOT IN :blackOneDayIdList AND o.oneDayStartTime > :now ORDER BY o.numLikes DESC")
+//    List<OneDay> findMostLikedOneDaysFilteredBlackList(@Param("blackOneDayIdList") List<Long> blackOneDayIdList,
+//                                                       @Param("now") LocalDateTime now);
 }

@@ -3,11 +3,15 @@ package com.example.moyiza_be.oneday.repository.QueryDSL;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.dto.OneDayListResponseDto;
+import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
+import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.user.entity.QUser;
 import com.example.moyiza_be.user.entity.User;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -147,6 +151,32 @@ public class OneDayRepositoryCustom {
                         );
 
         return new PageImpl<>(onedayList, pageable, 1000L);
+    }
+
+    public List<OneDay> findImminentOneDaysFilteredBlackList(LocalDateTime now,
+                                                              List<Long> blackOneDayIdList) {
+        return jpaQueryFactory
+                .selectFrom(oneDay)
+                .where(
+                        oneDay.deleted.isFalse(),
+                        filteringBlackList(blackOneDayIdList),
+                        oneDay.oneDayStartTime.goe(now)
+                )
+                .orderBy(oneDay.oneDayStartTime.asc())
+                .fetch();
+    }
+
+    public List<OneDay> findMostLikedOneDaysFilteredBlackList(List<Long> blackOneDayIdList,
+                                                              LocalDateTime now) {
+        return jpaQueryFactory
+                .selectFrom(oneDay)
+                .where(
+                        oneDay.deleted.isFalse(),
+                        filteringBlackList(blackOneDayIdList),
+                        oneDay.oneDayStartTime.goe(now)
+                )
+                .orderBy(oneDay.numLikes.desc())
+                .fetch();
     }
 
     private BooleanExpression titleContainOrContentContain(String q) {
