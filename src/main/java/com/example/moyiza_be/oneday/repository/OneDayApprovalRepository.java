@@ -16,4 +16,6 @@ public interface OneDayApprovalRepository extends JpaRepository<OneDayApproval, 
     OneDayApproval findByOneDayIdAndUserId(Long oneDayId, Long userId);
 
     boolean existsByOneDayIdAndUserId(Long oneDayId, Long id);
+
+    List<OneDayApproval> findAllByOneDayIdAndUserId(Long oneDayId, Long userId);
 }

@@ -41,7 +41,7 @@ public class ClubRepositoryCustom {
 
         List<ClubListResponse> clubListResponseList =
                 jpaQueryFactory
-                        .from(club).where(club.isDeleted.isFalse())
+                        .from(club)
                         .join(user).on(club.ownerId.eq(user.id))
                         .leftJoin(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
                         .where(
@@ -219,7 +219,7 @@ public class ClubRepositoryCustom {
     }
 
     private BooleanExpression isProfileId(Long profileId) {
-        return profileId == null ? null : user.id.eq(profileId);
+        return profileId == null ? null : club.ownerId.eq(profileId);
     }
 
     private BooleanExpression filteringBlackList(List<Long> blackClubIdList) {

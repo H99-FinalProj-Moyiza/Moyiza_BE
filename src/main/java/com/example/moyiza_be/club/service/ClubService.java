@@ -225,10 +225,15 @@ public class ClubService {
         return clubRepository.countByOwnerIdAndIsDeletedFalse(userId);
     }
 
-    public ResponseEntity<?> getMostLikedClub() {
-        List<Club> clubList = clubRepository.findAllByIsDeletedFalseOrderByNumLikesDesc();
-//        List<Long> filteringIdList = blackListService.filtering(user);
-//        List<Club> clubList = clubRepository.findAllClubsFilteredBlackList(filteringIdList);
+    public ResponseEntity<?> getMostLikedClub(User user) {
+        List<Club> clubList;
+        if (user != null) {
+            List<Long> blackClubIdList = blackListService.blackListFiltering(user, BoardTypeEnum.CLUB);
+            clubList = clubRepository.findMostLikedClubsFilteredBlackList(blackClubIdList);
+        } else {
+            clubList = clubRepository.findAllByIsDeletedFalseOrderByNumLikesDesc();
+        }
+
         List<ClubSimpleResponseDto> clubs = new ArrayList<>();
         for (Club club : clubList) {
             List<String> clubImageUrlList = clubImageUrlRepositoryCustom.getAllImageUrlByClubId(club.getId());
@@ -237,6 +242,4 @@ public class ClubService {
         }
         return new ResponseEntity<>(clubs, HttpStatus.OK);
     }
-
-
 }
