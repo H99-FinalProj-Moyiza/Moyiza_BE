@@ -3,16 +3,19 @@ package com.example.moyiza_be.chat.dto;
 import com.example.moyiza_be.chat.entity.ChatRecord;
 import com.querydsl.core.annotations.QueryInit;
 import com.querydsl.core.annotations.QueryProjection;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Data
+@Setter
 @NoArgsConstructor
 public class ChatMessageOutput {
+    @NotNull
     private Long chatId;
     private Long chatRecordId;
     private Long senderId;
