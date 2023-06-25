@@ -27,7 +27,7 @@ public class RedisConfig {
 
     private final RedisProperties redisProperties;
 
-//    @Bean
+    //    @Bean
 //    public RedisConnectionFactory redisConnectionFactory() {
 //        return new LettuceConnectionFactory(redisProperties.getHost(), redisProperties.getPort());
 //    }
@@ -53,7 +53,7 @@ public class RedisConfig {
     }
 
     @Bean
-    RedisTemplate<String, ChatMessageOutput> redisRecentChatTemplate(){
+    RedisTemplate<String, ChatMessageOutput> redisRecentChatTemplate() {
         RedisTemplate<String, ChatMessageOutput> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -61,8 +61,9 @@ public class RedisConfig {
 
         return redisTemplate;
     }
+
     @Bean
-    RedisTemplate<String, Long> redisLongTemplate(){
+    RedisTemplate<String, Long> redisLongTemplate() {
         RedisTemplate<String, Long> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
