@@ -22,15 +22,16 @@ spring:
     url: ENC(FLABZ3U84RdLp+5UmSAEmbYmkafqBM20nx/9yLQEvdw9qSxsMn9gx4Js5XbNvnAvWqzNYlj0Dyzly1XTyiR5YlYIDZufFamFRXBQOI6U54iR1UH3u84bY+bbBDli0OzN)
 
 
-#dev Redis
+  #Redis 설정
   data:
     redis:
       pool:
         min-idle: 0
         max-idle: 8
-        max-active: 8d
+        max-active: 8
       port: 6379
-      host: 127.0.0.1
+      host: 43.200.169.48
+      password: ENC(V8HByRExsO7bDwqCirBLQw==)
 
 management:
   endpoints:
