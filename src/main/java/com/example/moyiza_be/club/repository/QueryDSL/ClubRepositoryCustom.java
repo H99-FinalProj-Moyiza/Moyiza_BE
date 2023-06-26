@@ -191,6 +191,46 @@ public class ClubRepositoryCustom {
                 .fetch();
     }
 
+    public Page<ClubListResponse> likeClubResponseList(
+            Pageable pageable, Long profileId, List<Long> blackClubIdList
+    ) {
+        QUser owner = new QUser("owner");
+
+        List<ClubListResponse> clubListResponseList =
+                jpaQueryFactory
+                        .from(club)
+                        .join(clubLike).on(clubLike.clubId.eq(club.id))
+                        .join(user).on(clubLike.userId.eq(user.id))
+                        .join(owner).on(club.ownerId.eq(owner.id))
+                        .leftJoin(clubImageUrl).on(clubImageUrl.clubId.eq(club.id))
+                        .where(
+                                club.isDeleted.isFalse(),
+                                filteringBlackList(blackClubIdList),
+                                user.id.eq(profileId)
+                        )
+                        .distinct()
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .orderBy(club.id.desc())
+                        .transform(
+                                groupBy(club.id)
+                                        .list(Projections.constructor(ClubListResponse.class,
+                                                club.id,
+                                                owner.nickname,
+                                                club.title,
+                                                club.content,
+                                                club.tagString,
+                                                club.maxGroupSize,
+                                                club.nowMemberCount,
+                                                club.thumbnailUrl,
+                                                GroupBy.list(clubImageUrl.imageUrl),
+                                                club.numLikes
+                                        ))
+                        );
+        return new PageImpl<>(clubListResponseList, pageable, 5000L);
+    }
+
+
 
     private BooleanExpression isDeletedFalse(){
         return club.isDeleted.eq(false);

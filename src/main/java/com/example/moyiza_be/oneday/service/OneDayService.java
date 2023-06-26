@@ -116,7 +116,7 @@ public class OneDayService {
         return ResponseEntity.ok(filteredOnedayList);
     }
 
-    // List For MyPage OneDay
+    // Get OneDay List on Mypage
     public OneDayListOnMyPage getOneDayListOnMyPage(Pageable pageable, User user, Long profileId) {
         List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
         Page<OneDayListResponseDto> oneDaysInOperationInfo = oneDayRepositoryCustom.getFilteredOnedayList(
@@ -128,6 +128,12 @@ public class OneDayService {
                 user, profileId, pageable, blackOneDayIdList);
 
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
+    }
+
+    // Get Like OneDay List on Mypage
+    public Page<OneDayListResponseDto> getLikeOneDayListOnMypage(Pageable pageable, User user, Long profileId) {
+        List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
+        return oneDayRepositoryCustom.likeOneDayResponseList(pageable, profileId, blackOneDayIdList);
     }
 
     // Update OneDay

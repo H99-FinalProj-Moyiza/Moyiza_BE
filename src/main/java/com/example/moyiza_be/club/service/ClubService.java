@@ -105,6 +105,12 @@ public class ClubService {
         return new ClubListOnMyPage(clubsInOperationInfo, clubsInParticipatingInfo);
     }
 
+    //Get Like Club List on Mypage
+    public Page<ClubListResponse> getLikeClubListOnMypage(Pageable pageable, User user, Long profileId) {
+        List<Long> blackClubIdList = blackListService.blackListFiltering(user, BoardTypeEnum.CLUB);
+        return clubRepositoryCustom.likeClubResponseList(pageable, profileId, blackClubIdList);
+    }
+
     //Get Club Member
     public ResponseEntity<List<ClubMemberResponse>> getClubMember(Long clubId) {
 
