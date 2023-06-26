@@ -49,4 +49,27 @@ public class OneDayListResponseDto {
         this.numLikes = numLikes;
         this.isLikedByUser = isLikedByUser;
     }
+
+    @QueryProjection
+    public OneDayListResponseDto(
+            Long onedayId, String ownerNickname, String ownerProfileUrl, String onedayTitle, String onedayContent,
+            String tagString, Integer onedayGroupSize, Integer onedayAttendantsNum, String thumbnailUrl,
+            List<String> imageUrlList, Double longitude, Double latitude, String onedayLocation, Integer numLikes
+    ) {
+        this.onedayId = onedayId;
+        this.ownerNickname = ownerNickname;
+        this.ownerProfileUrl = ownerProfileUrl;
+        this.onedayTitle = onedayTitle;
+        this.onedayContent = onedayContent;
+        this.onedayTag = TagEnum.parseTag(tagString);
+        this.onedayGroupSize = onedayGroupSize;
+        this.onedayAttendantsNum = onedayAttendantsNum;
+        this.thumbnailUrl = thumbnailUrl;
+        this.imageUrlList = imageUrlList;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.onedayLocation = onedayLocation;
+        this.numLikes = numLikes;
+        this.isLikedByUser = false;
+    }
 }

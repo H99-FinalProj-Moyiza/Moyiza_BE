@@ -153,6 +153,53 @@ public class OneDayRepositoryCustom {
         return new PageImpl<>(onedayList, pageable, 1000L);
     }
 
+    public Page<OneDayListResponseDto> likeOneDayResponseList(
+            Pageable pageable, Long profileId, List<Long> blackOneDayIdList
+    ) {
+        QUser owner = new QUser("owner");
+
+        List<OneDayListResponseDto> onedayList =
+                jpaQueryFactory
+                        .from(oneDay)
+                        .join(onedayLike).on(onedayLike.onedayId.eq(oneDay.id))
+                        .join(user).on(onedayLike.userId.eq(user.id))
+                        .join(owner).on(oneDay.ownerId.eq(owner.id))
+                        .leftJoin(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
+                        .where(
+                                oneDay.deleted.isFalse(),
+                                filteringBlackList(blackOneDayIdList),
+                                user.id.eq(profileId)
+                        )
+                        .distinct()
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .orderBy(oneDay.id.desc())
+                        .transform(
+                                groupBy(oneDay.id)
+                                        .list(
+                                                Projections.constructor(OneDayListResponseDto.class,
+                                                        oneDay.id,
+                                                        owner.nickname,
+                                                        user.profileImage,
+                                                        oneDay.oneDayTitle,
+                                                        oneDay.oneDayContent,
+                                                        oneDay.tagString,
+                                                        oneDay.oneDayGroupSize,
+                                                        oneDay.attendantsNum,
+                                                        oneDay.oneDayImage,
+                                                        GroupBy.list(oneDayImageUrl.imageUrl),
+                                                        oneDay.oneDayLongitude,
+                                                        oneDay.oneDayLatitude,
+                                                        oneDay.oneDayLocation,
+                                                        oneDay.numLikes
+                                                )
+                                        )
+
+                        );
+
+        return new PageImpl<>(onedayList, pageable, 1000L);
+    }
+
     public List<OneDay> findImminentOneDaysFilteredBlackList(LocalDateTime now,
                                                               List<Long> blackOneDayIdList) {
         return jpaQueryFactory

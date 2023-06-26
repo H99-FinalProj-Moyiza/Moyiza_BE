@@ -81,6 +81,14 @@ public class UserController {
         return mypageService.getMypage(pageable, userDetails.getUser(), profileId);
     }
 
+    //프로필 페이지에서 좋아요 목록 조회
+    @GetMapping("/mypage/{profileId}/like")
+    public ResponseEntity<?> getLikeList(@PageableDefault(page = 0, size = 8, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                         @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                         @PathVariable Long profileId) {
+        return mypageService.getLikeList(pageable, userDetails.getUser(), profileId);
+    }
+
     //회원정보 수정 - 관심사 추가 tagList 조회
     @GetMapping("/profile/tags")
     public ResponseEntity<?> tagsOfCategory(@RequestParam String category){
