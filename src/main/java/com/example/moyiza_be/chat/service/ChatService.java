@@ -4,6 +4,7 @@ import com.example.moyiza_be.chat.dto.*;
 import com.example.moyiza_be.chat.entity.Chat;
 import com.example.moyiza_be.chat.entity.ChatJoinEntry;
 import com.example.moyiza_be.chat.entity.ChatRecord;
+import com.example.moyiza_be.chat.kafka.KafkaChatProducer;
 import com.example.moyiza_be.chat.repository.ChatJoinEntryRepository;
 import com.example.moyiza_be.chat.repository.ChatRecordRepository;
 import com.example.moyiza_be.chat.repository.ChatRepository;
@@ -11,7 +12,6 @@ import com.example.moyiza_be.chat.repository.QueryDSL.ChatRecordRepositoryCustom
 import com.example.moyiza_be.chat.repository.QueryDSL.ChatRepositoryCustom;
 import com.example.moyiza_be.club.entity.ClubImageUrl;
 import com.example.moyiza_be.club.repository.ClubImageUrlRepository;
-import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.example.moyiza_be.common.redis.RedisCacheService;
 import com.example.moyiza_be.common.utils.BadWordFiltering;
@@ -28,7 +28,6 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,28 +46,28 @@ public class ChatService {
     private final ClubImageUrlRepository clubImageUrlRepository;
     private final OneDayImageUrlRepository oneDayImageUrlRepository;
     private final BadWordFiltering badWordFiltering;
-
+    private final KafkaChatProducer kafkaChatProducer;
     private final String DEFAULT_CHATROOM_IMAGE = "https://moyiza-image.s3.ap-northeast-2.amazonaws.com/e048a389-8488-4ab5-a973-c8e5bae99d2e_pngaaa.com-293633.png";
 
-    public void receiveAndSendChat(ChatUserPrincipal userPrincipal,
-                                   Long chatId,
-                                   ChatMessageInput chatMessageInput
+    public void publishChat(ChatUserPrincipal userPrincipal,
+                            Long chatId,
+                            ChatMessageInput chatMessageInput
     ) {
-        //Filtering ? need to some logic
+        //filtering logic for future migration into kafka streaming API
         ChatMessageInput filteredChatInput = badWordFiltering.change(chatMessageInput);
         ChatRecord chatRecord = filteredChatInput.toChatRecord(chatId, userPrincipal.getUserId());
-        //disable for Jmeter test
+//        disable for Jmeter test
         chatRecordRepository.save(chatRecord);
+
+
         Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
         Long chatMemberCount = getChatMemberCount(chatId);
         ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal, chatMemberCount - subscriptionCount);
         messageOutput.setChatId(chatId);
-        String destination = "/chat/" + chatId;
-        String alarmDestination = "/chatalarm/" + chatId;
-        cacheService.addRecentChatToList(chatId.toString(), messageOutput);
-        sendingOperations.convertAndSend(destination, messageOutput);
-        sendingOperations.convertAndSend(alarmDestination, messageOutput);
+        kafkaChatProducer.publishMessage(messageOutput);
     }
+
+
 
     //Get Club Chat Room List
     public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(Long userId) {
@@ -151,7 +150,7 @@ public class ChatService {
 
         //구독자들한테 JOIN메시지 보내기
         ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "adminProfileImage");
-        receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다"));
+        publishChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 참여했습니다"));
 
     }
 
@@ -169,7 +168,7 @@ public class ChatService {
 
         //구독자들한테 LEAVE메시지 보내기
         ChatUserPrincipal adminInfo = new ChatUserPrincipal(-1L, "admin", "asdf");
-        receiveAndSendChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다"));
+        publishChat(adminInfo, chat.getId(), new ChatMessageInput(user.getNickname() + "님이 나가셨습니다"));
     }
 
     private Chat loadChat(Long roomIdentifier, ChatTypeEnum chatTypeEnum) {

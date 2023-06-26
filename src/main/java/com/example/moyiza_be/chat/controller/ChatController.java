@@ -18,13 +18,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -45,7 +43,7 @@ public class ChatController {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         String sessionId = headerAccessor.getSessionId();
         ChatUserPrincipal userInfo = redisCacheService.getUserInfoFromCache(sessionId);
-        chatService.receiveAndSendChat(userInfo, chatId, chatMessageInput);
+        chatService.publishChat(userInfo, chatId, chatMessageInput);
     }
 
     //채팅방 목록 조회

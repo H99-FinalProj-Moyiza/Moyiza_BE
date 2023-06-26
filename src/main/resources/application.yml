@@ -47,10 +47,29 @@ spring:
   mvc:
     websocket:
       enabled: true
-  # STOMP 관련 설정
+  # STOMP config
   messaging:
     stomp:
-      enabled: true
+      enabled: tr
+
+  #kafka config
+  kafka:
+    consumer:
+      bootstrap-servers: ENC(ULHxVjXF4Rmi2ZD302GSElMdX8/sVm9Jgyp8hvbUUUzzNhCQYkS9F43Fj3LpvYPXd+VDcvw7fzzJzNwBSiHuRxiHbz8R2gLg)
+      group-id: chatServer${chatServerIndex}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+    producer:
+      bootstrap-servers: ENC(ULHxVjXF4Rmi2ZD302GSElMdX8/sVm9Jgyp8hvbUUUzzNhCQYkS9F43Fj3LpvYPXd+VDcvw7fzzJzNwBSiHuRxiHbz8R2gLg)
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+
+
 
 cloud:
   aws:
@@ -72,3 +91,5 @@ coolsms:
   api:
     key: ENC(uYFfmuxh4hHPJCbWkYa2Ub8PGg5pFERm8jU6qjNpSsg=)
     secret: ENC(xK/tJOuANOgFBfKz1LvvHME+KhA4Ap4O9IToant9ZrWDtsy5CO9hXnyH4tUBJ/w6)
+
+
