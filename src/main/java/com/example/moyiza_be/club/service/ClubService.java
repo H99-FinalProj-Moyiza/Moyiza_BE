@@ -52,6 +52,9 @@ public class ClubService {
     //Join Club
     public ResponseEntity<Message> joinClub(Long clubId, User user) {
         Club club = loadClubByClubId(clubId);
+        if (club.getNowMemberCount() >= club.getMaxGroupSize()){
+            throw new IllegalArgumentException("exceeds maximum membercount");
+        }
 
         if (clubJoinEntryRepository.existsByClubIdAndUserId(clubId, user.getId())) {
             return new ResponseEntity<>(new Message("You can't sign up for duplicates."), HttpStatus.BAD_REQUEST);
@@ -63,6 +66,7 @@ public class ClubService {
         ClubJoinEntry joinEntry = new ClubJoinEntry(user.getId(), clubId);
         clubJoinEntryRepository.save(joinEntry);
         chatService.joinChat(clubId, ChatTypeEnum.CLUB, user);
+
 
         //Need to add conditional validation in the future
         Message message = new Message("Your signup has been approved.");
