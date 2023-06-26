@@ -54,8 +54,7 @@ public class OneDayController {
     ) {
         User user = userDetails == null ? null : userDetails.getUser();
         return oneDayService.getFilteredOneDayList(
-                user, pageable, null, null, null, null, null, null, null, null,
-                null
+                user, pageable, null, null, null, null, null, null, null, null
         );
     }
 
@@ -70,13 +69,11 @@ public class OneDayController {
             @RequestParam(required = false) Double longitude,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double radius,
-            @RequestParam(required = false) LocalDateTime startafter,
             @AuthenticationPrincipal UserDetailsImpl userDetails
             ){
         User user = userDetails == null ? null : userDetails.getUser();
         return oneDayService.getFilteredOneDayList(
-                user, pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius,
-                startafter
+                user, pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius
         );
     }
 

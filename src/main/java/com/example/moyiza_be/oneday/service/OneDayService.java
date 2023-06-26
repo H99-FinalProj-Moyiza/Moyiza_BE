@@ -106,34 +106,37 @@ public class OneDayService {
     // Read OneDay List
     public ResponseEntity<Page<OneDayListResponseDto>> getFilteredOneDayList(
             User user, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
-            Double longitude, Double latitude, Double radius, LocalDateTime startafter
+            Double longitude, Double latitude, Double radius
     ) {
+        LocalDateTime now = LocalDateTime.now();
         List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
         Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
                 user, null, pageable, category, q, tag1, tag2, tag3,
-                longitude, latitude, radius, startafter, blackOneDayIdList
+                longitude, latitude, radius, blackOneDayIdList, now
         );
         return ResponseEntity.ok(filteredOnedayList);
     }
 
     // Get OneDay List on Mypage
     public OneDayListOnMyPage getOneDayListOnMyPage(Pageable pageable, User user, Long profileId) {
+        LocalDateTime now = LocalDateTime.now();
         List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
         Page<OneDayListResponseDto> oneDaysInOperationInfo = oneDayRepositoryCustom.getFilteredOnedayList(
                 user, profileId, pageable, null, null, null, null,
-                null, null, null, null, null, blackOneDayIdList
+                null, null, null, null, blackOneDayIdList, now
         );
 
         Page<OneDayListResponseDto> oneDaysInParticipatingInfo = oneDayRepositoryCustom.getFilteredJoinedOnedayList(
-                user, profileId, pageable, blackOneDayIdList);
+                user, profileId, pageable, blackOneDayIdList, now);
 
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
     }
 
     // Get Like OneDay List on Mypage
     public Page<OneDayListResponseDto> getLikeOneDayListOnMypage(Pageable pageable, User user, Long profileId) {
+        LocalDateTime now = LocalDateTime.now();
         List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
-        return oneDayRepositoryCustom.likeOneDayResponseList(pageable, profileId, blackOneDayIdList);
+        return oneDayRepositoryCustom.likeOneDayResponseList(pageable, profileId, blackOneDayIdList, now);
     }
 
     // Update OneDay

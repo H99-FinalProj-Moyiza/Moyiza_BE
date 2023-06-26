@@ -3,15 +3,12 @@ package com.example.moyiza_be.oneday.repository.QueryDSL;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.dto.OneDayListResponseDto;
-import com.example.moyiza_be.oneday.dto.OneDayNearByResponseDto;
 import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.user.entity.QUser;
 import com.example.moyiza_be.user.entity.User;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -41,7 +38,7 @@ public class OneDayRepositoryCustom {
     public Page<OneDayListResponseDto> getFilteredOnedayList(
             User nowUser, Long profileId, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
             Double nowLongitude, Double nowLatitude, Double radius,
-            LocalDateTime timeCondition, List<Long> blackOneDayIdList
+            List<Long> blackOneDayIdList, LocalDateTime now
     ) {
         Long userId = nowUser == null ? -1 : nowUser.getId();
 
@@ -59,8 +56,8 @@ public class OneDayRepositoryCustom {
                                 eqCategory(category),
                                 titleContainOrContentContain(q),
                                 nearby(radius, nowLongitude, nowLatitude),
-                                startTimeAfter(timeCondition),
-                                isProfileId(profileId)
+                                isProfileId(profileId),
+                                oneDay.oneDayStartTime.goe(now)
                         )
                         .distinct()
                         .offset(pageable.getOffset())
@@ -100,7 +97,7 @@ public class OneDayRepositoryCustom {
     }
 
     public Page<OneDayListResponseDto> getFilteredJoinedOnedayList(
-            User nowUser, Long profileId, Pageable pageable, List<Long> blackOneDayIdList
+            User nowUser, Long profileId, Pageable pageable, List<Long> blackOneDayIdList, LocalDateTime now
     ) {
         QUser owner = new QUser("owner");
 
@@ -114,7 +111,8 @@ public class OneDayRepositoryCustom {
                         .where(
                                 oneDay.deleted.isFalse(),
                                 filteringBlackList(blackOneDayIdList),
-                                user.id.eq(profileId)
+                                user.id.eq(profileId),
+                                oneDay.oneDayStartTime.goe(now)
                         )
                         .distinct()
                         .offset(pageable.getOffset())
@@ -154,7 +152,7 @@ public class OneDayRepositoryCustom {
     }
 
     public Page<OneDayListResponseDto> likeOneDayResponseList(
-            Pageable pageable, Long profileId, List<Long> blackOneDayIdList
+            Pageable pageable, Long profileId, List<Long> blackOneDayIdList, LocalDateTime now
     ) {
         QUser owner = new QUser("owner");
 
@@ -168,7 +166,8 @@ public class OneDayRepositoryCustom {
                         .where(
                                 oneDay.deleted.isFalse(),
                                 filteringBlackList(blackOneDayIdList),
-                                user.id.eq(profileId)
+                                user.id.eq(profileId),
+                                oneDay.oneDayStartTime.goe(now)
                         )
                         .distinct()
                         .offset(pageable.getOffset())
@@ -228,10 +227,6 @@ public class OneDayRepositoryCustom {
 
     private BooleanExpression titleContainOrContentContain(String q) {
         return q == null ? null : titleContain(q).or(contentContain(q));
-    }
-
-    private BooleanExpression startTimeAfter(LocalDateTime timeCondition) {
-        return timeCondition == null ? null : oneDay.oneDayStartTime.after(timeCondition);
     }
 
     private BooleanExpression eqTag1(String tag) {
