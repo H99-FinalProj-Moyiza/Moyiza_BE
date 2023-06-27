@@ -280,8 +280,8 @@ public class OneDayService {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         ArrayList<MemberResponse> approvalUsers = new ArrayList<>();
         // valid Check
-        log.info("Valid Check : Are You Owner?");
-        if (!Objects.equals(oneDay.getOwnerId(), user.getId())) return new ResponseEntity<>("You are Not owner", HttpStatus.FORBIDDEN);
+//        log.info("Valid Check : Are You Owner?");
+//        if (!Objects.equals(oneDay.getOwnerId(), user.getId())) return new ResponseEntity<>("You are Not owner", HttpStatus.FORBIDDEN);
         log.info("Get All Attendant Wish list");
         List<OneDayApproval> approvalList = approvalRepository.findAllByOneDayId(oneDayId);
         log.info("Transform userId to User Information");
