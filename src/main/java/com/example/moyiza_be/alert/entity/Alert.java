@@ -24,8 +24,12 @@ public class Alert {
     @Column
     private String sender;
 
-//    @Column
-//    private String imgUrl;
+    @Column
+    private Long oneDayId;
+    @Column
+    private String oneDayTitle;
+    @Column
+    private String imageUrl;
 
 
     @Column
@@ -35,6 +39,8 @@ public class Alert {
     public void updateAlert(String sender) { // String imgUrl needed if image keep go with.
         this.sender = sender;
         this.message = sender + " is try to join!";
-//        this.imgUrl = imgUrl;
+        this.imageUrl = imageUrl;
+//        this.oneDayId = oneDayId;
+//        this.oneDayTitle = oneDayTitle;
     }
 }

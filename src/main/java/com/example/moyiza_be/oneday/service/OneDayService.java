@@ -196,7 +196,9 @@ public class OneDayService {
             log.info("user is not owner -> Send alarm");
             Alert alert = Alert.builder()
                     .sender(user.getName())
-//                    .imgUrl(user.getProfileImage())
+                    .oneDayId(oneDayId)
+                    .oneDayTitle(oneDay.getOneDayTitle())
+                    .imageUrl(user.getProfileImage())
                     .message(user.getNickname() + " 님이 " +oneDay.getOneDayTitle()+ "에 참여를 신청하였습니다.")
                     .receiver(owner.getNickname())
                     .checking(false)
@@ -217,7 +219,9 @@ public class OneDayService {
                 chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
                 Alert alert = Alert.builder()
                         .sender(user.getName())
-//                    .imgUrl(user.getProfileImage())
+                        .oneDayId(oneDayId)
+                        .oneDayTitle(oneDay.getOneDayTitle())
+                        .imageUrl(user.getProfileImage())
                         .message(user.getNickname() + " 님이 " +oneDay.getOneDayTitle()+ "에 참여하였습니다.")
                         .receiver(owner.getNickname())
                         .checking(false)
@@ -238,7 +242,8 @@ public class OneDayService {
     public ResponseEntity<?> cancelOneDay(Long oneDayId, User user) {
         log.info("cancel process");
         OneDay oneday = loadExistingOnedayById(oneDayId);
-        if (oneday.getType().equals(OneDayTypeEnum.APPROVAL)) {
+        Optional<OneDayAttendant> attending = attendantRepository.findByOneDayIdAndUserId(oneDayId, user.getId());
+        if (oneday.getType().equals(OneDayTypeEnum.APPROVAL) && attending.isEmpty()) {
             log.info("oneDay is Approval And Owner's not approved yet");
             OneDayApproval approval = approvalRepository.findByOneDayIdAndUserId(oneDayId, user.getId());
             approvalRepository.delete(approval);
