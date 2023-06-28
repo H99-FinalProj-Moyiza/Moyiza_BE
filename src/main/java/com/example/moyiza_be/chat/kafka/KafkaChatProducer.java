@@ -16,7 +16,7 @@ public class KafkaChatProducer {
 
     public void publishMessage(ChatMessageOutput chatMessage){
         kafkaChatMessageTemplate.send("chat", chatMessage);
-        log.info("chatMessage published by " + chatMessage.getSenderId() + " chat Id : " + chatMessage.getChatId());
+//        log.info("chatMessage published by " + chatMessage.getSenderId() + " chat Id : " + chatMessage.getChatId());
     }
 
 }

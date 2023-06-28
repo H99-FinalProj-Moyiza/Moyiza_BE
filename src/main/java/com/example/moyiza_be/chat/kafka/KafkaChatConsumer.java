@@ -31,6 +31,6 @@ public class KafkaChatConsumer {
         cacheService.addRecentChatToList(chatId.toString(), chatMessage);
         sendingOperations.convertAndSend(destination, chatMessage);
         sendingOperations.convertAndSend(alarmDestination, chatMessage);
-        log.info("consumed chatMessage for destination : " + destination);
+//        log.info("consumed chatMessage for destination : " + destination);
     }
 }
