@@ -74,10 +74,14 @@ dependencies {
     //coolSMS
     implementation 'net.nurigo:sdk:4.3.0'
 
+    //spring actuator
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     //kafka
     implementation 'org.springframework.kafka:spring-kafka'
+
+    //prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
 }
 
