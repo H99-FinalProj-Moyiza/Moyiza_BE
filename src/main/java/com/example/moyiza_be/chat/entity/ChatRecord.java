@@ -31,4 +31,5 @@ public class ChatRecord extends TimeStamped {
     public void setContent(String content) {
         this.content = content;
     }
+    public void setId(Long id){this.id = id;}
 }

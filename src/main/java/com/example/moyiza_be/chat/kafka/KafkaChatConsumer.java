@@ -20,9 +20,6 @@ public class KafkaChatConsumer {
     private final String CHAT_DESTINATION_PREFIX = "/chat/";
     private final String CHATALARM_DESTINATION_PREFIX = "/chatalarm/";
 
-    @Value("${chatServerIndex}")
-    private String chatServerIndex;
-
     @KafkaListener(topics = "chat")
     public void consumeAndBroadcast(ChatMessageOutput chatMessage){
         Long chatId = chatMessage.getChatId();

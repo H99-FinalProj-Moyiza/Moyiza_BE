@@ -34,7 +34,6 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
 public class ChatService {
     private final SimpMessageSendingOperations sendingOperations;
     private final ChatRecordRepository chatRecordRepository;
@@ -54,11 +53,10 @@ public class ChatService {
                             ChatMessageInput chatMessageInput
     ) {
         //filtering logic for future migration into kafka streaming API
-        ChatMessageInput filteredChatInput = badWordFiltering.change(chatMessageInput);
-        ChatRecord chatRecord = filteredChatInput.toChatRecord(chatId, userPrincipal.getUserId());
+//        ChatMessageInput filteredChatInput = badWordFiltering.change(chatMessageInput);
+        ChatRecord chatRecord = chatMessageInput.toChatRecord(chatId, userPrincipal.getUserId());
 //        disable for Jmeter test
         chatRecordRepository.save(chatRecord);
-
 
         Long subscriptionCount = cacheService.countSubscriptionToChatId(chatId.toString());
         Long chatMemberCount = getChatMemberCount(chatId);
@@ -70,6 +68,7 @@ public class ChatService {
 
 
     //Get Club Chat Room List
+    @Transactional
     public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(Long userId) {
         //나중에 쿼리 바꿀 대상
         List<ChatRoomInfo> clubChatRoomInfoList = chatRepositoryCustom.getClubChatRoomList(userId)
@@ -87,6 +86,7 @@ public class ChatService {
         return ResponseEntity.ok(clubChatRoomInfoList);
     }
 
+    @Transactional
     public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(Long userId) {
 
         List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId)
@@ -103,6 +103,7 @@ public class ChatService {
         return ResponseEntity.ok(onedayChatRoomInfoList);
     }
 
+    @Transactional
     public void makeChat(Long roomIdentifier, ChatTypeEnum chatType, String roomName) {
         Chat chat = chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatType).orElse(null);
         if (chat != null) {
@@ -114,6 +115,7 @@ public class ChatService {
     }
 
     // Get Chat Room Record
+    @Transactional
     public ResponseEntity<Page<ChatMessageOutput>> getChatRoomRecord(User user, Long chatId, Pageable pageable) {
         ChatJoinEntry chatJoinEntry =
                 chatJoinEntryRepository.findByUserIdAndChatIdAndIsCurrentlyJoinedTrue(user.getId(), chatId)
@@ -137,6 +139,7 @@ public class ChatService {
     }
 
     //클럽 채팅방 join
+    @Transactional
     public void joinChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
         Chat chat = loadChat(roomIdentifier, chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);
@@ -154,6 +157,7 @@ public class ChatService {
 
     }
 
+    @Transactional
     public void leaveChat(Long roomIdentifier, ChatTypeEnum chatType, User user) {
         Chat chat = loadChat(roomIdentifier, chatType);
         ChatJoinEntry chatJoinEntry = chatJoinEntryRepository.findByChatIdAndUserId(chat.getId(), user.getId()).orElse(null);
@@ -175,6 +179,7 @@ public class ChatService {
         return chatRepository.findByRoomIdentifierAndChatType(roomIdentifier, chatTypeEnum)
                 .orElseThrow(() -> new NullPointerException("채팅방을 찾을 수 없습니다"));
     }
+
 
     public Long getChatMemberCount(Long chatId) {
         return chatJoinEntryRepository.countByChatIdAndAndIsCurrentlyJoinedTrue(chatId);
