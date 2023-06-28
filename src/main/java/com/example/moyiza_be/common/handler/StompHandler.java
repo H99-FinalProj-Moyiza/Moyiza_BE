@@ -32,7 +32,7 @@ public class StompHandler implements ChannelInterceptor {
 
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         String sessionId = headerAccessor.getSessionId();
-        log.info("Command : " + headerAccessor.getCommand());
+//        log.info("Command : " + headerAccessor.getCommand());
 
         if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
             String bearerToken = headerAccessor.getFirstNativeHeader("ACCESS_TOKEN");
@@ -90,7 +90,7 @@ public class StompHandler implements ChannelInterceptor {
             String sessionId = headerAccessor.getSessionId();
             Long chatId = getChatIdFromDestination(destination);
             String subId = headerAccessor.getSubscriptionId();
-            log.info("activate SUBSCRIBE AfterCompletion Method for chatId : " + chatId);
+//            log.info("activate SUBSCRIBE AfterCompletion Method for chatId : " + chatId);
 
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             String userId = userPrincipal.getUserId().toString();
@@ -147,7 +147,7 @@ public class StompHandler implements ChannelInterceptor {
             log.debug("unsubscribe request for null chatId with subId : " + subId + " sessionId : " + sessionId);
             return;
         }
-        log.info(userPrincipal.getUserId() + " unsubscribing chatroom : " + chatId);
+//        log.info(userPrincipal.getUserId() + " unsubscribing chatroom : " + chatId);
         String userId = userPrincipal.getUserId().toString();
 
         ChatMessageOutput recentMessage = redisCacheService.loadRecentChat(chatId.toString());

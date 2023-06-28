@@ -17,7 +17,6 @@ public class ChatErrorHandler extends StompSubProtocolErrorHandler {
 
     @Override
     public Message<byte[]> handleClientMessageProcessingError(Message<byte[]> clientMessage, Throwable ex) {
-        log.info(ex.getMessage());
         return super.handleClientMessageProcessingError(clientMessage, ex);
     }
 }
