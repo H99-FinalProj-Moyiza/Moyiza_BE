@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
@@ -34,8 +35,10 @@ public class ChatMessageOutput {
         this.senderNickname = userPrincipal.getUserNickname();
         this.chatRecordId = chatRecord.getId();
         this.content = chatRecord.getContent();
-        this.sentAt = chatRecord.getCreatedAt().toString();
-        this.modifiedAt = chatRecord.getModifiedAt().toString();
+//        this.sentAt = chatRecord.getCreatedAt().toString();
+//        this.modifiedAt = chatRecord.getModifiedAt().toString();
+        this.sentAt = LocalDateTime.now().toString();
+        this.modifiedAt = LocalDateTime.now().toString();
         this.unreadCount = unreadCount;
     }
 
