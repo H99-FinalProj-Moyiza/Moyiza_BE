@@ -323,7 +323,8 @@ public class OneDayService {
         log.info("Add Attendant");
         attendantRepository.save(attendant);
         log.info("Invite to ChatRoom");
-        chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+        User attendUser = userRepository.findById(userId).orElseThrow(()-> new NullPointerException("Unauthorized User"));
+        chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, attendUser);
         log.info("AttendantsNum++");
         oneDay.addAttendantNum();
         log.info("After Join, Delete waitingList");
