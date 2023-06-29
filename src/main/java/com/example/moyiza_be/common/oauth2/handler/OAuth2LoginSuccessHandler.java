@@ -37,7 +37,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         log.info("OAuth2 Login 성공!");
         try {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-            User findUser = userRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(
+            User findUser = userRepository.findByEmailAndIsDeletedFalse(oAuth2User.getEmail()).orElseThrow(
                     () -> new NoSuchElementException("회원이 존재하지 않습니다."));
 
             JwtTokenDto tokenDto = jwtUtil.createAllToken(findUser);

@@ -19,21 +19,21 @@ public class ValidationUtil {
     private final UserRepository userRepository;
 
     public User findUserByEmail(String email){
-        return userRepository.findByEmail(email).orElseThrow(()->
+        return userRepository.findByEmailAndIsDeletedFalse(email).orElseThrow(()->
                 new NoSuchElementException("사용자가 존재하지 않습니다."));
     }
     public User findUserBySocialInfo(SocialType socialType, String socialLoginId){
-        return userRepository.findBySocialTypeAndSocialLoginId(socialType, socialLoginId).orElseThrow(()->
+        return userRepository.findBySocialTypeAndSocialLoginIdAndIsDeletedFalse(socialType, socialLoginId).orElseThrow(()->
                 new NoSuchElementException("사용자가 존재하지 않습니다."));
     }
     public void checkDuplicatedEmail(String email){
-        Optional<User> findUserByEmail = userRepository.findByEmail(email);
+        Optional<User> findUserByEmail = userRepository.findByEmailAndIsDeletedFalse(email);
         if (findUserByEmail.isPresent()) {
             throw new IllegalArgumentException("중복된 이메일 사용");
         }
     }
     public void checkDuplicatedNick(String nickname){
-        Optional<User> findUserByNickname = userRepository.findByNickname(nickname);
+        Optional<User> findUserByNickname = userRepository.findByNicknameAndIsDeletedFalse(nickname);
         if (findUserByNickname.isPresent()) {
             throw new IllegalArgumentException("중복된 닉네임 사용");
         }

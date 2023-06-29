@@ -3,12 +3,14 @@ package com.example.moyiza_be.common.security.jwt;
 import com.example.moyiza_be.common.security.SecurityExceptionDto;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
+import com.example.moyiza_be.user.util.ValidationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kotlin.reflect.jvm.internal.ReflectProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
+    private final ValidationUtil validationUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -48,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 //Get username with Refresh token
                 String userEmail = jwtUtil.getUserInfoFromToken(refresh_token);
                 //Get user information by username
-                User user = userRepository.findByEmail(userEmail).get();
+                User user = validationUtil.findUserByEmail(userEmail);
                 //Issue a new ACCESS TOKEN
                 String newAccessToken = jwtUtil.createToken(user, "Access");
                 //Add an ACCESS TOKEN to the header

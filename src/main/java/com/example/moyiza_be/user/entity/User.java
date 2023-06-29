@@ -21,7 +21,6 @@ import java.util.Calendar;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Where(clause = "is_deleted = false")
 public class User extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,17 +63,6 @@ public class User extends TimeStamped {
     // Methods for setting user permissions
     public void authorizeUser() {
         this.role = UserRoleEnum.USER;
-    }
-
-    public void updateProfileImage(String storedFileName) {
-        this.profileImage = storedFileName;
-    }
-
-    public void updateProfile(UpdateRequestDto requestDto, String tagString){
-        this.nickname = requestDto.getNickname();
-        this.tagString = tagString;
-        this.profileImage = requestDto.getImageUrl();
-        this.content = requestDto.getContent();
     }
 
     public User (String nickName, Long id){

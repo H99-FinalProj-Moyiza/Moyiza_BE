@@ -23,7 +23,7 @@ public class AlertService {
     private final UserRepository userRepository;
 
     public ResponseEntity<String> alertEvent(String nickname) {
-        User user = userRepository.findByNickname(nickname).get();
+        User user = userRepository.findByNicknameAndIsDeletedFalse(nickname).get();
         String userNickName = user.getNickname();
 
         if (sseEmitters.containsKey(userNickName)) {
