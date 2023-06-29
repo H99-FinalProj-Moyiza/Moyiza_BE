@@ -25,7 +25,6 @@ public class KafkaChatConsumer {
         Long chatId = chatMessage.getChatId();
         String destination = CHAT_DESTINATION_PREFIX + chatId;
         String alarmDestination = CHATALARM_DESTINATION_PREFIX + chatId;
-        cacheService.addRecentChatToList(chatId.toString(), chatMessage);
         sendingOperations.convertAndSend(destination, chatMessage);
         sendingOperations.convertAndSend(alarmDestination, chatMessage);
 //        log.info("consumed chatMessage for destination : " + destination);

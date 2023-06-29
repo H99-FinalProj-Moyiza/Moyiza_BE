@@ -35,10 +35,8 @@ public class ChatMessageOutput {
         this.senderNickname = userPrincipal.getUserNickname();
         this.chatRecordId = chatRecord.getId();
         this.content = chatRecord.getContent();
-//        this.sentAt = chatRecord.getCreatedAt().toString();
-//        this.modifiedAt = chatRecord.getModifiedAt().toString();
-        this.sentAt = LocalDateTime.now().toString();
-        this.modifiedAt = LocalDateTime.now().toString();
+        this.sentAt = chatRecord.getCreatedAt().toString();
+        this.modifiedAt = chatRecord.getModifiedAt().toString();
         this.unreadCount = unreadCount;
     }
 

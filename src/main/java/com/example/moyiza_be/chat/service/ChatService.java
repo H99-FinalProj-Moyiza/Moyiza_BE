@@ -63,6 +63,7 @@ public class ChatService {
         ChatMessageOutput messageOutput = new ChatMessageOutput(chatRecord, userPrincipal, chatMemberCount - subscriptionCount);
         messageOutput.setChatId(chatId);
         kafkaChatProducer.publishMessage(messageOutput);
+        cacheService.addRecentChatToList(chatId.toString(), messageOutput);
     }
 
 
