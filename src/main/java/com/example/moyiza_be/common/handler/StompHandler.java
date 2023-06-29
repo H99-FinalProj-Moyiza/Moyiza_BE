@@ -90,21 +90,21 @@ public class StompHandler implements ChannelInterceptor {
             String sessionId = headerAccessor.getSessionId();
             Long chatId = getChatIdFromDestination(destination);
             String subId = headerAccessor.getSubscriptionId();
-            log.info("activate SUBSCRIBE AfterCompletion Method for chatId : " + chatId);
+//            log.info("activate SUBSCRIBE AfterCompletion Method for chatId : " + chatId);
 
             ChatUserPrincipal userPrincipal = redisCacheService.getUserInfoFromCache(sessionId);
             String userId = userPrincipal.getUserId().toString();
 
 
 //            disable for JMeter test
-//            Long lastReadMessageId = redisCacheService.getUserLastReadMessageId(chatId.toString(), userId);
-//            if (lastReadMessageId == null) {
-//                log.info("User " + userId + " has no lastReadMessage... continue without sending decrease message");
-//            } else {
-//                Message<byte[]> lastReadIdMessage = buildLastReadMessage(destination, lastReadMessageId, userId);
-//                channel.send(lastReadIdMessage);
-//                log.info("sending subscritionInfo of user : " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
-//            }
+            Long lastReadMessageId = redisCacheService.getUserLastReadMessageId(chatId.toString(), userId);
+            if (lastReadMessageId == null) {
+                log.info("User " + userId + " has no lastReadMessage... continue without sending decrease message");
+            } else {
+                Message<byte[]> lastReadIdMessage = buildLastReadMessage(destination, lastReadMessageId, userId);
+                channel.send(lastReadIdMessage);
+                log.info("sending subscritionInfo of user : " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
+            }
 
             redisCacheService.saveChatSubscriptionDestination(subId, sessionId, chatId);
             redisCacheService.saveSessionChatSubId(sessionId, subId);
@@ -114,7 +114,6 @@ public class StompHandler implements ChannelInterceptor {
 
         ChannelInterceptor.super.afterSendCompletion(message, channel, sent, ex);
     }
-
 
     ////////////////////////////////////////
 
@@ -147,20 +146,20 @@ public class StompHandler implements ChannelInterceptor {
             log.debug("unsubscribe request for null chatId with subId : " + subId + " sessionId : " + sessionId);
             return;
         }
-        log.info(userPrincipal.getUserId() + " unsubscribing chatroom : " + chatId);
+//        log.info(userPrincipal.getUserId() + " unsubscribing chatroom : " + chatId);
         String userId = userPrincipal.getUserId().toString();
 
         ChatMessageOutput recentMessage = redisCacheService.loadRecentChat(chatId.toString());
         Long recentMessageId;
 
 //        disable for Jmeter Test
-//        if (recentMessage == null) {
-//            log.info("recent message not present for chatId : " + chatId);
-//        } else {
-//            recentMessageId = recentMessage.getChatRecordId();
-//            redisCacheService.addUnsubscribedUser(chatId.toString(), userId);
-//            log.info("adding recent message " + recentMessageId + " to userId : " + userId);
-//        }
+        if (recentMessage == null) {
+            log.info("recent message not present for chatId : " + chatId);
+        } else {
+            recentMessageId = recentMessage.getChatRecordId();
+            redisCacheService.addUnsubscribedUser(chatId.toString(), userId);
+            log.info("adding recent message " + recentMessageId + " to userId : " + userId);
+        }
 
         redisCacheService.removeSubIdFromSession(sessionId, subId);
         redisCacheService.removeSubscriptionFromChatId(chatId.toString(), userId);

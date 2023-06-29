@@ -38,7 +38,7 @@ public class RedisCacheService {
         userInfoMap.put("nickname", userInfo.getUserNickname());
         userInfoMap.put("profileUrl", userInfo.getProfileUrl());
         hashOperations.putAll(sessionId, userInfoMap);
-        log.info("updating/saving userInfo : " + userInfo.getUserId() + " for sessionId : " + sessionId);
+//        log.info("updating/saving userInfo : " + userInfo.getUserId() + " for sessionId : " + sessionId);
     }
 
     public ChatUserPrincipal getUserInfoFromCache(String sessionId) {
