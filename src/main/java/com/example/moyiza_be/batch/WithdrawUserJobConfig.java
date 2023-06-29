@@ -48,12 +48,11 @@ public class WithdrawUserJobConfig {
 
     //Reader 설정
     @Bean
-    @StepScope //(1)
+    @StepScope
     public QueueItemReader<User> withdrawUserReader() {
-        //(2)
         List<User> targetUsers = userRepository.findByModifiedAtBeforeAndIsDeletedTrue(
                 LocalDateTime.now().minusMonths(3));
-        return new QueueItemReader<>(targetUsers); //(3)
+        return new QueueItemReader<>(targetUsers);
     }
 
     //Processor 설정

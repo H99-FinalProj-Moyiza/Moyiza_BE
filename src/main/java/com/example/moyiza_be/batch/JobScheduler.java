@@ -16,7 +16,7 @@ public class JobScheduler {
     private final Job cleanUpEntitiesJob;
 
     //매주 일요일 0시에 job 실행
-    @Scheduled(cron = "0 0 0 * * SUN")
+    @Scheduled(cron = "0 0 0 * * MON")
     public void runWithdrawUserJob() throws Exception {
         jobLauncher.run(withdrawUserJob, new JobParameters());
     }
