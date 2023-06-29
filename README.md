@@ -30,7 +30,7 @@
 - 회원가입 & 로그인이 번거롭다고 생각되는 유저를 위한 소셜로그인 기능
   
   
-![소셜로그인](https://file.notion.so/f/s/65871667-35ac-4786-bad0-1f08539ba3f9/%E1%84%89%E1%85%A9%E1%84%89%E1%85%A7%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%B5%E1%86%AB.png?id=0d0053b1-3391-41f9-bb35-98108a229502&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=ioKzszC_NozpKcmTQ1BfDsLFQ-_LT7YUJD9Hwq2Ff_o&downloadName=%E1%84%89%E1%85%A9%E1%84%89%E1%85%A7%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%B5%E1%86%AB.png)
+<img src = "https://file.notion.so/f/s/65871667-35ac-4786-bad0-1f08539ba3f9/%E1%84%89%E1%85%A9%E1%84%89%E1%85%A7%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%B5%E1%86%AB.png?id=0d0053b1-3391-41f9-bb35-98108a229502&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=ioKzszC_NozpKcmTQ1BfDsLFQ-_LT7YUJD9Hwq2Ff_o&downloadName=%E1%84%89%E1%85%A9%E1%84%89%E1%85%A7%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%B5%E1%86%AB.png" width="600" height="400">
 
 </div>
 </details>
@@ -43,9 +43,9 @@
 - 취미가 비슷한 사람들과 함께 정기 모임을 가질 수 있는 일상속
   
   
-![일상속](https://file.notion.so/f/s/7b0b43f7-433f-4b5c-a23a-e57ca40b5914/%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A9%E1%86%A8.png?id=04637fa5-f8b2-4206-a0cf-e672183632f2&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=sZkwFVsALqz8nv-4avFLolDGela0YYosseO5FlTEIWA&downloadName=%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A9%E1%86%A8.png)
+<img src = "https://file.notion.so/f/s/7b0b43f7-433f-4b5c-a23a-e57ca40b5914/%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A9%E1%86%A8.png?id=04637fa5-f8b2-4206-a0cf-e672183632f2&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=sZkwFVsALqz8nv-4avFLolDGela0YYosseO5FlTEIWA&downloadName=%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A9%E1%86%A8.png" width="600" height="400">
 
-![일상속](https://file.notion.so/f/s/f845c40f-4080-4c64-bc04-f0da20dc2274/%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A9%E1%86%A8%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A6.png?id=60d5c6a5-c1c3-494f-8082-bed4876445a1&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=pxLhI8QRUxZLA8HWtYI2Obh_OI5Tzbae3nIEquysmb8&downloadName=%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A9%E1%86%A8%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A6.png)
+<img src = "https://file.notion.so/f/s/f845c40f-4080-4c64-bc04-f0da20dc2274/%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A9%E1%86%A8%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A6.png?id=60d5c6a5-c1c3-494f-8082-bed4876445a1&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=pxLhI8QRUxZLA8HWtYI2Obh_OI5Tzbae3nIEquysmb8&downloadName=%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A9%E1%86%A8%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A6.png" width="600" height="400">
 
 </div>
 </details>
@@ -58,9 +58,9 @@
 - 취미가 비슷한 사람들과 함께 일일 모임을 가질 수 있는 하루속
   
   
-![하루속](https://file.notion.so/f/s/d050bfb3-e199-48bd-b1b2-6b7c23f4a960/%E1%84%92%E1%85%A1%E1%84%85%E1%85%AE%E1%84%89%E1%85%A9%E1%86%A8.png?id=aab9dbb6-011c-4f1b-85eb-d11d7be6b1c8&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=P1onNpCWvytoXsf-vwUSMAbLrM8YPX5i-GAE-8-dNoQ&downloadName=%E1%84%92%E1%85%A1%E1%84%85%E1%85%AE%E1%84%89%E1%85%A9%E1%86%A8.png)
+<img src = "https://file.notion.so/f/s/d050bfb3-e199-48bd-b1b2-6b7c23f4a960/%E1%84%92%E1%85%A1%E1%84%85%E1%85%AE%E1%84%89%E1%85%A9%E1%86%A8.png?id=aab9dbb6-011c-4f1b-85eb-d11d7be6b1c8&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=P1onNpCWvytoXsf-vwUSMAbLrM8YPX5i-GAE-8-dNoQ&downloadName=%E1%84%92%E1%85%A1%E1%84%85%E1%85%AE%E1%84%89%E1%85%A9%E1%86%A8.png" width="600" height="400">
 
-![하루속](https://file.notion.so/f/s/a507392d-130c-4901-857c-ab97d5fc4bf0/%E1%84%92%E1%85%A1%E1%84%85%E1%85%AE%E1%84%89%E1%85%A9%E1%86%A8%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A6.png?id=c470b57b-a303-459d-b655-b137961c1ae9&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=ERyQgi_aehySDoPxd1ru9l52f8WGKOENPppGWZDS4vI&downloadName=%E1%84%92%E1%85%A1%E1%84%85%E1%85%AE%E1%84%89%E1%85%A9%E1%86%A8%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A6.png)
+<img src = "https://file.notion.so/f/s/a507392d-130c-4901-857c-ab97d5fc4bf0/%E1%84%92%E1%85%A1%E1%84%85%E1%85%AE%E1%84%89%E1%85%A9%E1%86%A8%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A6.png?id=c470b57b-a303-459d-b655-b137961c1ae9&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=ERyQgi_aehySDoPxd1ru9l52f8WGKOENPppGWZDS4vI&downloadName=%E1%84%92%E1%85%A1%E1%84%85%E1%85%AE%E1%84%89%E1%85%A9%E1%86%A8%E1%84%89%E1%85%A1%E1%86%BC%E1%84%89%E1%85%A6.png" width="600" height="400">
 
 </div>
 </details>
@@ -73,7 +73,7 @@
 - 모임을 개설할 때에 설정해야 하는 항목이 많아, 모임을 개설하다가 페이지를 이탈하더라도 임시저장이 되는 기능
   
   
-![게시글 임시 저장](https://file.notion.so/f/s/522653bf-2241-4d54-bf92-330634bdbc74/%E1%84%8B%E1%85%B5%E1%86%B7%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A5%E1%84%8C%E1%85%A1%E1%86%BC.png?id=e369ad9f-755e-4d0b-ac82-852fcd5bad1a&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=c2WgD9tBkF8palVsSgMOxMH8xgk9lDrSTpfg9cBxVEQ&downloadName=%E1%84%8B%E1%85%B5%E1%86%B7%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A5%E1%84%8C%E1%85%A1%E1%86%BC.png)
+<img src = "https://file.notion.so/f/s/522653bf-2241-4d54-bf92-330634bdbc74/%E1%84%8B%E1%85%B5%E1%86%B7%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A5%E1%84%8C%E1%85%A1%E1%86%BC.png?id=e369ad9f-755e-4d0b-ac82-852fcd5bad1a&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=c2WgD9tBkF8palVsSgMOxMH8xgk9lDrSTpfg9cBxVEQ&downloadName=%E1%84%8B%E1%85%B5%E1%86%B7%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A5%E1%84%8C%E1%85%A1%E1%86%BC.png" width="600" height="400">
 
 </div>
 </details>
@@ -86,13 +86,13 @@
 - 일상속, 하루속을 가입하면 생기는 채팅기능. 모임을 갖기 전, 모임에 있는 사람들과 소통할 수 있는 방법
   
   
-![채팅1](https://file.notion.so/f/s/1b3cd6cd-2377-40de-9965-252eade6bdc6/%E1%84%86%E1%85%A9%E1%84%8B%E1%85%B5%E1%86%B7_%E1%84%80%E1%85%A1%E1%84%8B%E1%85%B5%E1%86%B8.png?id=606f2b02-ffff-4768-b3f5-a2f4412268f6&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=eapKwKl8C_Gj7MuU4pUvUqmqxxon8CG4mxoYAU4pWx4&downloadName=%E1%84%86%E1%85%A9%E1%84%8B%E1%85%B5%E1%86%B7+%E1%84%80%E1%85%A1%E1%84%8B%E1%85%B5%E1%86%B8.png)
+<img src = "https://file.notion.so/f/s/1b3cd6cd-2377-40de-9965-252eade6bdc6/%E1%84%86%E1%85%A9%E1%84%8B%E1%85%B5%E1%86%B7_%E1%84%80%E1%85%A1%E1%84%8B%E1%85%B5%E1%86%B8.png?id=606f2b02-ffff-4768-b3f5-a2f4412268f6&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=eapKwKl8C_Gj7MuU4pUvUqmqxxon8CG4mxoYAU4pWx4&downloadName=%E1%84%86%E1%85%A9%E1%84%8B%E1%85%B5%E1%86%B7+%E1%84%80%E1%85%A1%E1%84%8B%E1%85%B5%E1%86%B8.png" width="600" height="400">
 
-![채팅2](https://file.notion.so/f/s/c61c2661-34b7-453b-a6a2-a438baab266e/%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC.png?id=2f05752e-1dba-4b85-aea1-58a7a5b7ebc5&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=o88-VM8Myzkm68V03D3pW64XqxFDm-_XSpY0ic96qGc&downloadName=%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC.png)
+<img src = "https://file.notion.so/f/s/c61c2661-34b7-453b-a6a2-a438baab266e/%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC.png?id=2f05752e-1dba-4b85-aea1-58a7a5b7ebc5&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=o88-VM8Myzkm68V03D3pW64XqxFDm-_XSpY0ic96qGc&downloadName=%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC.png" width="600" height="400">
 
-![채팅3](https://file.notion.so/f/s/5a25cb98-d397-4502-8474-56a1f2872373/%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC2.png?id=ef1b36a5-2f4d-44ad-a1dc-b9c107bf4cd3&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=vK7mef7OS7-Ahw_iJgRLtQfrgwEWU1t0ZONx0OhvdWw&downloadName=%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC2.png)
+<img src = "https://file.notion.so/f/s/5a25cb98-d397-4502-8474-56a1f2872373/%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC2.png?id=ef1b36a5-2f4d-44ad-a1dc-b9c107bf4cd3&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=vK7mef7OS7-Ahw_iJgRLtQfrgwEWU1t0ZONx0OhvdWw&downloadName=%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC2.png" width="600" height="400">
 
-![채팅4](https://file.notion.so/f/s/e4eb51f5-8e5f-4ff1-ac34-f791333370e7/%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC3.png?id=f967a17f-f3fb-4a82-b705-7addb0cb4d4f&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=G0DH4cchUSmWVpohvMSGY-TM1zdaXgshwMMYZ9vCUb0&downloadName=%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC3.png)
+<img src = "https://file.notion.so/f/s/e4eb51f5-8e5f-4ff1-ac34-f791333370e7/%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC3.png?id=f967a17f-f3fb-4a82-b705-7addb0cb4d4f&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=G0DH4cchUSmWVpohvMSGY-TM1zdaXgshwMMYZ9vCUb0&downloadName=%E1%84%8E%E1%85%A2%E1%84%90%E1%85%B5%E1%86%BC%E1%84%87%E1%85%A1%E1%86%BC3.png" width="600" height="400">
 
 </div>
 </details>
@@ -105,7 +105,7 @@
 - 내가 운영중, 참여중인 모임을 관리할 수 있는 마이페이지
   
   
-![마이페이지](https://file.notion.so/f/s/e913f081-8672-495b-a086-c1233a78efba/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-06-29_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_1.18.34.png?id=c7f3b337-8faf-473c-ace5-cf0216e2864b&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=vDtZl5W0HI1mPY0CiX8Y3sTBnuVXwVp6tTzy3iHWPp8&downloadName=%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA+2023-06-29+%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE+1.18.34.png)
+<img src = "https://file.notion.so/f/s/e913f081-8672-495b-a086-c1233a78efba/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2023-06-29_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_1.18.34.png?id=c7f3b337-8faf-473c-ace5-cf0216e2864b&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=vDtZl5W0HI1mPY0CiX8Y3sTBnuVXwVp6tTzy3iHWPp8&downloadName=%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA+2023-06-29+%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE+1.18.34.png" width="600" height="400">
 
 </div>
 </details>
@@ -118,7 +118,7 @@
 - 내 위치를 중심으로 가까운 곳에서 진행되는 모임 보기
   
   
-![위치기반 모임추천](https://file.notion.so/f/s/28da5c3e-2991-45fd-8fec-f526373cd7fe/%E1%84%8B%E1%85%B1%E1%84%8E%E1%85%B5%E1%84%80%E1%85%B5%E1%84%87%E1%85%A1%E1%86%AB.png?id=506f520f-f89b-47e9-bffe-c138f6c363d7&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=AOcQvykEDHSOPLk8cFLYrUiuytUkEqliEg23XmmMq3o&downloadName=%E1%84%8B%E1%85%B1%E1%84%8E%E1%85%B5%E1%84%80%E1%85%B5%E1%84%87%E1%85%A1%E1%86%AB.png)
+<img src = "https://file.notion.so/f/s/28da5c3e-2991-45fd-8fec-f526373cd7fe/%E1%84%8B%E1%85%B1%E1%84%8E%E1%85%B5%E1%84%80%E1%85%B5%E1%84%87%E1%85%A1%E1%86%AB.png?id=506f520f-f89b-47e9-bffe-c138f6c363d7&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=AOcQvykEDHSOPLk8cFLYrUiuytUkEqliEg23XmmMq3o&downloadName=%E1%84%8B%E1%85%B1%E1%84%8E%E1%85%B5%E1%84%80%E1%85%B5%E1%84%87%E1%85%A1%E1%86%AB.png" width="600" height="400">
 
 </div>
 </details>
@@ -127,7 +127,7 @@
 
 
 ## ✔️ 기술 아키텍쳐
-![아키텍쳐](https://file.notion.so/f/s/1442a192-6fd6-486f-8685-9739bb8a0a01/architecture.jpg?id=f9071ddd-a209-4dd1-a8ac-d33ca7019502&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=dsWM4k0SmG8aVtP2kvoIyelBJMozwcba1hxdsrVwLU4&downloadName=architecture.jpg)
+<img src = "https://file.notion.so/f/s/1442a192-6fd6-486f-8685-9739bb8a0a01/architecture.jpg?id=f9071ddd-a209-4dd1-a8ac-d33ca7019502&table=block&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&expirationTimestamp=1688104800000&signature=dsWM4k0SmG8aVtP2kvoIyelBJMozwcba1hxdsrVwLU4&downloadName=architecture.jpg">
 
 <br/>
 
