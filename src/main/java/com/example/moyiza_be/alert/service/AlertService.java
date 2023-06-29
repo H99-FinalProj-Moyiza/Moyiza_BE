@@ -84,9 +84,9 @@ public class AlertService {
         SseEmitter sseEmitter = new SseEmitter();
 
         try {
-            sseEmitter.send(SseEmitter.event())
-                    .name("sse")
-                    .data("Alert Connected");
+            sseEmitter.send(SseEmitter.event());
+//                    .name("sse")
+//                    .data("Alert Connected");
         } catch (IOException exception) {
             // remove if error occur
             sseEmitters.remove(userId);
