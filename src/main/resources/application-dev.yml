@@ -28,10 +28,9 @@ spring:
       pool:
         min-idle: 0
         max-idle: 8
-        max-active: 8
+        max-active: 8d
       port: 6379
-      host: 43.200.169.48
-      password: ENC(V8HByRExsO7bDwqCirBLQw==)
+      host: 127.0.0.1
 
 management:
   endpoints:
