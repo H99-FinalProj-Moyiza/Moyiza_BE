@@ -1,4 +1,4 @@
-![모이자로고](www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F74fe0ed3-0bc9-4bf8-84d6-2834b46b14b9%2FGroup_654.png?table=block&id=7f515567-4a74-4b91-90fb-e59e5c754fc3&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&width=250&userId=1649f914-3c04-4269-ae33-a2e537497687&cache=v2)
+![모이자로고](https://teamsparta.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fadababa8-076f-4b61-86ac-92dc4ccf1e8b%2FGroup_654.png?table=block&id=88e415df-499a-4340-ab4a-239b5accb690&spaceId=83c75a39-3aba-4ba4-a792-7aefe4b07895&width=250&userId=&cache=v2)
 # 🙌 모이자!(Moyiza)
 
 일일 모임부터 정기 모임까지!
@@ -297,4 +297,4 @@
 |강동현|Spring|https://github.com/kangdh208|
 
 
-![moyiza](www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F03a7f24c-83b7-48b7-b301-1fc5a19e40fd%2Fcover.jpg?table=block&id=7f515567-4a74-4b91-90fb-e59e5c754fc3&spaceId=d15a4e1d-e301-4395-ba47-1d253789fd34&width=1920&userId=1649f914-3c04-4269-ae33-a2e537497687&cache=v2)
+![moyiza](https://teamsparta.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fe1f6f86f-4538-49b7-bffe-1c11dd37135b%2F%25E1%2584%258C%25E1%2585%25A6%25E1%2584%2586%25E1%2585%25A9%25E1%2586%25A8%25E1%2584%258B%25E1%2585%25B3%25E1%2586%25AF-%25E1%2584%258B%25E1%2585%25B5%25E1%2586%25B8%25E1%2584%2585%25E1%2585%25A7%25E1%2586%25A8%25E1%2584%2592%25E1%2585%25A2%25E1%2584%258C%25E1%2585%25AE%25E1%2584%2589%25E1%2585%25A6%25E1%2584%258B%25E1%2585%25AD_-002_(4).png?table=block&id=88e415df-499a-4340-ab4a-239b5accb690&spaceId=83c75a39-3aba-4ba4-a792-7aefe4b07895&width=1920&userId=&cache=v2)
