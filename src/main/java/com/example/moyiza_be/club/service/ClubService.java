@@ -255,7 +255,10 @@ public class ClubService {
         } else {
             clubList = clubRepository.findAllByIsDeletedFalseOrderByNumLikesDesc();
         }
-
+        //Temporary before page
+        if(clubList.size() > 8){
+            clubList = clubList.subList(0, 8);
+        }
         List<ClubSimpleResponseDto> clubs = new ArrayList<>();
         for (Club club : clubList) {
             List<String> clubImageUrlList = clubImageUrlRepositoryCustom.getAllImageUrlByClubId(club.getId());

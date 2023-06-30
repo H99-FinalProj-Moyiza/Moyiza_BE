@@ -424,7 +424,10 @@ public class OneDayService {
         } else {
             imminentOneDays = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
         }
-
+        //Temporary before page
+        if(imminentOneDays.size() > 8){
+            imminentOneDays = imminentOneDays.subList(0,8);
+        }
         List<OneDayImminentResponseDto> oneDays = imminentOneDays.stream()
                 .map(oneDay -> {
                     Duration duration = Duration.between(now, oneDay.getOneDayStartTime());
@@ -454,6 +457,10 @@ public class OneDayService {
             });
         } else {
             oneDayList = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByNumLikesDesc(now);
+        }
+        //Temporary before page
+        if (oneDayList.size() > 8) {
+            oneDayList = oneDayList.subList(0, 8);
         }
         List<OneDaySimpleResponseDto> oneDays = new ArrayList<>();
         for (OneDay oneDay : oneDayList) {
