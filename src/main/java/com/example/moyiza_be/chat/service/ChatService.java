@@ -82,6 +82,15 @@ public class ChatService {
                                 findClubThumbnailUrl(chatRoomInfo.getRoomIdentifier())
                         )
                 )
+                .peek(chatRoomInfo ->
+                        chatRoomInfo.setUnreadMessage(
+                                chatRecordRepository.countByChatIdEqualsAndIdGreaterThan(
+                                        chatRoomInfo.getChatId(),
+                                        cacheService.getUserLastReadMessageId(chatRoomInfo.getChatId().toString(), userId.toString()
+                                        )
+                                )
+                        )
+                )
                 .toList();
 
         return ResponseEntity.ok(clubChatRoomInfoList);
@@ -98,6 +107,15 @@ public class ChatService {
                 .peek(chatRoomInfo ->
                         chatRoomInfo.setChatThumbnail(
                                 findOnedayThumbnailUrl(chatRoomInfo.getRoomIdentifier())
+                        )
+                )
+                .peek(chatRoomInfo ->
+                        chatRoomInfo.setUnreadMessage(
+                                chatRecordRepository.countByChatIdEqualsAndIdGreaterThan(
+                                        chatRoomInfo.getChatId(),
+                                        cacheService.getUserLastReadMessageId(chatRoomInfo.getChatId().toString(), userId.toString()
+                                        )
+                                )
                         )
                 )
                 .toList();
