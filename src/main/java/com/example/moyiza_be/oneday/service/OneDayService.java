@@ -442,6 +442,16 @@ public class OneDayService {
         if (user != null) {
             List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
             oneDayList = oneDayRepositoryCustom.findMostLikedOneDaysFilteredBlackList(blackOneDayIdList, now);
+            String userTags = (user.getTagString() != null) ? user.getTagString() : "";
+            oneDayList.sort((oneDay1, oneDay2) -> {
+                int similarity1 = TagEnum.calculateSimilarity(userTags, oneDay1.getTagString());
+                int similarity2 = TagEnum.calculateSimilarity(userTags, oneDay2.getTagString());
+
+                if (similarity1 != similarity2) {
+                    return similarity2 - similarity1;
+                }
+                return oneDay2.getNumLikes() - oneDay1.getNumLikes();
+            });
         } else {
             oneDayList = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByNumLikesDesc(now);
         }
