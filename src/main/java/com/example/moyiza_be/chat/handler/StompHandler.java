@@ -1,4 +1,4 @@
-package com.example.moyiza_be.common.handler;
+package com.example.moyiza_be.chat.handler;
 
 
 import com.example.moyiza_be.chat.dto.ChatMessageOutput;

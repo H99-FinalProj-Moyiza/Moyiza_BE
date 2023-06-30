@@ -49,17 +49,11 @@ public class ChatController {
     //채팅방 목록 조회
     @GetMapping("/chat/clubchat")
     public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if (userDetails == null){
-            throw new NullPointerException("사용자 정보가 없습니다");
-        }
         User user = userDetails.getUser();
         return chatService.getClubChatRoomList(user.getId());
     }
     @GetMapping("/chat/onedaychat")
     public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        if (userDetails == null){
-            throw new NullPointerException("사용자 정보가 없습니다");
-        }
         User user = userDetails.getUser();
         return chatService.getOnedayChatRoomList(user.getId());
     }

@@ -1,5 +1,7 @@
 package com.example.moyiza_be.common.enums;
 
+import net.nurigo.sdk.message.model.Count;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -203,5 +205,9 @@ public enum TagEnum {
             }
         }
         return count;
+    }
+
+    public static int calcTagStringMatchNum(String userTagString, String clubTagString){
+        return 1;
     }
 }

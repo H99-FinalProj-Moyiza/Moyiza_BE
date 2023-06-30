@@ -1,8 +1,7 @@
 package com.example.moyiza_be.config;
 
-import com.example.moyiza_be.common.handler.ChatErrorHandler;
-import com.example.moyiza_be.common.handler.MoyizaHandshakeInterceptor;
-import com.example.moyiza_be.common.handler.StompHandler;
+import com.example.moyiza_be.chat.handler.ChatErrorHandler;
+import com.example.moyiza_be.chat.handler.StompHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +18,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final StompHandler stompHandler; // JWT Validation
-    private final MoyizaHandshakeInterceptor moyizaHandshakeInterceptor;
     private final ChatErrorHandler chatErrorHandler;
 
     @Override
