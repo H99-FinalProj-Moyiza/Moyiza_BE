@@ -15,6 +15,7 @@ import com.example.moyiza_be.club.repository.QueryDSL.ClubRepositoryCustom;
 import com.example.moyiza_be.common.enums.BoardTypeEnum;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
+import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.event.dto.EventSimpleDetailDto;
 import com.example.moyiza_be.event.service.EventService;
@@ -240,6 +241,17 @@ public class ClubService {
         if (user != null) {
             List<Long> blackClubIdList = blackListService.blackListFiltering(user, BoardTypeEnum.CLUB);
             clubList = clubRepositoryCustom.findMostLikedClubsFilteredBlackList(blackClubIdList);
+            String userTags = (user.getTagString() != null) ? user.getTagString() : "";
+
+            clubList.sort((club1, club2) -> {
+                int similarity1 = TagEnum.calculateSimilarity(userTags, club1.getTagString());
+                int similarity2 = TagEnum.calculateSimilarity(userTags, club2.getTagString());
+
+                if (similarity1 != similarity2) {
+                    return similarity2 - similarity1;
+                }
+                return club2.getNumLikes() - club1.getNumLikes();
+            });
         } else {
             clubList = clubRepository.findAllByIsDeletedFalseOrderByNumLikesDesc();
         }
