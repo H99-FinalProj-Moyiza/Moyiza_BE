@@ -9,6 +9,8 @@ import com.example.moyiza_be.common.oauth2.userinfo.OAuth2UserInfo;
 import com.example.moyiza_be.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Map;
 import java.util.UUID;
@@ -18,6 +20,7 @@ public class OAuthAttributes {
 
     private String nameAttributeKey;
     private OAuth2UserInfo oauth2Userinfo;
+    private PasswordEncoder passwordEncoder;
 
     @Builder
     public OAuthAttributes(String nameAttributeKey, OAuth2UserInfo oAuth2UserInfo) {
@@ -63,7 +66,7 @@ public class OAuthAttributes {
                 .email(oAuth2UserInfo.getEmail())
                 .nickname(UUID.randomUUID().toString()) //temp
                 .profileImage(oAuth2UserInfo.getImageUrl())
-                .password(UUID.randomUUID().toString())
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .role(UserRoleEnum.GUEST)
                 .build();
     }
