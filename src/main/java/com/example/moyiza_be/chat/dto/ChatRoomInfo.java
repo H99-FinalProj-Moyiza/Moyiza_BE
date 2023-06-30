@@ -18,6 +18,7 @@ public class ChatRoomInfo {
     private Long roomIdentifier;
     private String roomName;
     private ChatMessageOutput lastMessage;
+    private Long unreadMessage;
 
     @QueryProjection
     public ChatRoomInfo(Long chatId, ChatTypeEnum chatType, Long roomIdentifier, String roomName, String chatThumbnail) {

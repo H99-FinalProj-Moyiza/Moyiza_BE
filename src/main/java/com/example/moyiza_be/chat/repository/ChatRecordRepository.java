@@ -9,5 +9,6 @@ import java.time.LocalDateTime;
 
 public interface ChatRecordRepository extends JpaRepository<ChatRecord, Long> {
     Page<ChatRecord> findAllByChatIdAndCreatedAtAfter(Pageable pageable, Long chatId, LocalDateTime fromDate);
+    Long countByChatIdEqualsAndIdGreaterThan(Long chatId, Long chatRecordId);
 
 }
