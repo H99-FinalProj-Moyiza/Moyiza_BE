@@ -1,0 +1,68 @@
+#local server config
+server:
+  port: 8080
+
+
+spring:
+  config:
+    activate:
+      on-profile: local # profile name
+
+
+  #local JPA config
+  jpa:
+#    show-sql: 'true'
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: update
+  datasource:
+    password: ENC(MpLqczeZ9JMeSsYgIRaQJuYGnVx3KW31)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ENC(1RC2fLhE3xF2E+OyJP7gdA==)
+    url: ENC(FLABZ3U84RdLp+5UmSAEmbYmkafqBM20nx/9yLQEvdw9qSxsMn9gx4Js5XbNvnAvWqzNYlj0Dyzly1XTyiR5YlYIDZufFamFRXBQOI6U54iR1UH3u84bY+bbBDli0OzN)
+
+#  local Redis
+  data:
+    redis:
+      pool:
+        min-idle: 0
+        max-idle: 8
+        max-active: 8d
+      port: 6379
+      host: 127.0.0.1
+
+#  #kafka config
+#  kafka:
+#    consumer:
+#      bootstrap-servers: ENC(ULHxVjXF4Rmi2ZD302GSElMdX8/sVm9Jgyp8hvbUUUzzNhCQYkS9F43Fj3LpvYPXd+VDcvw7fzzJzNwBSiHuRxiHbz8R2gLg)
+#      group-id: chatServer${chatServerIndex}
+#      auto-offset-reset: earliest
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#      properties:
+#        spring.json.trusted.packages: "*"
+#
+#    producer:
+#      bootstrap-servers: ENC(ULHxVjXF4Rmi2ZD302GSElMdX8/sVm9Jgyp8hvbUUUzzNhCQYkS9F43Fj3LpvYPXd+VDcvw7fzzJzNwBSiHuRxiHbz8R2gLg)
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+
+#  data:
+#    redis:
+#      pool:
+#        min-idle: 0
+#        max-idle: 8
+#        max-active: 8
+#      port: 6379
+#      host: 43.200.169.48
+#      password: ENC(V8HByRExsO7bDwqCirBLQw==)
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,beans,conditions,threaddump, heapdump, metrics, httptrace
