@@ -156,11 +156,9 @@
 |AWS 로드밸런서 (ALB)|- 병렬적으로 구성된 서버에 요청을 분산해주기 위함 </br> ⇒ 간단하게 구성이 가능하다|
 |AWS CloudWatch-agent|- 서버 자원(특히 메모리)을 모니터링 하기 위함|
 |Github Actions|- 빌드 및 배포 자동화를 위해 사용 </br> ⇒ 비교적 간단하게 사용 가능하고, 접근성이 좋음|
-
 |Spring Actuator|- metric 노출|
 |Prometheus|- metric 수집|
 |Grafana|- metric 시각화 (APM 대시보드)|
-
 |Junit|- 단위 테스트 위해 사용|
 |JMeter|- API 및 웹소켓에 대한 부하테스트 툴로 활용 </br> ⇒ 접근성 및 웹소켓 지원|
 
