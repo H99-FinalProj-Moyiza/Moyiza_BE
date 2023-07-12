@@ -12,15 +12,12 @@ import java.util.regex.Pattern;
 @Component
 @Slf4j
 public class BadWordFiltering implements BadWords {
-    private final Set<String> set = new HashSet<>(List.of(badWords));
+    private final Set<String> badWordsSet = new HashSet<>(List.of(badWords));
 
-    public boolean checkBadNick(String input) {
-        StringBuilder singBuilder = new StringBuilder("[");
-        for (String sing : sings) singBuilder.append(Pattern.quote(sing));
-        singBuilder.append("]*");
-        String patternText = singBuilder.toString();
+    public boolean checkBadWord(String input) {
+        String patternText = buildPatternText();
 
-        for (String word : set) {
+        for (String word : badWordsSet) {
             String[] chars = word.split("");
             if (Pattern.compile(String.join(patternText, chars))
                     .matcher(input)
@@ -29,22 +26,30 @@ public class BadWordFiltering implements BadWords {
         return false;
     }
 
-    public ChatMessageInput change(ChatMessageInput ChatMessageInput) {
-        String text = ChatMessageInput.getContent();
-        StringBuilder singBuilder = new StringBuilder("[");
-        for (String sing : sings) singBuilder.append(Pattern.quote(sing));
-        singBuilder.append("]*");
-        String patternText = singBuilder.toString();
+    public ChatMessageInput change(ChatMessageInput chatMessageInput) {
+        String text = chatMessageInput.getContent();
+        String patternText = buildPatternText();
 
-        for (String word : set) {
-            if (word.length() == 1) text = text.replace(word, substituteValue);
+        for (String word : badWordsSet) {
+            if (word.length() == 1) {
+                text = text.replace(word, substituteValue);
+            }
             String[] chars = word.split("");
             text = Pattern.compile(String.join(patternText, chars))
                     .matcher(text)
-                    .replaceAll(v -> substituteValue.repeat(v.group().length()));
+                    .replaceAll(matchedWord -> substituteValue.repeat(matchedWord.group().length()));
         }
-        ChatMessageInput.setContent(text);
+        chatMessageInput.setContent(text);
 
-        return ChatMessageInput;
+        return chatMessageInput;
+    }
+
+    private String buildPatternText() {
+        StringBuilder delimiterBuilder = new StringBuilder("[");
+        for (String delimiter : delimiters) {
+            delimiterBuilder.append(Pattern.quote(delimiter));
+        }
+        delimiterBuilder.append("]*");
+        return delimiterBuilder.toString();
     }
 }

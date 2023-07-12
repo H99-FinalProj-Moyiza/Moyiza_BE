@@ -38,4 +38,21 @@ public class ClubListResponse {
         this.numLikes = numLikes;
         this.isLikedByUser = isLikedByUser;
     }
+
+    @QueryProjection
+    public ClubListResponse(Long club_id, String ownerNickname, String clubTitle,String clubContent, String tagString,
+                            Integer maxGroupSize, Integer nowMemberCount, String thumbnailUrl, List<String> imageUrlList,
+                            Integer numLikes) {
+        this.club_id = club_id;
+        this.ownerNickname = ownerNickname;
+        this.clubTitle = clubTitle;
+        this.clubContent = clubContent;
+        this.clubTag = TagEnum.parseTag(tagString);
+        this.maxGroupSize = maxGroupSize;
+        this.nowMemberCount = nowMemberCount;
+        this.thumbnailUrl = thumbnailUrl;
+        this.imageUrlList = imageUrlList;
+        this.numLikes = numLikes;
+        this.isLikedByUser = false;
+    }
 }

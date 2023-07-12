@@ -106,28 +106,37 @@ public class OneDayService {
     // Read OneDay List
     public ResponseEntity<Page<OneDayListResponseDto>> getFilteredOneDayList(
             User user, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
-            Double longitude, Double latitude, Double radius, LocalDateTime startafter
+            Double longitude, Double latitude, Double radius
     ) {
-        List<Long> filteringIdList = blackListService.filtering(user);
+        LocalDateTime now = LocalDateTime.now();
+        List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
         Page<OneDayListResponseDto> filteredOnedayList = oneDayRepositoryCustom.getFilteredOnedayList(
                 user, null, pageable, category, q, tag1, tag2, tag3,
-                longitude, latitude, radius, startafter, filteringIdList
+                longitude, latitude, radius, blackOneDayIdList, now
         );
         return ResponseEntity.ok(filteredOnedayList);
     }
 
-    // List For MyPage OneDay
+    // Get OneDay List on Mypage
     public OneDayListOnMyPage getOneDayListOnMyPage(Pageable pageable, User user, Long profileId) {
-        List<Long> filteringIdList = blackListService.filtering(user);
+        LocalDateTime now = LocalDateTime.now();
+        List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
         Page<OneDayListResponseDto> oneDaysInOperationInfo = oneDayRepositoryCustom.getFilteredOnedayList(
                 user, profileId, pageable, null, null, null, null,
-                null, null, null, null, null, filteringIdList
+                null, null, null, null, blackOneDayIdList, now
         );
 
         Page<OneDayListResponseDto> oneDaysInParticipatingInfo = oneDayRepositoryCustom.getFilteredJoinedOnedayList(
-                user, profileId, pageable, filteringIdList);
+                user, profileId, pageable, blackOneDayIdList, now);
 
         return new OneDayListOnMyPage(oneDaysInOperationInfo, oneDaysInParticipatingInfo);
+    }
+
+    // Get Like OneDay List on Mypage
+    public Page<OneDayListResponseDto> getLikeOneDayListOnMypage(Pageable pageable, User user, Long profileId) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
+        return oneDayRepositoryCustom.likeOneDayResponseList(pageable, profileId, blackOneDayIdList, now);
     }
 
     // Update OneDay
@@ -187,7 +196,9 @@ public class OneDayService {
             log.info("user is not owner -> Send alarm");
             Alert alert = Alert.builder()
                     .sender(user.getName())
-//                    .imgUrl(user.getProfileImage())
+                    .oneDayId(oneDayId)
+                    .oneDayTitle(oneDay.getOneDayTitle())
+                    .imageUrl(user.getProfileImage())
                     .message(user.getNickname() + " 님이 " +oneDay.getOneDayTitle()+ "에 참여를 신청하였습니다.")
                     .receiver(owner.getNickname())
                     .checking(false)
@@ -198,7 +209,7 @@ public class OneDayService {
             log.info("OneDayApproval Add Process");
             OneDayApproval oneDayApproval = new OneDayApproval(oneDay, user.getId());
             approvalRepository.save(oneDayApproval);
-            return new ResponseEntity<>("Approval System Testing", HttpStatus.OK);
+            return new ResponseEntity<>("Approval Request", HttpStatus.OK);
         } else {
             log.info("FCGSB -> Is it Fully occupied?");
             if (oneDay.getAttendantsNum() < oneDay.getOneDayGroupSize()) {
@@ -206,6 +217,18 @@ public class OneDayService {
                 OneDayAttendant attendant = new OneDayAttendant(oneDay, user.getId());
                 attendantRepository.save(attendant);
                 chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+                Alert alert = Alert.builder()
+                        .sender(user.getName())
+                        .oneDayId(oneDayId)
+                        .oneDayTitle(oneDay.getOneDayTitle())
+                        .imageUrl(user.getProfileImage())
+                        .message(user.getNickname() + " 님이 " +oneDay.getOneDayTitle()+ "에 참여하였습니다.")
+                        .receiver(owner.getNickname())
+                        .checking(false)
+                        .build();
+                log.info("Approval Request Alarm sent");
+                alertRepository.save(alert);
+                alertService.alertEvent(owner.getNickname());
                 oneDay.addAttendantNum();
                 return new ResponseEntity<>("Attending Success", HttpStatus.OK);
             } else {
@@ -219,7 +242,8 @@ public class OneDayService {
     public ResponseEntity<?> cancelOneDay(Long oneDayId, User user) {
         log.info("cancel process");
         OneDay oneday = loadExistingOnedayById(oneDayId);
-        if (oneday.getType().equals(OneDayTypeEnum.APPROVAL)) {
+        Optional<OneDayAttendant> attending = attendantRepository.findByOneDayIdAndUserId(oneDayId, user.getId());
+        if (oneday.getType().equals(OneDayTypeEnum.APPROVAL) && attending.isEmpty()) {
             log.info("oneDay is Approval And Owner's not approved yet");
             OneDayApproval approval = approvalRepository.findByOneDayIdAndUserId(oneDayId, user.getId());
             approvalRepository.delete(approval);
@@ -261,8 +285,8 @@ public class OneDayService {
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         ArrayList<MemberResponse> approvalUsers = new ArrayList<>();
         // valid Check
-        log.info("Valid Check : Are You Owner?");
-        if (!Objects.equals(oneDay.getOwnerId(), user.getId())) return new ResponseEntity<>("You are Not owner", HttpStatus.FORBIDDEN);
+//        log.info("Valid Check : Are You Owner?");
+//        if (!Objects.equals(oneDay.getOwnerId(), user.getId())) return new ResponseEntity<>("You are Not owner", HttpStatus.FORBIDDEN);
         log.info("Get All Attendant Wish list");
         List<OneDayApproval> approvalList = approvalRepository.findAllByOneDayId(oneDayId);
         log.info("Transform userId to User Information");
@@ -276,7 +300,14 @@ public class OneDayService {
     }
     public ResponseEntity<?> approveJoin(Long oneDayId, Long userId, User user) {
         log.info("Get Approval And OneDay");
-        OneDayApproval oneDayApproval = approvalRepository.findByOneDayId(oneDayId);
+        List<OneDayApproval> approvalList = approvalRepository.findAllByOneDayIdAndUserId(oneDayId,userId);
+        OneDayApproval oneDayApproval = approvalRepository.findByOneDayIdAndUserId(oneDayId,userId);
+        if (approvalList.size()>2) {
+//            OneDayApproval approval = approvalList.get(0);
+            approvalRepository.deleteAll(approvalList);
+        } else if (approvalList.isEmpty()) {
+            throw new NullPointerException("No Approval Threw");
+        }
         OneDay oneDay = loadExistingOnedayById(oneDayId);
         log.info("Valid Check : Are You Owner");
         if (!Objects.equals(user.getId(), oneDay.getOwnerId())) return new ResponseEntity<>("You Are Not The Owner", HttpStatus.UNAUTHORIZED);
@@ -292,7 +323,8 @@ public class OneDayService {
         log.info("Add Attendant");
         attendantRepository.save(attendant);
         log.info("Invite to ChatRoom");
-        chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, user);
+        User attendUser = userRepository.findById(userId).orElseThrow(()-> new NullPointerException("Unauthorized User"));
+        chatService.joinChat(oneDayId, ChatTypeEnum.ONEDAY, attendUser);
         log.info("AttendantsNum++");
         oneDay.addAttendantNum();
         log.info("After Join, Delete waitingList");
@@ -311,9 +343,19 @@ public class OneDayService {
 
     // Recommendation Based on Distance
 
-    public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(double nowLatitude, double nowLongitude) {
-        List<Object[]> nearByOneDays = oneDayRepository.findNearByOneDays(nowLatitude, nowLongitude);
-
+    public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(User user, double nowLatitude, double nowLongitude) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Object[]> nearByOneDays;
+        if (user != null) {
+            List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
+            if (blackOneDayIdList.isEmpty()) {
+                nearByOneDays = oneDayRepository.findNearByOneDays(nowLatitude, nowLongitude, now);
+            } else {
+                nearByOneDays = oneDayRepository.findNearByOneDaysFilteredBlackList(nowLatitude, nowLongitude, blackOneDayIdList, now);
+            }
+        } else {
+            nearByOneDays = oneDayRepository.findNearByOneDays(nowLatitude, nowLongitude, now);
+        }
         List<OneDayNearByResponseDto> oneDays = new ArrayList<>();
         for (Object[] row : nearByOneDays) {
             OneDay oneDay = (OneDay) row[0];
@@ -372,9 +414,20 @@ public class OneDayService {
         }
     }
 
-    public ResponseEntity<List<OneDayImminentResponseDto>> getImminentOneDays() {
+    public ResponseEntity<List<OneDayImminentResponseDto>> getImminentOneDays(User user) {
         LocalDateTime now = LocalDateTime.now();
-        List<OneDay> imminentOneDays = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
+        List<OneDay> imminentOneDays;
+
+        if (user != null) {
+            List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
+            imminentOneDays = oneDayRepositoryCustom.findImminentOneDaysFilteredBlackList(now, blackOneDayIdList);
+        } else {
+            imminentOneDays = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByOneDayStartTimeAsc(now);
+        }
+        //Temporary before page
+        if(imminentOneDays.size() > 8){
+            imminentOneDays = imminentOneDays.subList(0,8);
+        }
         List<OneDayImminentResponseDto> oneDays = imminentOneDays.stream()
                 .map(oneDay -> {
                     Duration duration = Duration.between(now, oneDay.getOneDayStartTime());
@@ -385,8 +438,30 @@ public class OneDayService {
         return new ResponseEntity<>(oneDays, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getMostLikedOneDays() {
-        List<OneDay> oneDayList = oneDayRepository.findAllByDeletedFalseOrderByNumLikesDesc();
+    public ResponseEntity<?> getMostLikedOneDays(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        List<OneDay> oneDayList;
+
+        if (user != null) {
+            List<Long> blackOneDayIdList = blackListService.blackListFiltering(user, BoardTypeEnum.ONEDAY);
+            oneDayList = oneDayRepositoryCustom.findMostLikedOneDaysFilteredBlackList(blackOneDayIdList, now);
+            String userTags = (user.getTagString() != null) ? user.getTagString() : "";
+            oneDayList.sort((oneDay1, oneDay2) -> {
+                int similarity1 = TagEnum.calculateSimilarity(userTags, oneDay1.getTagString());
+                int similarity2 = TagEnum.calculateSimilarity(userTags, oneDay2.getTagString());
+
+                if (similarity1 != similarity2) {
+                    return similarity2 - similarity1;
+                }
+                return oneDay2.getNumLikes() - oneDay1.getNumLikes();
+            });
+        } else {
+            oneDayList = oneDayRepository.findAllByDeletedFalseAndOneDayStartTimeAfterOrderByNumLikesDesc(now);
+        }
+        //Temporary before page
+        if (oneDayList.size() > 8) {
+            oneDayList = oneDayList.subList(0, 8);
+        }
         List<OneDaySimpleResponseDto> oneDays = new ArrayList<>();
         for (OneDay oneDay : oneDayList) {
             List<OneDayImageUrl> oneDayImageUrlList = imageUrlRepository.findAllByOneDayId(oneDay.getId());

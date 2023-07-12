@@ -1,6 +1,7 @@
 package com.example.moyiza_be.common.oauth2;
 
 import com.example.moyiza_be.common.enums.SocialType;
+import com.example.moyiza_be.common.enums.UserRoleEnum;
 import com.example.moyiza_be.common.oauth2.userinfo.GoogleOAuth2UserInfo;
 import com.example.moyiza_be.common.oauth2.userinfo.KakaoOAuth2UserInfo;
 import com.example.moyiza_be.common.oauth2.userinfo.NaverOAuth2UserInfo;
@@ -8,14 +9,18 @@ import com.example.moyiza_be.common.oauth2.userinfo.OAuth2UserInfo;
 import com.example.moyiza_be.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 public class OAuthAttributes {
 
     private String nameAttributeKey;
     private OAuth2UserInfo oauth2Userinfo;
+    private PasswordEncoder passwordEncoder;
 
     @Builder
     public OAuthAttributes(String nameAttributeKey, OAuth2UserInfo oAuth2UserInfo) {
@@ -57,11 +62,12 @@ public class OAuthAttributes {
         return User.builder()
                 .socialType(socialType)
                 .socialLoginId(oAuth2UserInfo.getId())
-//                .name(oAuth2UserInfo.getName())
+                .name("TempName") //temp
                 .email(oAuth2UserInfo.getEmail())
-//                .nickname(oAuth2UserInfo.getNickname())
+                .nickname(UUID.randomUUID().toString()) //temp
                 .profileImage(oAuth2UserInfo.getImageUrl())
-                .role(Role.GUEST)
+                .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                .role(UserRoleEnum.GUEST)
                 .build();
     }
 }

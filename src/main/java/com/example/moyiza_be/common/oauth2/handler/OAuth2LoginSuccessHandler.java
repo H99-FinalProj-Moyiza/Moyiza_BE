@@ -1,7 +1,7 @@
 package com.example.moyiza_be.common.oauth2.handler;
 
+import com.example.moyiza_be.common.enums.UserRoleEnum;
 import com.example.moyiza_be.common.oauth2.CustomOAuth2User;
-import com.example.moyiza_be.common.oauth2.Role;
 import com.example.moyiza_be.common.security.jwt.CookieUtil;
 import com.example.moyiza_be.common.security.jwt.JwtTokenDto;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
@@ -37,7 +37,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         log.info("OAuth2 Login 성공!");
         try {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-            User findUser = userRepository.findByEmail(oAuth2User.getEmail()).orElseThrow(
+            User findUser = userRepository.findByEmailAndIsDeletedFalse(oAuth2User.getEmail()).orElseThrow(
                     () -> new NoSuchElementException("회원이 존재하지 않습니다."));
 
             JwtTokenDto tokenDto = jwtUtil.createAllToken(findUser);
@@ -50,9 +50,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 refreshTokenRepository.save(newToken);
             }
             cookieUtil.deleteCookie(request, response, JwtUtil.REFRESH_TOKEN);
-            cookieUtil.addCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+            cookieUtil.addResponseCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
 
-            String tokenName = (findUser.getRole() == Role.GUEST) ? "token" : "confirm";
+            String tokenName = (findUser.getRole() == UserRoleEnum.GUEST) ? "token" : "confirm";
 
             String targetUrl = "https://mo2za.com/oauth/redirect";
             String redirectUrl = UriComponentsBuilder.fromUriString(targetUrl)

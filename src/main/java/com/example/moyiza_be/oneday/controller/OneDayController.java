@@ -54,8 +54,7 @@ public class OneDayController {
     ) {
         User user = userDetails == null ? null : userDetails.getUser();
         return oneDayService.getFilteredOneDayList(
-                user, pageable, null, null, null, null, null, null, null, null,
-                null
+                user, pageable, null, null, null, null, null, null, null, null
         );
     }
 
@@ -70,13 +69,11 @@ public class OneDayController {
             @RequestParam(required = false) Double longitude,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double radius,
-            @RequestParam(required = false) LocalDateTime startafter,
             @AuthenticationPrincipal UserDetailsImpl userDetails
             ){
         User user = userDetails == null ? null : userDetails.getUser();
         return oneDayService.getFilteredOneDayList(
-                user, pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius,
-                startafter
+                user, pageable, CategoryEnum.fromString(category), q, tag1, tag2, tag3, longitude, latitude, radius
         );
     }
 
@@ -131,8 +128,10 @@ public class OneDayController {
 
     // Recommendation Based On Distance
     @GetMapping("/recommend")
-    public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(@RequestParam("lat") double nowLatitude, @RequestParam("lon") double nowLongitude) {
-        return oneDayService.recommendByDistance(nowLatitude, nowLongitude);
+    public ResponseEntity<List<OneDayNearByResponseDto>> recommendByDistance(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                             @RequestParam("lat") double nowLatitude, @RequestParam("lon") double nowLongitude) {
+        User user = userDetails == null ? null : userDetails.getUser();
+        return oneDayService.recommendByDistance(user, nowLatitude, nowLongitude);
     }
 
     // JoinWishList
@@ -152,12 +151,14 @@ public class OneDayController {
     }
 
     @GetMapping("/imminent")
-    public ResponseEntity<List<OneDayImminentResponseDto>> imminentOneDays(){
-        return oneDayService.getImminentOneDays();
+    public ResponseEntity<List<OneDayImminentResponseDto>> imminentOneDays(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        User user = userDetails == null ? null : userDetails.getUser();
+        return oneDayService.getImminentOneDays(user);
     }
     @GetMapping("/popular")
-    public ResponseEntity<?> mostLikedOneDays(){
-        return oneDayService.getMostLikedOneDays();
+    public ResponseEntity<?> mostLikedOneDays(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        User user = userDetails == null ? null : userDetails.getUser();
+        return oneDayService.getMostLikedOneDays(user);
     }
 
 }

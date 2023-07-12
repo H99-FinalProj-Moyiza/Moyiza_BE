@@ -6,7 +6,6 @@ import com.example.moyiza_be.common.oauth2.OAuthAttributes;
 import com.example.moyiza_be.common.oauth2.OAuthSocialTypeMissMatchException;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -45,7 +44,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         User createdUser = getUser(extractAttributes, socialType);
 
         return new CustomOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(createdUser.getRole().getKey())),
+                Collections.singleton(new SimpleGrantedAuthority(createdUser.getRole().getCode())),
                 attributes,
                 extractAttributes.getNameAttributeKey(),
                 createdUser.getEmail(),
@@ -64,7 +63,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     private User getUser(OAuthAttributes attributes, SocialType socialType) {
-        User savedUser = userRepository.findByEmail(attributes.getOauth2Userinfo().getEmail()).orElse(null);
+        User savedUser = userRepository.findByEmailAndIsDeletedFalse(attributes.getOauth2Userinfo().getEmail()).orElse(null);
         if (savedUser == null) {
             return saveUser(attributes, socialType);
         }

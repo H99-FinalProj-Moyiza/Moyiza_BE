@@ -264,7 +264,8 @@ public class OneDayCreateService {
         } else if (oneDayCreate.getOneDayImage()==null) {
             throw new NullPointerException("Image Is Empty");
         } else if (oneDayCreate.getOneDayType()!= OneDayTypeEnum.FCFSB && oneDayCreate.getOneDayType()!=OneDayTypeEnum.APPROVAL) {
-            oneDayCreate.setOneDayType(OneDayTypeEnum.FCFSB);
+//            oneDayCreate.setOneDayType(OneDayTypeEnum.FCFSB);
+            oneDayCreate.setOneDayType(OneDayTypeEnum.APPROVAL);
         }
     }
 

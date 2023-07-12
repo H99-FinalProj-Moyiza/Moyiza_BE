@@ -30,7 +30,7 @@ public class ReviewRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     public Page<ReviewListResponse> getReviewList(
-            User nowUser, ReviewTypeEnum reviewTypeEnum, Long identifier, Pageable pageable, List<Long> filteringIdList
+            User nowUser, ReviewTypeEnum reviewTypeEnum, Long identifier, Pageable pageable, List<Long> blackReviewIdList
     ) {
         Long userId = nowUser == null ? -1 : nowUser.getId();
         List<ReviewListResponse> reviewListResponse =
@@ -40,7 +40,7 @@ public class ReviewRepositoryCustom {
                 .leftJoin(reviewImage).on(reviewImage.reviewId.eq(review.id))
                 .where(
                         reviewTypeAndIdentifierMatcher(reviewTypeEnum, identifier),
-                        filteringBlackList(filteringIdList)
+                        filteringBlackList(blackReviewIdList)
                 )
                 .transform(
                         groupBy(review.id)
@@ -128,8 +128,8 @@ public class ReviewRepositoryCustom {
         }
     }
 
-    BooleanExpression filteringBlackList(List<Long> filteringIdList) {
-        return filteringIdList.isEmpty() ? null : review.writerId.notIn(filteringIdList);
+    BooleanExpression filteringBlackList(List<Long> blackReviewIdList) {
+        return blackReviewIdList.isEmpty() ? null : review.id.notIn(blackReviewIdList);
     }
 
 }

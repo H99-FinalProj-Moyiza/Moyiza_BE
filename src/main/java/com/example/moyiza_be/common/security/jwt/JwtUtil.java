@@ -1,6 +1,7 @@
 package com.example.moyiza_be.common.security.jwt;
 
 import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
+import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsServiceImpl;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshToken;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
@@ -15,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -126,7 +126,7 @@ public class JwtUtil {
 
     // Create an authentication object
     public Authentication createAuthentication(String userEmail) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+        UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(userEmail);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
     //Validate RefreshTokenValidate RefreshToken
@@ -145,7 +145,7 @@ public class JwtUtil {
             RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmail());
             refreshTokenRepository.save(newToken);
         }
-        cookieUtil.addCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+        cookieUtil.addResponseCookie(response, JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
         response.setHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
     }
 

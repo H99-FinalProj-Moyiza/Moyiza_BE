@@ -1,5 +1,7 @@
 package com.example.moyiza_be.user.service;
 
+import com.example.moyiza_be.club.entity.Club;
+import com.example.moyiza_be.club.repository.ClubRepository;
 import com.example.moyiza_be.common.enums.BasicProfileEnum;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
@@ -10,6 +12,8 @@ import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenReposi
 import com.example.moyiza_be.common.utils.AwsS3Uploader;
 import com.example.moyiza_be.common.utils.BadWordFiltering;
 import com.example.moyiza_be.common.utils.Message;
+import com.example.moyiza_be.oneday.entity.OneDay;
+import com.example.moyiza_be.oneday.repository.OneDayRepository;
 import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.user.entity.User;
 import com.example.moyiza_be.user.repository.UserRepository;
@@ -44,6 +48,8 @@ public class UserService {
     private final ValidationUtil validationUtil;
     private final RedisUtil redisUtil;
     private final BadWordFiltering badWordFiltering;
+    private final ClubRepository clubRepository;
+    private final OneDayRepository oneDayRepository;
 
     //Signup
     public ResponseEntity<?> signup(SignupRequestDto testRequestDto) {
@@ -73,7 +79,7 @@ public class UserService {
     public ResponseEntity<?> login(LoginRequestDto requestDto, HttpServletResponse response) {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();
-        User user = validationUtil.findUser(email);
+        User user = validationUtil.findUserByEmail(email);
         if(!passwordEncoder.matches(password, user.getPassword())){
             throw new IllegalArgumentException("Invalid password.");
         }
@@ -99,7 +105,7 @@ public class UserService {
     public ResponseEntity<?> reissueToken(String refreshToken, HttpServletResponse response) {
         jwtUtil.refreshTokenValid(refreshToken);
         String userEmail = jwtUtil.getUserInfoFromToken(refreshToken);
-        User user = userRepository.findByEmail(userEmail).get();
+        User user = userRepository.findByEmailAndIsDeletedFalse(userEmail).get();
         String newAccessToken = jwtUtil.createToken(user, "Access");
         response.setHeader("ACCESS_TOKEN", newAccessToken);
         return new ResponseEntity<>("Successful token reissue!", HttpStatus.OK);
@@ -117,7 +123,7 @@ public class UserService {
     public ResponseEntity<?> isDuplicatedNick(CheckNickRequestDto requestDto) {
         String nickname = requestDto.getNickname();
         validationUtil.checkDuplicatedNick(nickname);
-        if(badWordFiltering.checkBadNick(nickname)){
+        if(badWordFiltering.checkBadWord(nickname)){
             return new ResponseEntity<>(new Message("고운말을 씁시다."), HttpStatus.BAD_REQUEST);
         }
         Map<String, Boolean> result = new HashMap<>();
@@ -129,7 +135,7 @@ public class UserService {
     public ResponseEntity<?> sendSmsToFindEmail(FindEmailRequestDto requestDto) {
         String name = requestDto.getName();
         String phoneNum = requestDto.getPhone().replaceAll("-","");
-        User foundUser = userRepository.findByNameAndPhone(name, phoneNum).orElseThrow(()->
+        User foundUser = userRepository.findByNameAndPhoneAndIsDeletedFalse(name, phoneNum).orElseThrow(()->
                 new NoSuchElementException("The user does not exist."));
         String receiverEmail = foundUser.getEmail();
         String verificationCode = validationUtil.createCode();
@@ -149,7 +155,6 @@ public class UserService {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    //Test
     public ResponseEntity<?> uploadImg(MultipartFile image) {
         if(image == null || image.isEmpty()){
             return new ResponseEntity<>(BasicProfileEnum.getRandomImage().getImageUrl(), HttpStatus.OK);
@@ -159,15 +164,26 @@ public class UserService {
     }
 
     public ResponseEntity<?> updateProfile(UpdateRequestDto requestDto, String email) {
-        User user = validationUtil.findUser(email);
-        validationUtil.checkDuplicatedNick(requestDto.getNickname());
-        List<TagEnum> tagEnumList = requestDto.getTagEnumList();
-        String newString = "0".repeat(TagEnum.values().length);
-        StringBuilder tagBuilder = new StringBuilder(newString);
-        for (TagEnum tagEnum : tagEnumList) {
-            tagBuilder.setCharAt(tagEnum.ordinal(), '1');
+        User user = validationUtil.findUserByEmail(email);
+        if (requestDto.getNickname() != null && !requestDto.getNickname().isEmpty()) {
+            validationUtil.checkDuplicatedNick(requestDto.getNickname());
+            user.setNickname(requestDto.getNickname());
         }
-        user.updateProfile(requestDto, tagBuilder.toString());
+        if (requestDto.getTags() != null && !requestDto.getTags().isEmpty()) {
+            List<TagEnum> tagEnumList = requestDto.getTagEnumList();
+            String newString = "0".repeat(TagEnum.values().length);
+            StringBuilder tagBuilder = new StringBuilder(newString);
+            for (TagEnum tagEnum : tagEnumList) {
+                tagBuilder.setCharAt(tagEnum.ordinal(), '1');
+            }
+            user.setTagString(tagBuilder.toString());
+        }
+        if (requestDto.getImageUrl() != null && !requestDto.getImageUrl().isEmpty()) {
+            user.setProfileImage(requestDto.getImageUrl());
+        }
+        if (requestDto.getContent() != null && !requestDto.getContent().isEmpty()) {
+            user.setContent(requestDto.getContent());
+        }
         return new ResponseEntity<>("Edit your membership information", HttpStatus.OK);
     }
 
@@ -185,25 +201,22 @@ public class UserService {
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    //Modify Profile - test
-//    public ResponseEntity<?> updateProfile(MultipartFile imageFile, UpdateRequestDto requestDto, String email) {
-//        User user = validationUtil.findUser(email);
-//        validationUtil.checkDuplicatedNick(requestDto.getNickname());
-//
-//        if(imageFile != null){
-//            awsS3Uploader.delete(user.getProfileImage());
-//            String storedFileUrl  = awsS3Uploader.uploadFile(imageFile);
-//            user.updateProfileImage(storedFileUrl);
-//        }
-//
-//        List<TagEnum> tagEnumList = requestDto.getTagEnumList();
-//        String newString = "0".repeat(TagEnum.values().length);
-//        StringBuilder tagBuilder = new StringBuilder(newString);
-//        for (TagEnum tagEnum : tagEnumList) {
-//            tagBuilder.setCharAt(tagEnum.ordinal(), '1');
-//        }
-//        user.updateProfile(requestDto.getNickname(), tagBuilder.toString());
-//
-//        return new ResponseEntity<>("Edit your membership information", HttpStatus.OK);
-//    }
+    public ResponseEntity<?> withdrawUser(User user) {
+        Long userId = user.getId();
+        User withdrawUser = loadUserById(userId);
+        withdrawUser.setIsDeleted(true);
+        userRepository.save(withdrawUser);
+        List<Club> withdrawUsersClubs = clubRepository.findByOwnerId(userId);
+        for (Club club : withdrawUsersClubs) {
+            club.flagDeleted(true);
+        }
+        clubRepository.saveAll(withdrawUsersClubs);
+        List<OneDay> withdrawUsersOneDays = oneDayRepository.findAllByOwnerId(userId);
+        for (OneDay oneday : withdrawUsersOneDays) {
+            oneday.setDeleted(true);
+        }
+        oneDayRepository.saveAll(withdrawUsersOneDays);
+        return new ResponseEntity<>(new Message("User withdraw success"), HttpStatus.OK);
+    }
+
 }

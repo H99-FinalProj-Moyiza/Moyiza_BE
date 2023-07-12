@@ -3,11 +3,11 @@ package com.example.moyiza_be.oneday.repository.QueryDSL;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.oneday.dto.OneDayListResponseDto;
+import com.example.moyiza_be.oneday.entity.OneDay;
 import com.example.moyiza_be.user.entity.QUser;
 import com.example.moyiza_be.user.entity.User;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -38,34 +38,26 @@ public class OneDayRepositoryCustom {
     public Page<OneDayListResponseDto> getFilteredOnedayList(
             User nowUser, Long profileId, Pageable pageable, CategoryEnum category, String q, String tag1, String tag2, String tag3,
             Double nowLongitude, Double nowLatitude, Double radius,
-            LocalDateTime timeCondition, List<Long> filteringIdList
+            List<Long> blackOneDayIdList, LocalDateTime now
     ) {
         Long userId = nowUser == null ? -1 : nowUser.getId();
-        QUser owner = new QUser("owner");
-
-        SubQueryExpression<Long> subQuery = JPAExpressions.select(oneDayAttendant.oneDayId)
-                .from(oneDayAttendant)
-                .where(oneDayAttendant.userId.in(filteringIdList));
 
         List<OneDayListResponseDto> onedayList =
                 jpaQueryFactory
                         .from(oneDay)
-                        .join(oneDayAttendant).on(oneDay.id.eq(oneDayAttendant.oneDayId))
-                        .join(user).on(oneDayAttendant.userId.eq(user.id))
-                        .join(owner).on(oneDay.ownerId.eq(owner.id))
+                        .join(user).on(oneDay.ownerId.eq(user.id))
                         .leftJoin(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
                         .where(
                                 oneDay.deleted.isFalse(),
-                                filteringBlackList(filteringIdList),
-                                oneDayAttendant.oneDayId.notIn(subQuery),
+                                filteringBlackList(blackOneDayIdList),
                                 eqTag1(tag1),
                                 eqTag2(tag2),
                                 eqTag3(tag3),
                                 eqCategory(category),
                                 titleContainOrContentContain(q),
                                 nearby(radius, nowLongitude, nowLatitude),
-                                startTimeAfter(timeCondition),
-                                isProfileId(profileId)
+                                isProfileId(profileId),
+                                oneDay.oneDayStartTime.goe(now)
                         )
                         .distinct()
                         .offset(pageable.getOffset())
@@ -76,8 +68,8 @@ public class OneDayRepositoryCustom {
                                         .list(
                                                 Projections.constructor(OneDayListResponseDto.class,
                                                         oneDay.id,
-                                                        owner.nickname,
-                                                        owner.profileImage,
+                                                        user.nickname,
+                                                        user.profileImage,
                                                         oneDay.oneDayTitle,
                                                         oneDay.oneDayContent,
                                                         oneDay.tagString,
@@ -105,13 +97,9 @@ public class OneDayRepositoryCustom {
     }
 
     public Page<OneDayListResponseDto> getFilteredJoinedOnedayList(
-            User nowUser, Long profileId, Pageable pageable, List<Long> filteringIdList
+            User nowUser, Long profileId, Pageable pageable, List<Long> blackOneDayIdList, LocalDateTime now
     ) {
         QUser owner = new QUser("owner");
-
-        SubQueryExpression<Long> subQuery = JPAExpressions.select(oneDayAttendant.oneDayId)
-                .from(oneDayAttendant)
-                .where(oneDayAttendant.userId.in(filteringIdList));
 
         List<OneDayListResponseDto> onedayList =
                 jpaQueryFactory
@@ -122,9 +110,9 @@ public class OneDayRepositoryCustom {
                         .leftJoin(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
                         .where(
                                 oneDay.deleted.isFalse(),
-                                filteringBlackList(filteringIdList),
-                                oneDayAttendant.oneDayId.notIn(subQuery),
-                                user.id.eq(profileId)
+                                filteringBlackList(blackOneDayIdList),
+                                user.id.eq(profileId),
+                                oneDay.oneDayStartTime.goe(now)
                         )
                         .distinct()
                         .offset(pageable.getOffset())
@@ -163,12 +151,82 @@ public class OneDayRepositoryCustom {
         return new PageImpl<>(onedayList, pageable, 1000L);
     }
 
-    private BooleanExpression titleContainOrContentContain(String q) {
-        return q == null ? null : titleContain(q).or(contentContain(q));
+    public Page<OneDayListResponseDto> likeOneDayResponseList(
+            Pageable pageable, Long profileId, List<Long> blackOneDayIdList, LocalDateTime now
+    ) {
+        QUser owner = new QUser("owner");
+
+        List<OneDayListResponseDto> onedayList =
+                jpaQueryFactory
+                        .from(oneDay)
+                        .join(onedayLike).on(onedayLike.onedayId.eq(oneDay.id))
+                        .join(user).on(onedayLike.userId.eq(user.id))
+                        .join(owner).on(oneDay.ownerId.eq(owner.id))
+                        .leftJoin(oneDayImageUrl).on(oneDay.id.eq(oneDayImageUrl.oneDayId))
+                        .where(
+                                oneDay.deleted.isFalse(),
+                                filteringBlackList(blackOneDayIdList),
+                                user.id.eq(profileId),
+                                oneDay.oneDayStartTime.goe(now)
+                        )
+                        .distinct()
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .orderBy(oneDay.id.desc())
+                        .transform(
+                                groupBy(oneDay.id)
+                                        .list(
+                                                Projections.constructor(OneDayListResponseDto.class,
+                                                        oneDay.id,
+                                                        owner.nickname,
+                                                        user.profileImage,
+                                                        oneDay.oneDayTitle,
+                                                        oneDay.oneDayContent,
+                                                        oneDay.tagString,
+                                                        oneDay.oneDayGroupSize,
+                                                        oneDay.attendantsNum,
+                                                        oneDay.oneDayImage,
+                                                        GroupBy.list(oneDayImageUrl.imageUrl),
+                                                        oneDay.oneDayLongitude,
+                                                        oneDay.oneDayLatitude,
+                                                        oneDay.oneDayLocation,
+                                                        oneDay.numLikes
+                                                )
+                                        )
+
+                        );
+
+        return new PageImpl<>(onedayList, pageable, 1000L);
     }
 
-    private BooleanExpression startTimeAfter(LocalDateTime timeCondition) {
-        return timeCondition == null ? null : oneDay.oneDayStartTime.after(timeCondition);
+    public List<OneDay> findImminentOneDaysFilteredBlackList(LocalDateTime now,
+                                                              List<Long> blackOneDayIdList) {
+        return jpaQueryFactory
+                .selectFrom(oneDay)
+                .where(
+                        oneDay.deleted.isFalse(),
+                        filteringBlackList(blackOneDayIdList),
+                        oneDay.oneDayStartTime.goe(now)
+                )
+                .orderBy(oneDay.oneDayStartTime.asc())
+                .fetch();
+    }
+
+    public List<OneDay> findMostLikedOneDaysFilteredBlackList(List<Long> blackOneDayIdList,
+                                                              LocalDateTime now) {
+        return jpaQueryFactory
+                .selectFrom(oneDay)
+                .where(
+                        oneDay.deleted.isFalse(),
+                        filteringBlackList(blackOneDayIdList),
+                        oneDay.oneDayStartTime.goe(now)
+                )
+                .orderBy(oneDay.numLikes.desc())
+                .fetch();
+    }
+
+    private BooleanExpression titleContainOrContentContain(String q) {
+        return q == null ? null : titleContain(q).or(contentContain(q));
     }
 
     private BooleanExpression eqTag1(String tag) {
@@ -221,7 +279,7 @@ public class OneDayRepositoryCustom {
         return profileId == null ? null : user.id.eq(profileId);
     }
 
-    private BooleanExpression filteringBlackList(List<Long> filteringIdList) {
-        return filteringIdList.isEmpty() ? null : oneDayAttendant.userId.notIn(filteringIdList);
+    private BooleanExpression filteringBlackList(List<Long> blackOneDayIdList) {
+        return blackOneDayIdList.isEmpty() ? null : oneDay.id.notIn(blackOneDayIdList);
     }
 }

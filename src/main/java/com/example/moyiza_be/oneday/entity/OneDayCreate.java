@@ -37,7 +37,8 @@ public class OneDayCreate {
     private Integer attendantsNum;
     private String oneDayImage;
     private Boolean confirmed = false;
-    private OneDayTypeEnum oneDayType = OneDayTypeEnum.FCFSB;
+//    private OneDayTypeEnum oneDayType = OneDayTypeEnum.FCFSB;
+    private OneDayTypeEnum oneDayType = OneDayTypeEnum.APPROVAL;
 
     public OneDayCreate(Long ownerId) {
         this.ownerId = ownerId;

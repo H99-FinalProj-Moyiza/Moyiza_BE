@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -26,4 +27,7 @@ public class AlertController {
         return alertService.alertCheck(alertId);
     }
 
+    // Alert Subscribe
+    @GetMapping(value = "/subscribe", produces = "text/event-stream")
+    public SseEmitter subscribe(@AuthenticationPrincipal UserDetailsImpl userDetails) {return alertService.subscribe(userDetails.getUser()); }
 }
