@@ -7,10 +7,13 @@ import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.user.entity.QUser;
 import com.example.moyiza_be.user.entity.User;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.group.GroupBy;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.SubQueryExpression;
-import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.moyiza_be.club.entity.QClub.club;
 import static com.example.moyiza_be.club.entity.QClubImageUrl.clubImageUrl;
@@ -27,6 +32,7 @@ import static com.example.moyiza_be.club.entity.QClubJoinEntry.clubJoinEntry;
 import static com.example.moyiza_be.like.entity.QClubLike.clubLike;
 import static com.example.moyiza_be.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.types.ExpressionUtils.count;
 
 
 @Repository
@@ -181,85 +187,11 @@ public class ClubRepositoryCustom {
                 .fetchOne();
     }
 
-////운영중인 마이페이지 클럽 리스트 조회
-//    public List<ClubDetailResponse> getManagedClubDetail(Long userId, Long profileId) {
-//        return jpaQueryFactory
-//                .select(
-//                        new QClubDetailResponse(
-//                                club.id,
-//                                user.nickname,
-//                                club.title,
-//                                club.category,
-//                                club.tagString,
-//                                club.content,
-//                                club.agePolicy,
-//                                club.genderPolicy,
-//                                club.maxGroupSize,
-//                                club.nowMemberCount,
-//                                club.thumbnailUrl,
-//                                club.numLikes,
-//                                JPAExpressions
-//                                        .selectFrom(clubLike)
-//                                        .where(clubLike.clubId.eq(club.id)
-//                                                .and(clubLike.userId.eq(userId))
-//                                        )
-//                                        .exists(),
-//                                club.clubRule
-//                        )
-//                )
-//                .from(club)
-//                .join(user).on(club.ownerId.eq(profileId))
-//                .where(user.id.eq(profileId), club.isDeleted.isFalse())
-//                .orderBy(club.id.desc())
-//                .fetch();
-//    }
-//
-//    public List<ClubDetailResponse> getJoinedClubDetail(Long userId, Long profileId) {
-//        return jpaQueryFactory
-//                .select(
-//                        new QClubDetailResponse(
-//                                club.id,
-//                                user.nickname,
-//                                club.title,
-//                                club.category,
-//                                club.tagString,
-//                                club.content,
-//                                club.agePolicy,
-//                                club.genderPolicy,
-//                                club.maxGroupSize,
-//                                club.nowMemberCount,
-//                                club.thumbnailUrl,
-//                                club.numLikes,
-//                                JPAExpressions
-//                                        .selectFrom(clubLike)
-//                                        .where(clubLike.clubId.eq(club.id)
-//                                                .and(clubLike.userId.eq(userId))
-//                                        )
-//                                        .exists(),
-//                                club.clubRule
-//                        )
-//                )
-//                .from(club)
-//                .join(clubJoinEntry).on(clubJoinEntry.clubId.eq(club.id))
-//                .join(user).on(clubJoinEntry.userId.eq(profileId))
-//                .where(user.id.eq(profileId), club.isDeleted.isFalse())
-//                .orderBy(club.id.desc())
-//                .fetch();
+//    private OrderSpecifier createTagSimilarityOrderSpecifier(List<Integer> indexes) {
+//        return new OrderSpecifier(Order.DESC, club.tagString.locate("1"));
 //    }
 
-//    private OrderSpecifier createOrderSpecifier(OrderCondition orderCondition) {
-//
-//        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
-//
-//        if(Objects.isNull(orderCondition)){
-//            orderSpecifiers.add(new OrderSpecifier(Order.DESC, person.name));
-//        }else if(orderCondition.equals(OrderCondition.AGE)){
-//            orderSpecifiers.add(new OrderSpecifier(Order.DESC, person.age));
-//        }else{
-//            orderSpecifiers.add(new OrderSpecifier(Order.DESC, person.region));
-//        }
-//        return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
-//    }
+
     private BooleanExpression isDeletedFalse(){
         return club.isDeleted.eq(false);
     }

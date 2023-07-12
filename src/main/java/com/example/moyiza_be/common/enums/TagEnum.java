@@ -207,7 +207,19 @@ public enum TagEnum {
         return count;
     }
 
-    public static int calcTagStringMatchNum(String userTagString, String clubTagString){
-        return 1;
+    public static List<Integer> tagIndexList(String tagString){
+        if (tagString == null){return null;}
+        int i = 0;
+        List<Integer> tagIdxList = new ArrayList<>();
+        while (i <= tagString.length() - 1) {
+            int idx = tagString.indexOf('1', i);
+            if (idx == -1) {
+                break;
+            } else {
+                tagIdxList.add(i);
+                i = idx + 1;
+            }
+        }
+        return tagIdxList;
     }
 }
