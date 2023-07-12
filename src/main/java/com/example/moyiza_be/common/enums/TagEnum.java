@@ -1,5 +1,7 @@
 package com.example.moyiza_be.common.enums;
 
+import net.nurigo.sdk.message.model.Count;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,5 +200,21 @@ public enum TagEnum {
             }
         }
         return count;
+    }
+
+    public static List<Integer> tagIndexList(String tagString){
+        if (tagString == null){return null;}
+        int i = 0;
+        List<Integer> tagIdxList = new ArrayList<>();
+        while (i <= tagString.length() - 1) {
+            int idx = tagString.indexOf('1', i);
+            if (idx == -1) {
+                break;
+            } else {
+                tagIdxList.add(i);
+                i = idx + 1;
+            }
+        }
+        return tagIdxList;
     }
 }

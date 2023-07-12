@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class KafkaChatConsumer {
     private final SimpMessageSendingOperations sendingOperations;
-    private final RedisCacheService cacheService;
     private final String CHAT_DESTINATION_PREFIX = "/chat/";
     private final String CHATALARM_DESTINATION_PREFIX = "/chatalarm/";
 
@@ -27,6 +26,5 @@ public class KafkaChatConsumer {
         String alarmDestination = CHATALARM_DESTINATION_PREFIX + chatId;
         sendingOperations.convertAndSend(destination, chatMessage);
         sendingOperations.convertAndSend(alarmDestination, chatMessage);
-//        log.info("consumed chatMessage for destination : " + destination);
     }
 }

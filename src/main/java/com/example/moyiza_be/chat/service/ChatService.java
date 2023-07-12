@@ -71,7 +71,7 @@ public class ChatService {
     //Get Club Chat Room List
     @Transactional
     public ResponseEntity<List<ChatRoomInfo>> getClubChatRoomList(Long userId) {
-        //나중에 쿼리 바꿀 대상
+        //Future refactor
         List<ChatRoomInfo> clubChatRoomInfoList = chatRepositoryCustom.getClubChatRoomList(userId)
                 .stream()
                 .peek(chatRoomInfo ->
@@ -98,7 +98,7 @@ public class ChatService {
 
     @Transactional
     public ResponseEntity<List<ChatRoomInfo>> getOnedayChatRoomList(Long userId) {
-
+        //future refactor
         List<ChatRoomInfo> onedayChatRoomInfoList = chatRepositoryCustom.getOnedayChatRoomList(userId)
                 .stream()
                 .peek(chatRoomInfo ->
@@ -113,8 +113,8 @@ public class ChatService {
                         chatRoomInfo.setUnreadMessage(
                                 chatRecordRepository.countByChatIdEqualsAndIdGreaterThan(
                                         chatRoomInfo.getChatId(),
-                                        cacheService.getUserLastReadMessageId(chatRoomInfo.getChatId().toString(), userId.toString()
-                                        )
+                                        cacheService.getUserLastReadMessageId(chatRoomInfo.getChatId().toString(), userId.toString()) == null ? 0L
+                                                :cacheService.getUserLastReadMessageId(chatRoomInfo.getChatId().toString(), userId.toString())
                                 )
                         )
                 )

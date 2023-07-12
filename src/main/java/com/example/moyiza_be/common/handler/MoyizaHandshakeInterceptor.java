@@ -16,6 +16,16 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import java.util.Map;
 
+
+
+//No use
+//We currently use SockJS as socket connection from the client side, where adding custom header is not possible.
+//Therefore, authenticating user in handshake process cannot be done
+//Instead, we authenticate user after the handshake, through STOMP Connection, where STOMP header is provided.
+//I wonder though, as STOMP header is essentially present in the payload of the websocket message, we might as well
+//provide JWT token as to payload of SockJS connection, so that we can authenticate user in the handshake process,
+//which enables us to set UserPrincipal within the session, which would allow us to reduce the process of setting
+//and getting userInfo by sessionId from redis.
 @Component
 @RequiredArgsConstructor
 public class MoyizaHandshakeInterceptor implements HandshakeInterceptor {

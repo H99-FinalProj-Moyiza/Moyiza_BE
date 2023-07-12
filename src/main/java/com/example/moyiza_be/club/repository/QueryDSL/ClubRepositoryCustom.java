@@ -8,9 +8,13 @@ import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.user.entity.QUser;
 import com.example.moyiza_be.user.entity.User;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.group.GroupBy;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.SubQueryExpression;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +23,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.moyiza_be.club.entity.QClub.club;
 import static com.example.moyiza_be.club.entity.QClubImageUrl.clubImageUrl;
@@ -27,6 +33,7 @@ import static com.example.moyiza_be.club.entity.QClubJoinEntry.clubJoinEntry;
 import static com.example.moyiza_be.like.entity.QClubLike.clubLike;
 import static com.example.moyiza_be.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.types.ExpressionUtils.count;
 
 
 @Repository
@@ -166,7 +173,6 @@ public class ClubRepositoryCustom {
                 .fetchOne();
     }
 
-
 //    private OrderSpecifier createOrderSpecifier(OrderCondition orderCondition) {
 //
 //        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
@@ -229,8 +235,6 @@ public class ClubRepositoryCustom {
                         );
         return new PageImpl<>(clubListResponseList, pageable, 5000L);
     }
-
-
 
     private BooleanExpression isDeletedFalse(){
         return club.isDeleted.eq(false);
