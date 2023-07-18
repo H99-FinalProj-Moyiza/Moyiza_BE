@@ -1,15 +1,15 @@
 package com.example.moyiza_be.domain.club.repository.QueryDSL;
 
 import com.example.moyiza_be.domain.club.dto.ClubMemberResponse;
-import com.example.moyiza_be.club.dto.QClubMemberResponse;
+import com.example.moyiza_be.domain.club.dto.QClubMemberResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.example.moyiza_be.club.entity.QClubJoinEntry.clubJoinEntry;
-import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.example.moyiza_be.domain.club.entity.QClubJoinEntry.clubJoinEntry;
+import static com.example.moyiza_be.domain.user.entity.QUser.user;
 
 @Repository
 @RequiredArgsConstructor

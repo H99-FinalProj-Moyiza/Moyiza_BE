@@ -1,15 +1,15 @@
 package com.example.moyiza_be.domain.oneday.repository.QueryDSL;
 
 import com.example.moyiza_be.domain.oneday.dto.MemberResponse;
-import com.example.moyiza_be.oneday.dto.QMemberResponse;
+import com.example.moyiza_be.domain.oneday.dto.QMemberResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.example.moyiza_be.oneday.entity.QOneDayAttendant.oneDayAttendant;
-import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.example.moyiza_be.domain.oneday.entity.QOneDayAttendant.oneDayAttendant;
+import static com.example.moyiza_be.domain.user.entity.QUser.user;
 
 @Repository
 @RequiredArgsConstructor

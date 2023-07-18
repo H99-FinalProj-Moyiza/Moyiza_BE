@@ -1,7 +1,7 @@
 package com.example.moyiza_be.common.common_features.blackList.repository.QueryDSL;
 
+import com.example.moyiza_be.common.common_features.blackList.dto.QBlackListMemberResponse;
 import com.example.moyiza_be.common.common_features.blackList.dto.BlackListMemberResponse;
-import com.example.moyiza_be.blackList.dto.QBlackListMemberResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -11,15 +11,15 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.moyiza_be.blackList.entity.QBlackList.blackList;
-import static com.example.moyiza_be.club.entity.QClub.club;
-import static com.example.moyiza_be.club.entity.QClubJoinEntry.clubJoinEntry;
-import static com.example.moyiza_be.event.entity.QEvent.event;
-import static com.example.moyiza_be.event.entity.QEventAttendant.eventAttendant;
-import static com.example.moyiza_be.oneday.entity.QOneDay.oneDay;
-import static com.example.moyiza_be.oneday.entity.QOneDayAttendant.oneDayAttendant;
-import static com.example.moyiza_be.review.entity.QReview.review;
-import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.example.moyiza_be.common.common_features.blackList.entity.QBlackList.blackList;
+import static com.example.moyiza_be.domain.club.entity.QClub.club;
+import static com.example.moyiza_be.domain.club.entity.QClubJoinEntry.clubJoinEntry;
+import static com.example.moyiza_be.domain.event.entity.QEvent.event;
+import static com.example.moyiza_be.domain.event.entity.QEventAttendant.eventAttendant;
+import static com.example.moyiza_be.domain.oneday.entity.QOneDay.oneDay;
+import static com.example.moyiza_be.domain.oneday.entity.QOneDayAttendant.oneDayAttendant;
+import static com.example.moyiza_be.domain.review.entity.QReview.review;
+import static com.example.moyiza_be.domain.user.entity.QUser.user;
 
 
 

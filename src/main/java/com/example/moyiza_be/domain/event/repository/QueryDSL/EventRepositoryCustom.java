@@ -1,7 +1,7 @@
 package com.example.moyiza_be.domain.event.repository.QueryDSL;
 
 import com.example.moyiza_be.domain.event.dto.EventSimpleDetailDto;
-import com.example.moyiza_be.event.dto.QEventSimpleDetailDto;
+import com.example.moyiza_be.domain.event.dto.QEventSimpleDetailDto;
 import com.example.moyiza_be.domain.user.entity.User;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.example.moyiza_be.event.entity.QEvent.event;
-import static com.example.moyiza_be.like.entity.QEventLike.eventLike;
-import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.example.moyiza_be.domain.event.entity.QEvent.event;
+import static com.example.moyiza_be.domain.like.entity.QEventLike.eventLike;
+import static com.example.moyiza_be.domain.user.entity.QUser.user;
 
 @Repository
 @RequiredArgsConstructor

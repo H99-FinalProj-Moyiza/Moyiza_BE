@@ -11,7 +11,7 @@ import com.example.moyiza_be.domain.oneday.entity.OneDayImageUrl;
 import com.example.moyiza_be.domain.oneday.repository.OneDayCreateRepository;
 import com.example.moyiza_be.domain.oneday.dto.OneDayDetailResponse;
 import com.example.moyiza_be.domain.oneday.dto.OneDayIdResponseDto;
-import com.example.moyiza_be.oneday.dto.onedaycreate.*;
+import com.example.moyiza_be.domain.oneday.dto.onedaycreate.*;
 import com.example.moyiza_be.domain.oneday.repository.OneDayImageUrlRepository;
 import com.example.moyiza_be.domain.user.entity.User;
 import com.example.moyiza_be.domain.user.repository.UserRepository;

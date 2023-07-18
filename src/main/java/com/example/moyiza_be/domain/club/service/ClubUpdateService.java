@@ -5,7 +5,7 @@ import com.example.moyiza_be.domain.club.dto.AgePolicyUpdateRequest;
 import com.example.moyiza_be.domain.club.dto.ClubRuleUpdateRequest;
 import com.example.moyiza_be.domain.club.dto.GenderPolicyUpdateRequest;
 import com.example.moyiza_be.domain.club.dto.RemoveImageRequest;
-import com.example.moyiza_be.club.dto.createclub.*;
+import com.example.moyiza_be.domain.club.dto.createclub.*;
 import com.example.moyiza_be.domain.club.dto.createclub.*;
 import com.example.moyiza_be.domain.club.entity.Club;
 import com.example.moyiza_be.domain.club.entity.ClubImageUrl;

@@ -3,7 +3,7 @@ package com.example.moyiza_be.domain.oneday.controller;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;
 import com.example.moyiza_be.domain.oneday.dto.onedaycreate.*;
-import com.example.moyiza_be.oneday.dto.onedaycreate.*;
+import com.example.moyiza_be.domain.oneday.dto.onedaycreate.*;
 import com.example.moyiza_be.domain.oneday.service.OneDayCreateService;
 import com.example.moyiza_be.domain.user.entity.User;
 import jakarta.annotation.Nullable;

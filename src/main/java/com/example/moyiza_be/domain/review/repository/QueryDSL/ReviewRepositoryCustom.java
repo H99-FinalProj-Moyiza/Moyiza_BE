@@ -18,10 +18,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.example.moyiza_be.like.entity.QReviewLike.reviewLike;
-import static com.example.moyiza_be.review.entity.QReview.review;
-import static com.example.moyiza_be.review.entity.QReviewImage.reviewImage;
-import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.example.moyiza_be.domain.like.entity.QReviewLike.reviewLike;
+import static com.example.moyiza_be.domain.review.entity.QReview.review;
+import static com.example.moyiza_be.domain.review.entity.QReviewImage.reviewImage;
+import static com.example.moyiza_be.domain.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 
 @Repository

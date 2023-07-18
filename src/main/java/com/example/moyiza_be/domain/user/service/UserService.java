@@ -16,7 +16,7 @@ import com.example.moyiza_be.domain.oneday.entity.OneDay;
 import com.example.moyiza_be.domain.oneday.repository.OneDayRepository;
 import com.example.moyiza_be.domain.user.dto.*;
 import com.example.moyiza_be.domain.user.util.ValidationUtil;
-import com.example.moyiza_be.user.dto.*;
+import com.example.moyiza_be.domain.user.dto.*;
 import com.example.moyiza_be.domain.user.entity.User;
 import com.example.moyiza_be.domain.user.repository.UserRepository;
 import com.example.moyiza_be.domain.user.sms.SmsUtil;

@@ -3,7 +3,7 @@ package com.example.moyiza_be.domain.club.controller;
 
 import com.example.moyiza_be.domain.club.dto.ClubDetailResponse;
 import com.example.moyiza_be.domain.club.dto.ResumeCreationDto;
-import com.example.moyiza_be.club.dto.createclub.*;
+import com.example.moyiza_be.domain.club.dto.createclub.*;
 import com.example.moyiza_be.domain.club.service.CreateClubService;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.utils.Message;

@@ -41,12 +41,6 @@ public class StompHandler implements ChannelInterceptor {
             handleConnect(sessionId, token);
             return message;
         }
-//
-//        if (StompCommand.SUBSCRIBE.equals(command) &&
-//                MessageDestinationEnum.CHAT.equals(headerUtils.destinationChecker(headerAccessor.getDestination()))
-//        ) {
-//            return message;
-//        }
 
         if (StompCommand.UNSUBSCRIBE.equals(command)
         ) {

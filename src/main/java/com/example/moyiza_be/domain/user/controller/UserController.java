@@ -2,11 +2,10 @@ package com.example.moyiza_be.domain.user.controller;
 
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.domain.user.dto.*;
-import com.example.moyiza_be.domain.user.service.UserService;
-import com.example.moyiza_be.user.dto.*;
 import com.example.moyiza_be.domain.user.email.EmailRequestDto;
 import com.example.moyiza_be.domain.user.email.EmailService;
 import com.example.moyiza_be.domain.user.service.MypageService;
+import com.example.moyiza_be.domain.user.service.UserService;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -2,13 +2,13 @@ package com.example.moyiza_be.domain.chat.repository.QueryDSL;
 
 
 import com.example.moyiza_be.domain.chat.dto.ChatMessageOutput;
-import com.example.moyiza_be.chat.dto.QChatMessageOutput;
+import com.example.moyiza_be.domain.chat.dto.QChatMessageOutput;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import static com.example.moyiza_be.chat.entity.QChatRecord.chatRecord;
-import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.example.moyiza_be.domain.chat.entity.QChatRecord.chatRecord;
+import static com.example.moyiza_be.domain.user.entity.QUser.user;
 
 import java.util.List;
 

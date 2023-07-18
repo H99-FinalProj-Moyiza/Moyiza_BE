@@ -2,7 +2,7 @@ package com.example.moyiza_be.domain.chat.repository.QueryDSL;
 
 
 import com.example.moyiza_be.domain.chat.dto.ChatRoomInfo;
-import com.example.moyiza_be.chat.dto.QChatRoomInfo;
+import com.example.moyiza_be.domain.chat.dto.QChatRoomInfo;
 import com.example.moyiza_be.common.enums.ChatTypeEnum;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.example.moyiza_be.chat.entity.QChat.chat;
-import static com.example.moyiza_be.chat.entity.QChatJoinEntry.chatJoinEntry;
-import static com.example.moyiza_be.club.entity.QClub.club;
-import static com.example.moyiza_be.oneday.entity.QOneDay.oneDay;
+import static com.example.moyiza_be.domain.chat.entity.QChat.chat;
+import static com.example.moyiza_be.domain.chat.entity.QChatJoinEntry.chatJoinEntry;
+import static com.example.moyiza_be.domain.club.entity.QClub.club;
+import static com.example.moyiza_be.domain.oneday.entity.QOneDay.oneDay;
 
 @Repository
 @RequiredArgsConstructor
