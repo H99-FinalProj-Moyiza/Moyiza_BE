@@ -1,11 +1,12 @@
 package com.example.moyiza_be.domain.chat.handler;
 
 
-import com.example.moyiza_be.domain.chat.dto.ChatMessageOutput;
-import com.example.moyiza_be.domain.chat.dto.ChatUserPrincipal;
 import com.example.moyiza_be.common.enums.MessageDestinationEnum;
 import com.example.moyiza_be.common.redis.RedisService;
 import com.example.moyiza_be.common.security.jwt.JwtUtil;
+import com.example.moyiza_be.domain.chat.dto.ChatMessageOutput;
+import com.example.moyiza_be.domain.chat.dto.ChatUserPrincipal;
+import com.example.moyiza_be.domain.chat.utils.StompUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
@@ -13,10 +14,8 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -26,33 +25,30 @@ import java.util.Set;
 public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisService redisService;
+    private final StompUtils headerUtils;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
         String sessionId = headerAccessor.getSessionId();
-        log.info("Command : " + headerAccessor.getCommand());
+        StompCommand command = headerAccessor.getCommand();
+        log.info("Command : " + command);
 
-        if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
+        if (StompCommand.CONNECT.equals(command)) {
             String bearerToken = headerAccessor.getFirstNativeHeader("ACCESS_TOKEN");
             String token = jwtUtil.removePrefix(bearerToken);
-            if (!jwtUtil.validateToken(token)) {
-                throw new IllegalArgumentException("The token is invalid.");
-            }
-            ChatUserPrincipal userInfo = jwtUtil.tokenToChatUserPrincipal(token);
-            redisService.saveUserInfoToCache(sessionId, userInfo);
+            handleConnect(sessionId, token);
             return message;
         }
+//
+//        if (StompCommand.SUBSCRIBE.equals(command) &&
+//                MessageDestinationEnum.CHAT.equals(headerUtils.destinationChecker(headerAccessor.getDestination()))
+//        ) {
+//            return message;
+//        }
 
-        if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) &&
-                MessageDestinationEnum.CHAT.equals(destinationChecker(headerAccessor.getDestination()))
-        ) {
-            return message;
-        }
-
-        if (StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())
-//                MessageDestinationEnum.CHAT.equals(destinationChecker(headerAccessor.getDestination()))
+        if (StompCommand.UNSUBSCRIBE.equals(command)
         ) {
             String subId = headerAccessor.getSubscriptionId();
             if(redisService.getChatIdFromSubId(subId, sessionId) != null){
@@ -61,8 +57,7 @@ public class StompHandler implements ChannelInterceptor {
             }
         }
 
-        if (StompCommand.DISCONNECT.equals(headerAccessor.getCommand())
-//                MessageDestinationEnum.CHAT.equals(destinationChecker(headerAccessor.getDestination()))
+        if (StompCommand.DISCONNECT.equals(command)
         ) {
             ChatUserPrincipal userPrincipal = redisService.getUserInfoFromCache(sessionId);
             Set<String> chatSubIdSet = redisService.getSessionSubIdSet(sessionId);
@@ -79,29 +74,35 @@ public class StompHandler implements ChannelInterceptor {
         return message;
     }
 
+    private void handleConnect(String sessionId, String token) {
+        if (!jwtUtil.validateToken(token)) {
+            throw new IllegalArgumentException("The token is invalid.");
+        }
+        ChatUserPrincipal userInfo = jwtUtil.tokenToChatUserPrincipal(token);
+        redisService.saveUserInfoToCache(sessionId, userInfo);
+    }
+
     @Override
     public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
 
         if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) &&
-               MessageDestinationEnum.CHAT.equals(destinationChecker(headerAccessor.getDestination()))
+               MessageDestinationEnum.CHAT.equals(headerUtils.destinationChecker(headerAccessor.getDestination()))
         ) {
             String destination = headerAccessor.getDestination();
             String sessionId = headerAccessor.getSessionId();
-            Long chatId = getChatIdFromDestination(destination);
+            Long chatId = headerUtils.getChatIdFromDestination(destination);
             String subId = headerAccessor.getSubscriptionId();
-//            log.info("activate SUBSCRIBE AfterCompletion Method for chatId : " + chatId);
 
             ChatUserPrincipal userPrincipal = redisService.getUserInfoFromCache(sessionId);
             String userId = userPrincipal.getUserId().toString();
 
 
-//            disable for JMeter test
             Long lastReadMessageId = redisService.getUserLastReadMessageId(chatId.toString(), userId);
             if (lastReadMessageId == null) {
                 log.info("User " + userId + " has no lastReadMessage... continue without sending decrease message");
             } else {
-                Message<byte[]> lastReadIdMessage = buildLastReadMessage(destination, lastReadMessageId, userId);
+                Message<byte[]> lastReadIdMessage = headerUtils.buildLastReadMessage(destination, lastReadMessageId, userId);
                 channel.send(lastReadIdMessage);
                 log.info("sending subscritionInfo of user : " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
             }
@@ -115,44 +116,18 @@ public class StompHandler implements ChannelInterceptor {
         ChannelInterceptor.super.afterSendCompletion(message, channel, sent, ex);
     }
 
-    ////////////////////////////////////////
-
-    private Long getChatIdFromDestination(String destination) {
-        if (destination == null) {
-            throw new NullPointerException("subscribe destination not defined");
-        }
-        return Long.valueOf(destination.replaceAll("\\D", ""));
-    }
-
-    private MessageDestinationEnum destinationChecker(String destination) {
-        if(destination == null){
-            return null;
-        }
-        String type = destination.split("/")[1];
-        if (type.equals("chat")) {
-            return MessageDestinationEnum.CHAT;
-        }
-        if (type.equals("chatalarm")) {
-            return MessageDestinationEnum.CHATALARM;
-        }
-        else{
-            throw new IllegalArgumentException("unknown destination type");
-        }
-    }
-
     private void handleChatUnsubscribe(ChatUserPrincipal userPrincipal, String subId, String sessionId) {
         Long chatId = redisService.removeAndGetChatSubcriptionDestination(subId, sessionId);
         if(chatId == null){
             log.debug("unsubscribe request for null chatId with subId : " + subId + " sessionId : " + sessionId);
             return;
         }
-//        log.info(userPrincipal.getUserId() + " unsubscribing chatroom : " + chatId);
+
         String userId = userPrincipal.getUserId().toString();
 
         ChatMessageOutput recentMessage = redisService.loadRecentChat(chatId.toString());
         Long recentMessageId;
 
-//        disable for Jmeter Test
         if (recentMessage == null) {
             log.info("recent message not present for chatId : " + chatId);
         } else {
@@ -163,15 +138,6 @@ public class StompHandler implements ChannelInterceptor {
 
         redisService.removeSubIdFromSession(sessionId, subId);
         redisService.removeSubscriptionFromChatId(chatId.toString(), userId);
-    }
-
-    //When a user SUBSCRIBES, this message tells the client the ID of the last message read by that user.
-    private Message<byte[]> buildLastReadMessage(String destination, Long lastReadMessageId, String userId) {
-        StompHeaderAccessor newHeader = StompHeaderAccessor.create(StompCommand.MESSAGE);
-        newHeader.setDestination(destination);
-        newHeader.setNativeHeader("lastReadMessage", String.valueOf(lastReadMessageId));
-        newHeader.setNativeHeader("subscribedUserId", userId);
-        return MessageBuilder.createMessage("new subscription".getBytes(StandardCharsets.UTF_8), newHeader.getMessageHeaders());
     }
 
 }
