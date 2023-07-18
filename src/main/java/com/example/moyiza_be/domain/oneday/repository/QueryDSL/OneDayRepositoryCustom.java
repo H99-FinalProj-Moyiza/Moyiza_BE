@@ -4,7 +4,7 @@ import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
 import com.example.moyiza_be.domain.oneday.dto.OneDayListResponseDto;
 import com.example.moyiza_be.domain.oneday.entity.OneDay;
-import com.example.moyiza_be.user.entity.QUser;
+import com.example.moyiza_be.domain.user.entity.QUser;
 import com.example.moyiza_be.domain.user.entity.User;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
@@ -21,11 +21,11 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.example.moyiza_be.like.entity.QOnedayLike.onedayLike;
-import static com.example.moyiza_be.oneday.entity.QOneDay.oneDay;
-import static com.example.moyiza_be.oneday.entity.QOneDayAttendant.oneDayAttendant;
-import static com.example.moyiza_be.oneday.entity.QOneDayImageUrl.oneDayImageUrl;
-import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.example.moyiza_be.domain.like.entity.QOnedayLike.onedayLike;
+import static com.example.moyiza_be.domain.oneday.entity.QOneDay.oneDay;
+import static com.example.moyiza_be.domain.oneday.entity.QOneDayAttendant.oneDayAttendant;
+import static com.example.moyiza_be.domain.oneday.entity.QOneDayImageUrl.oneDayImageUrl;
+import static com.example.moyiza_be.domain.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.types.dsl.MathExpressions.power;
 

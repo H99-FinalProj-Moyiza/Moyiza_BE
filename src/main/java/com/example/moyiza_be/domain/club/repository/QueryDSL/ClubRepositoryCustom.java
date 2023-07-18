@@ -2,11 +2,11 @@ package com.example.moyiza_be.domain.club.repository.QueryDSL;
 
 import com.example.moyiza_be.domain.club.dto.ClubDetailResponse;
 import com.example.moyiza_be.domain.club.dto.ClubListResponse;
-import com.example.moyiza_be.club.dto.QClubDetailResponse;
+import com.example.moyiza_be.domain.club.dto.QClubDetailResponse;
 import com.example.moyiza_be.domain.club.entity.Club;
 import com.example.moyiza_be.common.enums.CategoryEnum;
 import com.example.moyiza_be.common.enums.TagEnum;
-import com.example.moyiza_be.user.entity.QUser;
+import com.example.moyiza_be.domain.user.entity.QUser;
 import com.example.moyiza_be.domain.user.entity.User;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
@@ -21,11 +21,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.example.moyiza_be.club.entity.QClub.club;
-import static com.example.moyiza_be.club.entity.QClubImageUrl.clubImageUrl;
-import static com.example.moyiza_be.club.entity.QClubJoinEntry.clubJoinEntry;
-import static com.example.moyiza_be.like.entity.QClubLike.clubLike;
-import static com.example.moyiza_be.user.entity.QUser.user;
+import static com.example.moyiza_be.domain.club.entity.QClub.club;
+import static com.example.moyiza_be.domain.club.entity.QClubImageUrl.clubImageUrl;
+import static com.example.moyiza_be.domain.club.entity.QClubJoinEntry.clubJoinEntry;
+import static com.example.moyiza_be.domain.like.entity.QClubLike.clubLike;
+import static com.example.moyiza_be.domain.user.entity.QUser.user;
 import static com.querydsl.core.group.GroupBy.groupBy;
 
 

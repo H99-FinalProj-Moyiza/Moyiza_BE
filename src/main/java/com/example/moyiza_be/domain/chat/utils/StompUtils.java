@@ -5,9 +5,11 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 
+@Component
 public class StompUtils {
 
     public MessageDestinationEnum destinationChecker(String destination) {

@@ -1,6 +1,6 @@
 package com.example.moyiza_be.domain.club.controller;
 
-import com.example.moyiza_be.club.dto.createclub.*;
+import com.example.moyiza_be.domain.club.dto.createclub.*;
 import com.example.moyiza_be.domain.club.service.ClubService;
 import com.example.moyiza_be.domain.club.service.ClubUpdateService;
 import com.example.moyiza_be.common.enums.CategoryEnum;

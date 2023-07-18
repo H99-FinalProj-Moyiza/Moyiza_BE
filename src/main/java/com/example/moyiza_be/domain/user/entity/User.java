@@ -6,12 +6,13 @@ import com.example.moyiza_be.common.enums.SocialType;
 import com.example.moyiza_be.common.enums.UserRoleEnum;
 import com.example.moyiza_be.common.oauth2.OAuthAttributes;
 import com.example.moyiza_be.common.utils.TimeStamped;
-
 import com.example.moyiza_be.domain.user.dto.SignupRequestDto;
 import com.example.moyiza_be.domain.user.dto.UpdateSocialInfoRequestDto;
-import com.example.moyiza_be.user.dto.*;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.Calendar;

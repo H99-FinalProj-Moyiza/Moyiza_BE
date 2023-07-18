@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.example.moyiza_be.club.entity.QClubImageUrl.clubImageUrl;
+import static com.example.moyiza_be.domain.club.entity.QClubImageUrl.clubImageUrl;
 
 @Repository
 @RequiredArgsConstructor
