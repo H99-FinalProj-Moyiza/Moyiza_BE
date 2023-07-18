@@ -1,9 +1,10 @@
 package com.example.moyiza_be.user.service;
 
-import com.example.moyiza_be.user.dto.SignupRequestDto;
-import com.example.moyiza_be.user.entity.User;
-import com.example.moyiza_be.user.repository.UserRepository;
-import com.example.moyiza_be.user.util.ValidationUtil;
+import com.example.moyiza_be.domain.user.dto.SignupRequestDto;
+import com.example.moyiza_be.domain.user.entity.User;
+import com.example.moyiza_be.domain.user.repository.UserRepository;
+import com.example.moyiza_be.domain.user.service.UserService;
+import com.example.moyiza_be.domain.user.util.ValidationUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

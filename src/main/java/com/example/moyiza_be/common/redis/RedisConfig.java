@@ -1,6 +1,6 @@
 package com.example.moyiza_be.common.redis;
 
-import com.example.moyiza_be.chat.dto.ChatMessageOutput;
+import com.example.moyiza_be.domain.chat.dto.ChatMessageOutput;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.cache.CacheManager;
