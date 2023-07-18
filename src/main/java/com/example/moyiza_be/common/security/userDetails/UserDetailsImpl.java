@@ -1,7 +1,6 @@
 package com.example.moyiza_be.common.security.userDetails;
 
-import com.example.moyiza_be.common.enums.UserRoleEnum;
-import com.example.moyiza_be.user.entity.User;
+import com.example.moyiza_be.domain.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,6 +1,6 @@
 package com.example.moyiza_be.common.utils;
 
-import com.example.moyiza_be.chat.dto.ChatMessageInput;
+import com.example.moyiza_be.domain.chat.dto.ChatMessageInput;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

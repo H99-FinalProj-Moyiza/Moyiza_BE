@@ -1,11 +1,11 @@
 package com.example.moyiza_be.common.security.jwt;
 
-import com.example.moyiza_be.chat.dto.ChatUserPrincipal;
+import com.example.moyiza_be.domain.chat.dto.ChatUserPrincipal;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsImpl;
 import com.example.moyiza_be.common.security.userDetails.UserDetailsServiceImpl;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshToken;
 import com.example.moyiza_be.common.security.jwt.refreshToken.RefreshTokenRepository;
-import com.example.moyiza_be.user.entity.User;
+import com.example.moyiza_be.domain.user.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;

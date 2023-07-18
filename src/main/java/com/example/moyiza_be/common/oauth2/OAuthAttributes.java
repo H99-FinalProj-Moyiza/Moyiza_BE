@@ -6,10 +6,9 @@ import com.example.moyiza_be.common.oauth2.userinfo.GoogleOAuth2UserInfo;
 import com.example.moyiza_be.common.oauth2.userinfo.KakaoOAuth2UserInfo;
 import com.example.moyiza_be.common.oauth2.userinfo.NaverOAuth2UserInfo;
 import com.example.moyiza_be.common.oauth2.userinfo.OAuth2UserInfo;
-import com.example.moyiza_be.user.entity.User;
+import com.example.moyiza_be.domain.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Map;
