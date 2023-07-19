@@ -25,7 +25,7 @@ import java.util.Set;
 public class StompHandler implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     private final RedisService redisService;
-    private final StompUtils headerUtils;
+    private final StompUtils stompUtils;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -68,6 +68,39 @@ public class StompHandler implements ChannelInterceptor {
         return message;
     }
 
+    @Override
+    public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
+        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+
+        if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) &&
+               MessageDestinationEnum.CHAT.equals(stompUtils.destinationChecker(headerAccessor.getDestination()))
+        ) {
+            String destination = headerAccessor.getDestination();
+            Long chatId = stompUtils.getChatIdFromDestination(destination);
+
+            String sessionId = headerAccessor.getSessionId();
+            String subId = headerAccessor.getSubscriptionId();
+
+            ChatUserPrincipal userPrincipal = redisService.getUserInfoFromCache(sessionId);
+            String userId = userPrincipal.getUserId().toString();
+
+            Long lastReadMessageId = redisService.getUserLastReadMessageId(chatId.toString(), userId);
+
+            if (lastReadMessageId == null) {
+                log.info("User " + userId + " has no lastReadMessage... continue without sending decrease message");
+            } else {
+                stompUtils.sendLastReadMessage(destination, lastReadMessageId, userId, channel);
+            }
+
+            redisService.addSessionSubInfo(sessionId, subId, chatId, userId);
+            redisService.removeUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString());
+            redisService.addSubscriptionToChatId(chatId.toString(), userId);
+
+        }
+
+        ChannelInterceptor.super.afterSendCompletion(message, channel, sent, ex);
+    }
+
     private void handleConnect(String sessionId, String token) {
         if (!jwtUtil.validateToken(token)) {
             throw new IllegalArgumentException("The token is invalid.");
@@ -76,62 +109,13 @@ public class StompHandler implements ChannelInterceptor {
         redisService.saveUserInfoToCache(sessionId, userInfo);
     }
 
-    @Override
-    public void afterSendCompletion(Message<?> message, MessageChannel channel, boolean sent, Exception ex) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+    private void handleSubscribe(String sessionId, String subId, String chatId){
 
-        if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) &&
-               MessageDestinationEnum.CHAT.equals(headerUtils.destinationChecker(headerAccessor.getDestination()))
-        ) {
-            String destination = headerAccessor.getDestination();
-            String sessionId = headerAccessor.getSessionId();
-            Long chatId = headerUtils.getChatIdFromDestination(destination);
-            String subId = headerAccessor.getSubscriptionId();
-
-            ChatUserPrincipal userPrincipal = redisService.getUserInfoFromCache(sessionId);
-            String userId = userPrincipal.getUserId().toString();
-
-
-            Long lastReadMessageId = redisService.getUserLastReadMessageId(chatId.toString(), userId);
-            if (lastReadMessageId == null) {
-                log.info("User " + userId + " has no lastReadMessage... continue without sending decrease message");
-            } else {
-                Message<byte[]> lastReadIdMessage = headerUtils.buildLastReadMessage(destination, lastReadMessageId, userId);
-                channel.send(lastReadIdMessage);
-                log.info("sending subscritionInfo of user : " + userPrincipal.getUserId() + " lastread message : " + lastReadMessageId);
-            }
-
-            redisService.saveChatSubscriptionDestination(subId, sessionId, chatId);
-            redisService.saveSessionChatSubId(sessionId, subId);
-            redisService.removeUnsubscribedUser(chatId.toString(), userPrincipal.getUserId().toString());
-            redisService.addSubscriptionToChatId(chatId.toString(), userId);
-        }
-
-        ChannelInterceptor.super.afterSendCompletion(message, channel, sent, ex);
     }
 
     private void handleChatUnsubscribe(ChatUserPrincipal userPrincipal, String subId, String sessionId) {
-        Long chatId = redisService.removeAndGetChatSubcriptionDestination(subId, sessionId);
-        if(chatId == null){
-            log.debug("unsubscribe request for null chatId with subId : " + subId + " sessionId : " + sessionId);
-            return;
-        }
-
         String userId = userPrincipal.getUserId().toString();
-
-        ChatMessageOutput recentMessage = redisService.loadRecentChat(chatId.toString());
-        Long recentMessageId;
-
-        if (recentMessage == null) {
-            log.info("recent message not present for chatId : " + chatId);
-        } else {
-            recentMessageId = recentMessage.getChatRecordId();
-            redisService.addUnsubscribedUser(chatId.toString(), userId);
-            log.info("adding recent message " + recentMessageId + " to userId : " + userId);
-        }
-
-        redisService.removeSubIdFromSession(sessionId, subId);
-        redisService.removeSubscriptionFromChatId(chatId.toString(), userId);
+        redisService.unsubscribeChat(subId, sessionId, userId);
     }
 
 }

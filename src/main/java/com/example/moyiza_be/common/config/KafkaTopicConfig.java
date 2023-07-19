@@ -30,10 +30,9 @@ public class KafkaTopicConfig {
 //    public KafkaTemplate<String, ChatMessageOutput> kafkaTemplate() {
 //        return new KafkaTemplate<>(producerFactory());
 //    }
-    @Bean
-    public NewTopic moyizaChatTopicBuilder(){
-        return TopicBuilder.name("chat")
-//                .partitions(1)
-                .build();
-    }
+//    @Bean
+//    public NewTopic moyizaChatTopicBuilder(){
+//        return TopicBuilder.name("chat")
+//                .build();
+//    }
 }

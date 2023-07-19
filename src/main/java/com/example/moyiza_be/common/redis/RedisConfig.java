@@ -1,6 +1,7 @@
 package com.example.moyiza_be.common.redis;
 
 import com.example.moyiza_be.domain.chat.dto.ChatMessageOutput;
+import com.example.moyiza_be.domain.chat.dto.ChatUserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.cache.CacheManager;
@@ -68,6 +69,15 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new GenericToStringSerializer<>(Long.class));
+
+        return redisTemplate;
+    }
+    @Bean
+    RedisTemplate<String, ChatUserPrincipal> redisPrincipalTemplate() {
+        RedisTemplate<String, ChatUserPrincipal> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 
         return redisTemplate;
     }

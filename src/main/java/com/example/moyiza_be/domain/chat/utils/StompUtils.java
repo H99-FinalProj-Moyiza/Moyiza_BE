@@ -2,6 +2,7 @@ package com.example.moyiza_be.domain.chat.utils;
 
 import com.example.moyiza_be.common.enums.MessageDestinationEnum;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageBuilder;
@@ -42,6 +43,11 @@ public class StompUtils {
         newHeader.setNativeHeader("lastReadMessage", String.valueOf(lastReadMessageId));
         newHeader.setNativeHeader("subscribedUserId", userId);
         return MessageBuilder.createMessage("new subscription".getBytes(StandardCharsets.UTF_8), newHeader.getMessageHeaders());
+    }
+
+    public void sendLastReadMessage(String destination, Long lastReadMessageId, String userId, MessageChannel channel){
+        Message<byte[]> message = buildLastReadMessage(destination, lastReadMessageId, userId);
+        channel.send(message);
     }
 
 }
