@@ -57,7 +57,7 @@ spring:
     consumer:
       bootstrap-servers: ENC(ULHxVjXF4Rmi2ZD302GSElMdX8/sVm9Jgyp8hvbUUUzzNhCQYkS9F43Fj3LpvYPXd+VDcvw7fzzJzNwBSiHuRxiHbz8R2gLg)
       group-id: chatServer${chatServerIndex}
-      auto-offset-reset: earliest
+      auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
@@ -67,6 +67,8 @@ spring:
       bootstrap-servers: ENC(ULHxVjXF4Rmi2ZD302GSElMdX8/sVm9Jgyp8hvbUUUzzNhCQYkS9F43Fj3LpvYPXd+VDcvw7fzzJzNwBSiHuRxiHbz8R2gLg)
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+
 
 
 
